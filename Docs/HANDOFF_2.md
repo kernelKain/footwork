@@ -2,9 +2,9 @@
 
 Step-by-step record of what actually happened. The locked plan stays in `Docs/HANDOFF_1.md`. This file is the place to read after a step is finished.
 
-**Status:** P0.3 proof is blocked. The arrangement gate is ready to commit. CodeRabbit GitHub App install is still unconfirmed.  
-**Next step:** Commit P0.3, then P0.4 — Record music API and hosting access checks.  
-**Last completed step:** P0.2 code is `51038eb`, still partial until the CodeRabbit GitHub App is confirmed.  
+**Status:** P0.4 music proof succeeded. Render CLI is authenticated. Credit balance is still unread.  
+**Next step:** Commit P0.4, then P1.1 — Build the Soundprint interface and fixture contracts.  
+**Last completed step:** P0.3 — commit `4332c72`.  
 **Active build time:** 0 of 20 hours recorded.
 
 Execution notes stay in this file. The diagram and write-up path are under `Docs/`. Each **Notes** section is filled only after that step is finished.
@@ -59,7 +59,7 @@ Configure the frontend, API, and Hugging Face environments, plus GitHub Actions,
 
 ### P0.3 — Add the Gemma access proof and provider configuration
 
-**Status:** Partial  
+**Status:** Done  
 **Kind:** Proof · 30 minutes · AC-04  
 **Commit subject:** Add the Gemma access proof and provider configuration
 
@@ -67,11 +67,11 @@ Add the minimal Hugging Face arrangement endpoint and prove `google/gemma-4-E2B-
 
 **Done when.** One valid arrangement is recorded with model identity, latency, and quota, or the blocked gate and its fallback are recorded.
 
-**Notes.** Local `backend/.env` has `HF_TOKEN`, `GEMMA_MODEL_ID=google/gemma-4-E2B-it`, `GEMMA_MODEL_REVISION=3e22461f65e89153144f8adb70e3b8c2cc9845a7`, `HF_SPACE_URL=https://kernelkain-footwork.hf.space`, `APP_ENV=local`, and `PUBLIC_BASE_URL=http://127.0.0.1:8000`. The token value is not recorded. The public Space `kernelKain/footwork` is Gradio on requested ZeroGPU hardware `zero-a10g`, but its runtime stage is `NO_APP_FILE` and a request returned 503. No arrangement was generated, and latency and quota were not measured. No second arrangement provider is configured. The fallback is Route Sketch plus a separately labeled cached Studio example. `/arrange` still returns `arrangement: null` when generation has not run. `uv run --directory backend pytest tests/unit/test_arrange_gate.py` passed, 3 tests. Evidence is in `Docs/evidence/gemma-access.md`. AC-04 remains blocked. Not done until the commit hash is recorded. No active time was measured.
+**Notes.** Local `backend/.env` has `HF_TOKEN`, `GEMMA_MODEL_ID=google/gemma-4-E2B-it`, `GEMMA_MODEL_REVISION=3e22461f65e89153144f8adb70e3b8c2cc9845a7`, `HF_SPACE_URL=https://kernelkain-footwork.hf.space`, `APP_ENV=local`, and `PUBLIC_BASE_URL=http://127.0.0.1:8000`. The token value is not recorded. The public Space `kernelKain/footwork` is Gradio on requested ZeroGPU hardware `zero-a10g`, but its runtime stage is `NO_APP_FILE` and a request returned 503. No arrangement was generated, and latency and quota were not measured. No second arrangement provider is configured. The fallback is Route Sketch plus a separately labeled cached Studio example. `/arrange` still returns `arrangement: null` when generation has not run. `uv run --directory backend pytest tests/unit/test_arrange_gate.py` passed, 3 tests. Evidence is in `Docs/evidence/gemma-access.md`. AC-04 remains blocked. Commit `4332c72` on `main`. No active time was measured.
 
 ### P0.4 — Record music API and hosting access checks
 
-**Status:** Not started  
+**Status:** Partial  
 **Kind:** Proof · 30 minutes · AC-05, AC-07, AC-14  
 **Commit subject:** Record music API and hosting access checks
 
@@ -79,7 +79,7 @@ Check the ElevenLabs key, model, balance, and usage rights, and confirm Render c
 
 **Done when.** One affordable audio proof is recorded where permitted, and the hosting choice is confirmed. No new spending.
 
-**Notes.** Not implemented.
+**Notes.** On October 9, 2026 the ElevenLabs key in `backend/.env` composed one `music_v2_5` chunk of 3000 ms. The response was HTTP 200, `audio/mpeg`, 48528 bytes, and `ffprobe` measured 3.030188 seconds. Request SHA-256 is `7658928e848e246b59b2ac87d02667c283d476f3051d1145cfcdb47bc7cf1e77`. Provider song id is `OKldGOIYKQQ3rmFF7OXM`. The audio file is `artifacts/eleven-proof.mp3` and is gitignored. `GET /v1/user` returned 401 because the key lacks `user_read`, so tier and balance were not read. No second music request was made. Render CLI v2.28.0 is authenticated for workspace `My Workspace` (`tea-da16h79t0dsc73b4d4hg`). That workspace already has one unsuspended web service on plan `1c-2g` and one static site. No Footwork service was created. The CLI and public API do not expose credit balance, so the $50 credit and the hosting choice remain unconfirmed. No new purchase was made. Evidence is in `Docs/evidence/music-hosting.md`. AC-05 has a short access proof, not the 45–60 second demonstration track. AC-07 remains unmet. Not done until the commit hash is recorded. No active time was measured.
 
 ---
 
