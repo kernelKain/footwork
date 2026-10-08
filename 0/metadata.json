@@ -1,0 +1,76 @@
+{
+  "cli_version": "0.11.4",
+  "checkpoint_id": "01M4EB8WRYW4NRA43HPTPN0N6S",
+  "session_id": "2f2c80ac-07a8-47e0-919c-af8c815f99c3",
+  "strategy": "manual-commit",
+  "created_at": "2026-10-08T18:09:16.013615629Z",
+  "branch": "main",
+  "checkpoints_count": 2,
+  "save_step_count": 3,
+  "files_touched": [
+    "Docs/HANDOFF_0.md",
+    "Docs/HANDOFF_1.md",
+    "Docs/HANDOFF_2.md",
+    "Docs/PRODUCT_CONCEPT.md",
+    "Docs/diagrams/architecture.excalidraw",
+    "Docs/write-ups/README.md",
+    "README.md",
+    "docs/diagrams/architecture.excalidraw",
+    "docs/write-ups/README.md"
+  ],
+  "agent": "Cursor",
+  "model": "grok-4.7-high",
+  "turn_id": "52b7d2028002",
+  "compact_transcript_start": 0,
+  "token_usage": {
+    "input_tokens": 22468,
+    "cache_creation_tokens": 0,
+    "cache_read_tokens": 1820800,
+    "output_tokens": 4792,
+    "api_call_count": 2
+  },
+  "session_metrics": {
+    "turn_count": 3
+  },
+  "initial_attribution": {
+    "calculated_at": "2026-10-08T18:09:15.979415702Z",
+    "agent_lines": 492,
+    "agent_removed": 424,
+    "human_added": 0,
+    "human_modified": 0,
+    "human_removed": 0,
+    "total_committed": 492,
+    "total_lines_changed": 916,
+    "agent_percentage": 100,
+    "metric_version": 2
+  },
+  "prompt_attributions": [
+    {
+      "checkpoint_number": 2,
+      "user_lines_added": 0,
+      "user_lines_removed": 0,
+      "agent_lines_added": 0,
+      "agent_lines_removed": 0
+    },
+    {
+      "checkpoint_number": 3,
+      "user_lines_added": 269,
+      "user_lines_removed": 0,
+      "agent_lines_added": 76,
+      "agent_lines_removed": 8,
+      "user_added_per_file": {
+        ".opencode/plugins/entire.ts": 269
+      }
+    },
+    {
+      "checkpoint_number": 4,
+      "user_lines_added": 269,
+      "user_lines_removed": 0,
+      "agent_lines_added": 492,
+      "agent_lines_removed": 424,
+      "user_added_per_file": {
+        ".opencode/plugins/entire.ts": 269
+      }
+    }
+  ]
+}
