@@ -1,0 +1,49 @@
+{
+  "cli_version": "0.11.4",
+  "checkpoint_id": "01M4EAW1QXQ13JY9T6RXF3PJPZ",
+  "strategy": "manual-commit",
+  "branch": "main",
+  "checkpoints_count": 1,
+  "files_touched": [
+    ".coderabbit.yaml",
+    ".github/workflows/ci.yml",
+    ".gitignore",
+    "Docs/HANDOFF_2.md",
+    "backend/.env.example",
+    "backend/.python-version",
+    "backend/app/__init__.py",
+    "backend/app/main.py",
+    "backend/pyproject.toml",
+    "backend/tests/unit/test_fixtures.py",
+    "backend/tests/unit/test_imports.py",
+    "docs/diagrams/architecture.excalidraw",
+    "docs/write-ups/README.md",
+    "fixtures/synthetic/toolchain-check.json",
+    "frontend/.prettierrc.json",
+    "frontend/eslint.config.js",
+    "frontend/index.html",
+    "frontend/package.json",
+    "frontend/playwright.config.ts",
+    "frontend/src/App.tsx",
+    "frontend/src/main.tsx",
+    "frontend/src/styles.css",
+    "frontend/src/vite-env.d.ts",
+    "frontend/tests/shell.spec.ts",
+    "frontend/tsconfig.app.json",
+    "frontend/tsconfig.json",
+    "frontend/tsconfig.node.json",
+    "frontend/vite.config.ts",
+    "hf-space/README.md",
+    "hf-space/app.py",
+    "hf-space/requirements.txt"
+  ],
+  "sessions": [
+    {
+      "metadata": "/0/metadata.json",
+      "transcript": "/0/full.jsonl",
+      "compact_transcript": "/0/transcript.jsonl",
+      "content_hash": "/0/content_hash.txt",
+      "prompt": "/0/prompt.txt"
+    }
+  ]
+}
