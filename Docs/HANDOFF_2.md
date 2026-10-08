@@ -4,7 +4,7 @@ Step-by-step record of what actually happened. The locked plan stays in `Docs/HA
 
 **Status:** P0 is recorded. The user stated the Render balance is $50. CodeRabbit GitHub App install is still unconfirmed.  
 **Next step:** P1 on `build/experience`. Do not start until asked.  
-**Last completed step:** P0.4 — commit `acf03ad`, with the $50 credit recorded after it.  
+**Last completed step:** P0.4 — proof `acf03ad`, credit confirmation `8c11719`.  
 **Active build time:** 0 of 20 hours recorded.
 
 Execution notes stay in this file. The diagram and write-up path are under `Docs/`. Each **Notes** section is filled only after that step is finished.
@@ -79,7 +79,7 @@ Check the ElevenLabs key, model, balance, and usage rights, and confirm Render c
 
 **Done when.** One affordable audio proof is recorded where permitted, and the hosting choice is confirmed. No new spending.
 
-**Notes.** On October 9, 2026 the ElevenLabs key in `backend/.env` composed one `music_v2_5` chunk of 3000 ms. The response was HTTP 200, `audio/mpeg`, 48528 bytes, and `ffprobe` measured 3.030188 seconds. Request SHA-256 is `7658928e848e246b59b2ac87d02667c283d476f3051d1145cfcdb47bc7cf1e77`. Provider song id is `OKldGOIYKQQ3rmFF7OXM`. The audio file is `artifacts/eleven-proof.mp3` and is gitignored. `GET /v1/user` returned 401 because the key lacks `user_read`, so tier and balance were not read. No second music request was made. Render CLI v2.28.0 is authenticated for workspace `My Workspace` (`tea-da16h79t0dsc73b4d4hg`). That workspace already has one unsuspended web service on plan `1c-2g` and one static site. No Footwork service was created. The CLI and public API do not expose credit balance. The user stated the balance is $50 on October 9, 2026, so the hosting choice is one paid `1c-2g` service. No new purchase was made. Evidence is in `Docs/evidence/music-hosting.md`. AC-05 has a short access proof, not the 45–60 second demonstration track. AC-07 remains unmet until the public deployment in P1.2. Commit `acf03ad` on `main`. No active time was measured.
+**Notes.** On October 9, 2026 the ElevenLabs key in `backend/.env` composed one `music_v2_5` chunk of 3000 ms. The response was HTTP 200, `audio/mpeg`, 48528 bytes, and `ffprobe` measured 3.030188 seconds. Request SHA-256 is `7658928e848e246b59b2ac87d02667c283d476f3051d1145cfcdb47bc7cf1e77`. Provider song id is `OKldGOIYKQQ3rmFF7OXM`. The audio file is `artifacts/eleven-proof.mp3` and is gitignored. `GET /v1/user` returned 401 because the key lacks `user_read`, so tier and balance were not read. No second music request was made. Render CLI v2.28.0 is authenticated for workspace `My Workspace` (`tea-da16h79t0dsc73b4d4hg`). That workspace already has one unsuspended web service on plan `1c-2g` and one static site. No Footwork service was created. The CLI and public API do not expose credit balance. The user stated the balance is $50 on October 9, 2026, so the hosting choice is one paid `1c-2g` service. No new purchase was made. Evidence is in `Docs/evidence/music-hosting.md`. AC-05 has a short access proof, not the 45–60 second demonstration track. AC-07 remains unmet until the public deployment in P1.2. Proof commit `acf03ad` and credit confirmation `8c11719` are on `main`. No active time was measured.
 
 ---
 
