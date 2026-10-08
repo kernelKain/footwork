@@ -1,0 +1,5 @@
+Update this project to inclue these tech stack adn we will set up these in phase 0, so udpate docs:: - Code rabbit  → Code review
+- Entire → Agent Sessions sharing
+- DevRelay → Use for Dev write ups
+- Github actions → Automated checks
+- Excalidraw → Architecture diagrams
