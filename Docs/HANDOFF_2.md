@@ -1,0 +1,441 @@
+# Footwork execution notes
+
+Step-by-step record of what actually happened. The locked plan stays in `Docs/HANDOFF_1.md`. This file is the place to read after a step is finished.
+
+**Status:** P0.1 prepared. Waiting for the user to create `build/foundation` and commit.  
+**Next step:** P0.1 commit, then P0.2 — Configure the application toolchain and quality checks.  
+**Last completed step:** None.  
+**Active build time:** 0 of 20 hours recorded.
+
+Execution notes live in this file. The lowercase `docs/` folder is not used. Each **Notes** section is filled only after that step is finished.
+
+## How to update this file
+
+After a step is implemented, edit only that step and its phase summary:
+
+1. Set the step status to **Done**, **Blocked**, or **Partial**.
+2. Replace **Notes** with what changed, what was verified, the commit hash, and anything left open.
+3. Update the phase summary once every step in that phase has a finished note.
+4. Update the status lines at the top of this file.
+
+Write notes in plain sentences. Include evidence. Do not mark a step done before its commit exists.
+
+A finished note looks like this:
+
+> **Notes.** Added the health endpoint and Render config. `GET /health` returned 200 on the public URL. Commit `abc1234`. CodeRabbit review is still waiting on the GitHub App install.
+
+---
+
+## P0 — Stack and access foundation
+
+**Branch:** `build/foundation`  
+**Window:** Build hours 0–2 (120 minutes)  
+**Outcome:** Tools, model access, music API access, and hosting are configured or an explicit fallback is recorded.  
+**Phase note:** Not started.
+
+### P0.1 — Verify baseline and initialize execution record
+
+**Status:** Partial  
+**Kind:** Proof · 30 minutes · AC-14, AC-16  
+**Commit subject:** Document the implementation contract and repository baseline
+
+Inspect the repository baseline, preserve `Docs/`, and initialize the execution record. The user creates the `build/foundation` branch.
+
+**Done when.** Repository facts and contest eligibility are recorded, and existing work is left in place.
+
+**Notes.** Inspected `main` at `dca4c40` (`add Product Concept and Implementation Plan`), parent `22df0e7` (`Initial commit`). The public repository is https://github.com/kernelKain/footwork, created `2026-10-07T22:05:09Z`, inside the Week 1 entry window. No application code, `.env`, or deployment exists. Local Node is v22.14.0 and local Python is 3.14.4; the locked API runtime stays 3.12.12 for P0.2. Contest rules were checked against DevRelay `dev-challenges`, `hacktoberfest`, and challenge id 79. Personal prize eligibility is unconfirmed. The lowercase `docs/` handoff was removed at the user's request; this file is the execution record. Uncommitted toolchain edits in `Docs/` and `README.md` were left in place. `Docs/HANDOFF_1.md` execution-state edits from that attempt were restored. Not done until the user creates `build/foundation` and the commit hash is recorded. No active time was measured.
+
+### P0.2 — Configure the application toolchain and quality checks
+
+**Status:** Not started  
+**Kind:** Edit · 30 minutes · AC-07, AC-14, AC-18  
+**Commit subject:** Configure the application toolchain and quality checks
+
+Configure the frontend, API, and Hugging Face environments, plus GitHub Actions, CodeRabbit, Entire, the DevRelay write-up path, and the Excalidraw architecture diagram.
+
+**Done when.** The build succeeds, versions are recorded, and the toolchain files are committed. The user installs the CodeRabbit GitHub App, runs `entire enable --agent cursor`, and confirms DevRelay authentication.
+
+**Notes.** Not implemented.
+
+### P0.3 — Add the Gemma access proof and provider configuration
+
+**Status:** Not started  
+**Kind:** Proof · 30 minutes · AC-04  
+**Commit subject:** Add the Gemma access proof and provider configuration
+
+Add the minimal Hugging Face arrangement endpoint, prove `google/gemma-4-E2B-it`, and check whether Backboard has a real Gemma model.
+
+**Done when.** One valid arrangement is recorded with model identity, latency, and quota, or the blocked gate and its fallback are recorded.
+
+**Notes.** Not implemented.
+
+### P0.4 — Record music API and hosting access checks
+
+**Status:** Not started  
+**Kind:** Proof · 30 minutes · AC-05, AC-07, AC-14  
+**Commit subject:** Record music API and hosting access checks
+
+Check the ElevenLabs key, model, balance, and usage rights, and confirm Render credit covers the chosen service.
+
+**Done when.** One affordable audio proof is recorded where permitted, and the hosting choice is confirmed. No new spending.
+
+**Notes.** Not implemented.
+
+---
+
+## P1 — Complete frontend experience
+
+**Branch:** `build/experience`  
+**Window:** Build hours 2–7 (300 minutes)  
+**Outcome:** A full fixture journey, synchronized player, responsive states, and the first public deployment.  
+**Phase note:** Not started. Depends on P0.
+
+### P1.1 — Build the Soundprint interface and fixture contracts
+
+**Status:** Not started  
+**Kind:** Edit · 50 minutes · AC-13, AC-18  
+**Commit subject:** Build the Soundprint interface and fixture contracts
+
+Build design tokens, the three-screen shell, reusable layout, and typed fixture contracts in `frontend/`.
+
+**Done when.** A labeled fixture renders at 390 px and 1280 px, and contract validation passes.
+
+**Notes.** Not implemented.
+
+### P1.2 — Deploy the frontend shell and API health endpoint
+
+**Status:** Not started  
+**Kind:** Release · 50 minutes · AC-07  
+**Commit subject:** Deploy the frontend shell and API health endpoint
+
+Serve the frontend and a FastAPI health endpoint from one Render service. The user deploys the skeleton.
+
+**Done when.** The public HTTPS page and `/health` both work.
+
+**Notes.** Not implemented.
+
+### P1.3 — Synchronize route playback and audio scrubbing
+
+**Status:** Not started  
+**Kind:** Edit · 50 minutes · AC-02, AC-10  
+**Commit subject:** Synchronize route playback and audio scrubbing
+
+Add the audio player, SVG route, and scrubbing, driven by one audio clock and deterministic fixture audio.
+
+**Done when.** Anchor checks stay within 500 ms of the audio clock.
+
+**Notes.** Not implemented.
+
+### P1.4 — Add movement markers and Soundprint explanations
+
+**Status:** Not started  
+**Kind:** Edit · 50 minutes · AC-10, AC-18  
+**Commit subject:** Add movement markers and Soundprint explanations
+
+Add the Route–Sound Graph, Movement Story, and sponsor and provenance labels.
+
+**Done when.** Choosing a marker moves the route, graph, and story together, and planned mappings are labeled as planned.
+
+**Notes.** Not implemented.
+
+### P1.5 — Implement recording and generation interface states
+
+**Status:** Not started  
+**Kind:** Edit · 50 minutes · AC-06, AC-11, AC-18  
+**Commit subject:** Implement recording and generation interface states
+
+Build the fixture recording and generation flow, including every required visible state.
+
+**Done when.** Permission, loading, partial, invalid, quota, and provider-failure states are present, and none of them pretends a live generation succeeded.
+
+**Notes.** Not implemented.
+
+### P1.6 — Refine the mobile Soundprint experience
+
+**Status:** Not started  
+**Kind:** Verify · 50 minutes · AC-12, AC-13  
+**Commit subject:** Refine the mobile Soundprint experience
+
+The user reviews the full fixture experience. Revise hierarchy and mobile layout from that review.
+
+**Done when.** The fixture journey is accepted and usable at 390 px and 1280 px.
+
+**Notes.** Not implemented.
+
+---
+
+## P2 — Real recording and movement engine
+
+**Branch:** `build/movement`  
+**Window:** Build hours 7–11 (240 minutes)  
+**Outcome:** Real capture, four detectors, compression, and an exact Route Sketch Hook.  
+**Phase note:** Not started. Depends on P1.
+
+### P2.1 — Record browser movement and recover local drafts
+
+**Status:** Not started  
+**Kind:** Edit · 40 minutes · AC-01, AC-14  
+**Commit subject:** Record browser movement and recover local drafts
+
+Record permissioned browser location, keep samples bounded, and store the draft in IndexedDB.
+
+**Done when.** Start and end stop the watch, and a reload recovers the draft. There is no upload interface.
+
+**Notes.** Not implemented.
+
+### P2.2 — Handle recording interruptions and screen visibility
+
+**Status:** Not started  
+**Kind:** Edit · 40 minutes · AC-01, AC-11  
+**Commit subject:** Handle recording interruptions and screen visibility
+
+Record visibility gaps, add a wake lock where the browser allows it, and explain how to keep the page visible.
+
+**Done when.** Hiding and resuming the page marks an interruption, and the interface does not promise screen-off recording.
+
+**Notes.** Not implemented.
+
+### P2.3 — Validate and clean recorded movement samples
+
+**Status:** Not started  
+**Kind:** Edit · 40 minutes · AC-09, AC-14  
+**Commit subject:** Validate and clean recorded movement samples
+
+Validate, clean, and project samples in Python, and score route quality.
+
+**Done when.** Noise, impossible jumps, and invalid timestamps are rejected, and a low-quality trace is explained.
+
+**Notes.** Not implemented.
+
+### P2.4 — Detect turns, pace changes, pauses, and loops
+
+**Status:** Not started  
+**Kind:** Edit · 40 minutes · AC-09  
+**Commit subject:** Detect turns pace changes pauses and loops
+
+Implement the four detectors with positive and negative fixtures.
+
+**Done when.** Turn, pace, pause, and loop fixtures pass, and control traces do not gain invented events.
+
+**Notes.** Not implemented.
+
+### P2.5 — Generate synchronized route sketches from movement events
+
+**Status:** Not started  
+**Kind:** Edit · 40 minutes · AC-02, AC-10, AC-14, AC-17  
+**Commit subject:** Generate synchronized route sketches from movement events
+
+Compress the journey, transform the route for display, and synthesize the deterministic Route Sketch.
+
+**Done when.** The automated turn and pause Hook test passes, the shared map stays in order, and the audio is valid.
+
+**Notes.** Not implemented.
+
+### P2.6 — Validate the movement pipeline with a real outdoor walk
+
+**Status:** Not started  
+**Kind:** Verify · 40 minutes · AC-01, AC-09, AC-14  
+**Commit subject:** Validate the movement pipeline with a real outdoor walk
+
+The user records the outdoor seed walk. Inspect the derived events and save only the approved sanitized fixture.
+
+**Done when.** The real recording shows useful events, and the raw trace stays out of Git.
+
+**Notes.** Not implemented.
+
+---
+
+## P3 — Sponsor-backed Soundprint
+
+**Branch:** `build/soundprint`  
+**Window:** Build hours 11–15 (240 minutes)  
+**Outcome:** Live Gemma and Eleven Music adapters, job controls, and one reviewed Studio result. Feature freeze is at the end of this phase.  
+**Phase note:** Not started. Depends on P2.
+
+### P3.1 — Add protected generation jobs and durable usage limits
+
+**Status:** Not started  
+**Kind:** Edit · 40 minutes · AC-08, AC-14, AC-15  
+**Commit subject:** Add protected generation jobs and durable usage limits
+
+Add job endpoints, per-job capability checks, the quota ledger, and idempotency.
+
+**Done when.** Duplicate, restart, and quota tests pass, and budget is reserved before a provider is called.
+
+**Notes.** Not implemented.
+
+### P3.2 — Integrate Gemma arrangement generation and validation
+
+**Status:** Not started  
+**Kind:** Edit · 40 minutes · AC-04, AC-06  
+**Commit subject:** Integrate Gemma arrangement generation and validation
+
+Call Gemma with an anonymous event timeline and validate the arrangement. Allow at most one repair.
+
+**Done when.** A valid plan is produced, and invalid output becomes an honest Route Sketch.
+
+**Notes.** Not implemented.
+
+### P3.3 — Render validated arrangements with Eleven Music
+
+**Status:** Not started  
+**Kind:** Edit · 40 minutes · AC-05, AC-17  
+**Commit subject:** Render validated arrangements with Eleven Music
+
+Compile timed Music v2.5 chunks, call the Eleven Music API, and check the returned audio.
+
+**Done when.** A genuine audio receipt exists, and an ambiguous network failure is not retried automatically.
+
+**Notes.** Not implemented.
+
+### P3.4 — Connect recorded walks to live Soundprint generation
+
+**Status:** Not started  
+**Kind:** Edit · 40 minutes · AC-01, AC-06, AC-08, AC-18  
+**Commit subject:** Connect recorded walks to live Soundprint generation
+
+Replace fixture generation with the live job flow without rebuilding the accepted interface.
+
+**Done when.** A real recording reaches Studio or Route Sketch, and the mode and stages match what happened.
+
+**Notes.** Not implemented.
+
+### P3.5 — Verify and cache the real walk demonstration track
+
+**Status:** Not started  
+**Kind:** Verify · 40 minutes · AC-03, AC-05, AC-17  
+**Commit subject:** Verify and cache the real walk demonstration track
+
+Listen to the seed Studio track, timestamp three movement mappings, and store the cached example.
+
+**Done when.** The turn, the pause, and a third mapping are perceptible. If they are not, AC-03 is recorded as failed. Stay inside the attempt cap.
+
+**Notes.** Not implemented.
+
+### P3.6 — Verify provider fallbacks and freeze the feature set
+
+**Status:** Not started  
+**Kind:** Verify · 40 minutes · AC-06, AC-08, AC-11, AC-15, AC-18  
+**Commit subject:** Verify provider fallbacks and freeze the feature set
+
+Check provider failure, deadline, quota, and fixture parity. Freeze features at build hour 15.
+
+**Done when.** The same trace can fall back to Route Sketch, the cached example stays separately labeled, and the freeze is recorded.
+
+**Notes.** Not implemented.
+
+---
+
+## P4 — Release verification
+
+**Branch:** `build/release`  
+**Window:** Build hours 15–17 (120 minutes)  
+**Outcome:** Privacy, accessibility, responsive, and failure checks, then the final deployed release.  
+**Phase note:** Not started. Depends on P3. Fixes only. No new features.
+
+### P4.1 — Harden location privacy and generation access controls
+
+**Status:** Not started  
+**Kind:** Verify · 30 minutes · AC-14, AC-15  
+**Commit subject:** Harden location privacy and generation access controls
+
+Audit secrets, payloads, authorization, logs, and retention.
+
+**Done when.** Coordinates and secrets are absent from the inspected artifacts, another job's capability is denied, and caps survive a restart.
+
+**Notes.** Not implemented.
+
+### P4.2 — Fix accessibility and responsive layout issues
+
+**Status:** Not started  
+**Kind:** Verify · 30 minutes · AC-12, AC-13  
+**Commit subject:** Fix accessibility and responsive layout issues
+
+Check keyboard use, contrast, reduced motion, and the 390 px and 1280 px layouts.
+
+**Done when.** The core flow works at both widths and by keyboard. Fix required failures only.
+
+**Notes.** Not implemented.
+
+### P4.3 — Verify the release journey and synchronization contracts
+
+**Status:** Not started  
+**Kind:** Verify · 30 minutes · AC-02, AC-10, AC-11, AC-18  
+**Commit subject:** Verify the release journey and synchronization contracts
+
+Run the contract tests, the browser journey, and the targeted failure cases.
+
+**Done when.** The automated Hook test and the release journey pass. Any criterion still open is written down.
+
+**Notes.** Not implemented.
+
+### P4.4 — Prepare the verified public release and rollback record
+
+**Status:** Not started  
+**Kind:** Release · 30 minutes · AC-07, AC-08, AC-14  
+**Commit subject:** Prepare the verified public release and rollback record
+
+The user deploys the reviewed release. Record the smoke check, the rollback commit, and cleanup settings.
+
+**Done when.** The public URL is healthy, the example plays, and the live caps are correct.
+
+**Notes.** Not implemented.
+
+---
+
+## P5 — Demo and submission
+
+**Branch:** `build/submission`  
+**Window:** Build hours 17–20 (150 minutes, plus a 30-minute emergency buffer)  
+**Outcome:** Demo video, DEV article, README, links, and the final evidence record.  
+**Phase note:** Not started. Depends on P4.
+
+The 30-minute buffer is not a step. If emergency work happens, add it under the step it belongs to, with its own commit and note.
+
+### P5.1 — Document the architecture, demo, and AI-assisted development
+
+**Status:** Not started  
+**Kind:** Edit · 45 minutes · AC-16  
+**Commit subject:** Document the architecture demo and AI-assisted development
+
+Write the README, architecture notes, and rights notes. Draft the DEV article through DevRelay, and export the Excalidraw diagram.
+
+**Done when.** The mechanism, evidence, limitations, and setup are accurate, and the DEV draft is still unpublished for review.
+
+**Notes.** Not implemented.
+
+### P5.2 — Add the demonstration assets and judge runbook
+
+**Status:** Not started  
+**Kind:** Release · 45 minutes · AC-03, AC-16  
+**Commit subject:** Add the demonstration assets and judge runbook
+
+The user records the 60-second demo. Prepare the runbook and screenshot references.
+
+**Done when.** The Hook appears in the first ten seconds, a backup video exists, and prepared playback is not described as live generation.
+
+**Notes.** Not implemented.
+
+### P5.3 — Record the completed challenge submission
+
+**Status:** Not started  
+**Kind:** Release · 45 minutes · AC-16  
+**Commit subject:** Record the completed challenge submission
+
+Review tags, template, and links. The user publishes the DEV submission and records the URL.
+
+**Done when.** The submission checklist is complete before the deadline.
+
+**Notes.** Not implemented.
+
+### P5.4 — Record final verification and release status
+
+**Status:** Not started  
+**Kind:** Verify · 15 minutes · all acceptance criteria  
+**Commit subject:** Record final verification and release status
+
+Update the final handoff, acceptance evidence, release reference, and remaining limitations.
+
+**Done when.** This file and the repository match the deployed release.
+
+**Notes.** Not implemented.
