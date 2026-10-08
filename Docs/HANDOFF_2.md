@@ -2,9 +2,9 @@
 
 Step-by-step record of what actually happened. The locked plan stays in `Docs/HANDOFF_1.md`. This file is the place to read after a step is finished.
 
-**Status:** P0.1 prepared. Waiting for the user to create `build/foundation` and commit.  
-**Next step:** P0.1 commit, then P0.2 — Configure the application toolchain and quality checks.  
-**Last completed step:** None.  
+**Status:** P0.1 committed on `main`. The phase branch was not created.  
+**Next step:** P0.2 — Configure the application toolchain and quality checks.  
+**Last completed step:** P0.1 — commit `31ec759`.  
 **Active build time:** 0 of 20 hours recorded.
 
 Execution notes live in this file. The lowercase `docs/` folder is not used. Each **Notes** section is filled only after that step is finished.
@@ -35,7 +35,7 @@ A finished note looks like this:
 
 ### P0.1 — Verify baseline and initialize execution record
 
-**Status:** Partial  
+**Status:** Done  
 **Kind:** Proof · 30 minutes · AC-14, AC-16  
 **Commit subject:** Document the implementation contract and repository baseline
 
@@ -43,7 +43,7 @@ Inspect the repository baseline, preserve `Docs/`, and initialize the execution 
 
 **Done when.** Repository facts and contest eligibility are recorded, and existing work is left in place.
 
-**Notes.** Inspected `main` at `dca4c40` (`add Product Concept and Implementation Plan`), parent `22df0e7` (`Initial commit`). The public repository is https://github.com/kernelKain/footwork, created `2026-10-07T22:05:09Z`, inside the Week 1 entry window. No application code, `.env`, or deployment exists. Local Node is v22.14.0 and local Python is 3.14.4; the locked API runtime stays 3.12.12 for P0.2. Contest rules were checked against DevRelay `dev-challenges`, `hacktoberfest`, and challenge id 79. Personal prize eligibility is unconfirmed. The lowercase `docs/` handoff was removed at the user's request; this file is the execution record. Uncommitted toolchain edits in `Docs/` and `README.md` were left in place. `Docs/HANDOFF_1.md` execution-state edits from that attempt were restored. Not done until the user creates `build/foundation` and the commit hash is recorded. No active time was measured.
+**Notes.** Inspected `main` at `dca4c40` (`add Product Concept and Implementation Plan`), parent `22df0e7` (`Initial commit`). The public repository is https://github.com/kernelKain/footwork, created `2026-10-07T22:05:09Z`, inside the Week 1 entry window. No application code, `.env`, or deployment exists. Local Node is v22.14.0 and local Python is 3.14.4; the locked API runtime stays 3.12.12 for P0.2. Contest rules were checked against DevRelay `dev-challenges`, `hacktoberfest`, and challenge id 79. Personal prize eligibility is unconfirmed. The lowercase `docs/` handoff was removed at the user's request; this file is the execution record. Uncommitted toolchain edits in `Docs/` and `README.md` were left out of the commit. Commit `31ec759` on `main`. The planned `build/foundation` branch was not created because the commit was requested on `main`. No active time was measured.
 
 ### P0.2 — Configure the application toolchain and quality checks
 
