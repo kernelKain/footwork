@@ -1,0 +1,1 @@
+Now for each pahse and each step update the noets in HANDOFF_2.md after implementation of each step in proper readbale formt.
