@@ -1,9 +1,1 @@
-Execute the selected diff-tab commit action.
-
----
-
-Execute the selected diff-tab commit action.
-
----
-
-add folder and files of docs directory to Docs then delete docs directory.
+commit and push
