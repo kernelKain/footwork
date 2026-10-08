@@ -1,0 +1,9 @@
+commit and push
+
+---
+
+move to next step
+
+---
+
+added HF TOken, modle id and model gevison of gemma,added public base url and app env; donw ith hf token login; CREATED HUGGING FACE SPACE WITH GRADIO; added space url in .env; haven't added this:BACKBOARD_API_KEY, so remove backboard from docs notes all and all parts of code.;
