@@ -1,9 +1,15 @@
-commit and push
+Stage the changes you worked on and create a commit for this branch.
+- Current branch: main.
+- Base branch: main.
+- Stage the changes you worked on.
+- If there are unrelated files or changes, exclude them.
+- Write a concise commit message.
+- Do not push.
+- Do not include unrelated files in the commit.
+<timestamp>Friday, Oct 9, 2026, 12:20 AM (UTC+5:30)</timestamp>
+
+Execute the selected diff-tab commit action.
 
 ---
 
-move to next step
-
----
-
-added HF TOken, modle id and model gevison of gemma,added public base url and app env; donw ith hf token login; CREATED HUGGING FACE SPACE WITH GRADIO; added space url in .env; haven't added this:BACKBOARD_API_KEY, so remove backboard from docs notes all and all parts of code.;
+push
