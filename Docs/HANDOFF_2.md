@@ -2,9 +2,9 @@
 
 Step-by-step record of what actually happened. The locked plan stays in `Docs/HANDOFF_1.md`. This file is the place to read after a step is finished.
 
-**Status:** P0.2 prepared on `main`. Waiting for a commit, the CodeRabbit GitHub App, and `entire enable --agent cursor`.  
-**Next step:** Finish the P0.2 user actions, then P0.3 — Add the Gemma access proof and provider configuration.  
-**Last completed step:** P0.1 — commits `31ec759` and `828aca0`.  
+**Status:** P0.2 committed on `main` as `51038eb`. CodeRabbit GitHub App install is still unconfirmed.  
+**Next step:** Confirm the CodeRabbit GitHub App, then P0.3 — Add the Gemma access proof and provider configuration.  
+**Last completed step:** P0.1 — commits `31ec759` and `828aca0`. P0.2 code is `51038eb`, still partial until the CodeRabbit GitHub App is confirmed.  
 **Active build time:** 0 of 20 hours recorded.
 
 Execution notes stay in this file. The locked diagram and write-up path use lowercase `docs/`. Each **Notes** section is filled only after that step is finished.
@@ -55,7 +55,7 @@ Configure the frontend, API, and Hugging Face environments, plus GitHub Actions,
 
 **Done when.** The build succeeds, versions are recorded, and the toolchain files are committed. The user installs the CodeRabbit GitHub App, runs `entire enable --agent cursor`, and confirms DevRelay authentication.
 
-**Notes.** Frontend and API checks passed locally on October 8, 2026. Python 3.12.12 was installed with uv 0.12.5. `uv run --directory backend ruff check .` passed. `uv run --directory backend pytest` passed, 3 tests. Frontend typecheck, lint, Prettier, production build, and two Playwright shell tests passed on Node v22.14.0. Direct pins: React 19.3.0, Vite 8.3.4, TypeScript 5.9.3, ESLint 9.39.5, Prettier 3.9.9, Playwright 1.64.0, axe-core Playwright 4.13.0, FastAPI 0.143.0, Uvicorn 0.54.0, Pydantic 2.13.5, HTTPX 0.28.1, NumPy 2.5.3, gradio-client 2.7.2, pytest 8.4.2, Ruff 0.16.10. Hugging Face requirements pin Gradio 6.29.1, Transformers 5.19.0, and PyTorch 2.12.1; those packages were confirmed on PyPI and were not installed locally. ESLint 9.39.5 printed an upstream end-of-support warning; it stays because the lock is the 9.x line. DevRelay authentication was confirmed for DEV user `kernelkain`. No article was published. `.env.example` has empty values. The diagram is `docs/diagrams/architecture.excalidraw`. CodeRabbit config is committed only after the user commits these files; the GitHub App is not installed from here. Entire CLI 0.11.3 is installed, and `entire enable --agent cursor` has not been run, so `.cursor/hooks.json` and `.entire/settings.json` do not exist yet. No active time was measured. Not done until the commit hash exists.
+**Notes.** Frontend and API checks passed locally on October 8, 2026. Python 3.12.12 was installed with uv 0.12.5. `uv run --directory backend ruff check .` passed. `uv run --directory backend pytest` passed, 3 tests. Frontend typecheck, lint, Prettier, production build, and two Playwright shell tests passed on Node v22.14.0. Direct pins: React 19.3.0, Vite 8.3.4, TypeScript 5.9.3, ESLint 9.39.5, Prettier 3.9.9, Playwright 1.64.0, axe-core Playwright 4.13.0, FastAPI 0.143.0, Uvicorn 0.54.0, Pydantic 2.13.5, HTTPX 0.28.1, NumPy 2.5.3, gradio-client 2.7.2, pytest 8.4.2, Ruff 0.16.10. Hugging Face requirements pin Gradio 6.29.1, Transformers 5.19.0, and PyTorch 2.12.1; those packages were confirmed on PyPI and were not installed locally. ESLint 9.39.5 printed an upstream end-of-support warning; it stays because the lock is the 9.x line. DevRelay authentication was confirmed for DEV user `kernelkain`. No article was published. `.env.example` has empty values. The diagram is `docs/diagrams/architecture.excalidraw`. Commit `51038eb` on `main` includes the toolchain, `.coderabbit.yaml`, `.cursor/hooks.json`, and `.entire/settings.json`. `.opencode/` was left untracked because the locked agent is Cursor. The CodeRabbit GitHub App install is still unconfirmed. No active time was measured.
 
 ### P0.3 — Add the Gemma access proof and provider configuration
 
