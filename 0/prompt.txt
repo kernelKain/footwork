@@ -1,0 +1,1 @@
+rever  back delete fodler of docs you crated and update the imepelntation in this fielr an dthis doss folder: /home/kernel-kain/Documents/Github/footwork/Docs/HANDOFF_2.md
