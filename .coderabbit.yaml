@@ -1,0 +1,17 @@
+language: en-US
+reviews:
+  profile: chill
+  request_changes_workflow: false
+  high_level_summary: true
+  poem: false
+  review_status: true
+  auto_review:
+    enabled: true
+    drafts: false
+    base_branches:
+      - main
+  path_instructions:
+    - path: "**/.env.example"
+      instructions: "Flag any real secret, token, or credential. Example files must stay empty."
+    - path: "fixtures/**"
+      instructions: "Flag raw coordinates, unlabeled synthetic data, and claims that a fixture is a live provider response."

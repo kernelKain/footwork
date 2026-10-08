@@ -1,0 +1,5 @@
+{
+  "schema_version": "1",
+  "label": "synthetic",
+  "purpose": "Proves fixture validation rejects unlabeled files and location fields. This is not a walk and not a Soundprint."
+}
