@@ -2,9 +2,9 @@
 
 Step-by-step record of what actually happened. The locked plan stays in `Docs/HANDOFF_1.md`. This file is the place to read after a step is finished.
 
-**Status:** P0.4 music proof succeeded. Render CLI is authenticated. Credit balance is still unread.  
-**Next step:** Commit P0.4, then P1.1 — Build the Soundprint interface and fixture contracts.  
-**Last completed step:** P0.3 — commit `4332c72`.  
+**Status:** P0 is recorded. The user stated the Render balance is $50. CodeRabbit GitHub App install is still unconfirmed.  
+**Next step:** P1 on `build/experience`. Do not start until asked.  
+**Last completed step:** P0.4 — commit `acf03ad`, with the $50 credit recorded after it.  
 **Active build time:** 0 of 20 hours recorded.
 
 Execution notes stay in this file. The diagram and write-up path are under `Docs/`. Each **Notes** section is filled only after that step is finished.
@@ -31,7 +31,7 @@ A finished note looks like this:
 **Branch:** `build/foundation`  
 **Window:** Build hours 0–2 (120 minutes)  
 **Outcome:** Tools, model access, music API access, and hosting are configured or an explicit fallback is recorded.  
-**Phase note:** Not started.
+**Phase note:** Toolchain, Gemma gate, music proof, and hosting choice are recorded on `main`. The user stated the Render balance is $50 on October 9, 2026. The hosting choice is one paid `1c-2g` service. No Footwork service was created. The CodeRabbit GitHub App install is still unconfirmed. The planned `build/foundation` branch was not used.
 
 ### P0.1 — Verify baseline and initialize execution record
 
@@ -71,7 +71,7 @@ Add the minimal Hugging Face arrangement endpoint and prove `google/gemma-4-E2B-
 
 ### P0.4 — Record music API and hosting access checks
 
-**Status:** Partial  
+**Status:** Done  
 **Kind:** Proof · 30 minutes · AC-05, AC-07, AC-14  
 **Commit subject:** Record music API and hosting access checks
 
@@ -79,7 +79,7 @@ Check the ElevenLabs key, model, balance, and usage rights, and confirm Render c
 
 **Done when.** One affordable audio proof is recorded where permitted, and the hosting choice is confirmed. No new spending.
 
-**Notes.** On October 9, 2026 the ElevenLabs key in `backend/.env` composed one `music_v2_5` chunk of 3000 ms. The response was HTTP 200, `audio/mpeg`, 48528 bytes, and `ffprobe` measured 3.030188 seconds. Request SHA-256 is `7658928e848e246b59b2ac87d02667c283d476f3051d1145cfcdb47bc7cf1e77`. Provider song id is `OKldGOIYKQQ3rmFF7OXM`. The audio file is `artifacts/eleven-proof.mp3` and is gitignored. `GET /v1/user` returned 401 because the key lacks `user_read`, so tier and balance were not read. No second music request was made. Render CLI v2.28.0 is authenticated for workspace `My Workspace` (`tea-da16h79t0dsc73b4d4hg`). That workspace already has one unsuspended web service on plan `1c-2g` and one static site. No Footwork service was created. The CLI and public API do not expose credit balance, so the $50 credit and the hosting choice remain unconfirmed. No new purchase was made. Evidence is in `Docs/evidence/music-hosting.md`. AC-05 has a short access proof, not the 45–60 second demonstration track. AC-07 remains unmet. Not done until the commit hash is recorded. No active time was measured.
+**Notes.** On October 9, 2026 the ElevenLabs key in `backend/.env` composed one `music_v2_5` chunk of 3000 ms. The response was HTTP 200, `audio/mpeg`, 48528 bytes, and `ffprobe` measured 3.030188 seconds. Request SHA-256 is `7658928e848e246b59b2ac87d02667c283d476f3051d1145cfcdb47bc7cf1e77`. Provider song id is `OKldGOIYKQQ3rmFF7OXM`. The audio file is `artifacts/eleven-proof.mp3` and is gitignored. `GET /v1/user` returned 401 because the key lacks `user_read`, so tier and balance were not read. No second music request was made. Render CLI v2.28.0 is authenticated for workspace `My Workspace` (`tea-da16h79t0dsc73b4d4hg`). That workspace already has one unsuspended web service on plan `1c-2g` and one static site. No Footwork service was created. The CLI and public API do not expose credit balance. The user stated the balance is $50 on October 9, 2026, so the hosting choice is one paid `1c-2g` service. No new purchase was made. Evidence is in `Docs/evidence/music-hosting.md`. AC-05 has a short access proof, not the 45–60 second demonstration track. AC-07 remains unmet until the public deployment in P1.2. Commit `acf03ad` on `main`. No active time was measured.
 
 ---
 

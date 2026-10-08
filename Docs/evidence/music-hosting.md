@@ -18,9 +18,9 @@ Recorded October 9, 2026. One short Eleven Music generation succeeded. No Render
 | Render workspace | Active workspace name `My Workspace`, id `tea-da16h79t0dsc73b4d4hg`, type team. |
 | Existing services | One unsuspended web service on plan `1c-2g` in Singapore, and one static site. Neither is a Footwork service. |
 | Footwork service | Not created. |
-| Render credit | Not readable. The CLI has no billing command. `GET /v1/owners/{id}/billing` and `/credits` returned 404. Render documents the Billing page as the balance source. |
-| Planning estimate | About $25 per month for 1 CPU / 2 GB. Five days is about $4.17 of compute before storage or bandwidth. This is not an account balance. |
-| Hosting choice | Unconfirmed until the Billing page shows the credit covers a new `1c-2g` service. The workspace already runs that plan for another service. |
+| Render credit | $50, stated by the user on October 9, 2026. The CLI still cannot read the Billing page. |
+| Planning estimate | About $25 per month for 1 CPU / 2 GB. Five days is about $4.17 of compute before storage or bandwidth. |
+| Hosting choice | One paid web service on plan `1c-2g` (1 CPU / 2 GB), covered by the stated $50 credit. No Footwork service has been created yet. |
 | New spend | No new purchase and no new Render service. One minimum-length music request used the existing key. |
 
 Studio generation is possible with this key. A Route Sketch remains the fallback when a later Studio request fails. This 3-second file is an access proof, not the 45–60 second demonstration track.
