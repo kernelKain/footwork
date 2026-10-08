@@ -8,6 +8,7 @@
 - **Deadline:** October 11, 2026, 11:59 PM PDT. Coding only October 9–10, with a maximum of 20 active hours.
 - **Feature freeze:** Build hour 15, at 75% of the budget.
 - **Stack:** React/TypeScript/Vite → Python/FastAPI on Render → Gemma on free Hugging Face ZeroGPU → Eleven Music.
+- **Development toolchain (Phase 0):** CodeRabbit for code review, Entire for agent-session sharing, DevRelay for DEV write-ups, GitHub Actions for automated checks, Excalidraw for architecture diagrams. These are not part of the running application.
 - **Plan:** Six phases, 30 separately committed steps, one branch per phase.
 - **Largest risk:** Free Gemma availability and whether generated Studio audio makes the intended movement mappings perceptible.
 
@@ -19,6 +20,7 @@
 |---|---|
 | Planning status | **LOCKED** |
 | Planning date | October 8, 2026 |
+| Toolchain amendment | October 8, 2026. User added CodeRabbit, Entire, DevRelay, GitHub Actions, and Excalidraw to Phase 0. Product scope and architecture boundaries are unchanged. |
 | Source packet | Updated "PROMPT 0 → PROMPT 1 IDEA PACKET" in `Docs/handoff-0.md` |
 | Hackathon | Hacktoberfest Open-Source AI Challenge: Week 1 |
 | Deadline | October 11, 2026, 11:59 PM PDT; October 12, 2026, 12:29 PM IST |
@@ -35,7 +37,7 @@
 | Live URL | **NOT YET DEPLOYED** |
 | Harness | Agent; planning reconnaissance was read-only |
 
-Preserve existing `Docs/` material. During execution, create the implementation handoff at lowercase `docs/HANDOFF.md`.
+Preserve existing `Docs/` material. Execution notes stay in `Docs/HANDOFF_2.md`.
 
 > **This document contains the implementation contract. Execution may refine low-level details but may not change product scope, architecture boundaries, or acceptance criteria without following the change policy.**
 
@@ -460,10 +462,13 @@ The separate HF service exists specifically to satisfy free Gemma hosting.
 | Accessibility | axe-core 4.x through Playwright | Automated checks supplemented by manual interaction. |
 | Formatting/lint | Ruff 0.x; ESLint 9.x; Prettier 3.x | Resolve compatible stable versions in P0 and freeze exact versions. |
 | Package managers | npm with lockfile; uv with committed lockfiles | Reproducible, separate Python API and HF environments. |
-| CI | GitHub Actions | Existing GitHub repository; no additional platform. |
+| CI | GitHub Actions | Automated checks on pull requests and `main`. Existing GitHub repository; no additional platform. |
 | Hosting | Render paid small Python service; free HF ZeroGPU | Existing Render credit; no paid Gemma hosting. |
 | Logging | Structured JSON with request/job IDs | No raw samples, secrets or full provider prompts. |
-| Documentation | Markdown and Mermaid | Repository-native and submission-ready. |
+| Documentation | Markdown; Mermaid for inline flows; Excalidraw for architecture diagrams | Repository-native and submission-ready. |
+| Code review | CodeRabbit | Pull-request review. Reject review-by-inspection-only for phase merges. |
+| Session sharing | Entire, Cursor agent | Commit-linked agent sessions. Reject a separate transcript store. |
+| Write-ups | DevRelay | DEV drafts for the hackathon explanation. Reject posting outside the required DEV submission. |
 
 ### P0 Resolution Policy
 
@@ -486,6 +491,20 @@ npm view eslint@9 version engines --json
 
 No automatic major upgrades after P0.
 
+### Development Toolchain (Phase 0)
+
+These five tools are set up in Phase 0. They are not part of the running application, and they do not count toward the two-external-API product limit. The Footwork runtime does not call them.
+
+| Tool | Role | Phase 0 setup | Boundary |
+|---|---|---|---|
+| CodeRabbit | Code review | User installs the GitHub App on `kernelKain/footwork` with owner permission, limited to this repository. The repository commits `.coderabbit.yaml` so pull requests are reviewed automatically. [GitHub setup](https://docs.coderabbit.ai/platforms/github-com). | Reviews phase pull requests. Does not merge, deploy, or change acceptance criteria. |
+| Entire | Agent session sharing | User installs the Entire CLI and, from this repository, runs `entire enable --agent cursor`. That writes `.cursor/hooks.json` and Entire settings. Sessions capture prompts, responses, and tool calls; checkpoints link that context to commits. [Cursor setup](https://docs.entire.io/agents/cursor). | Commit subjects stay one-line descriptions of completed work. An `Entire-Checkpoint` trailer is allowed. Do not share a session that contains raw coordinates, provider keys, or `.env` values. Checkpoint data lives on a separate Git ref; pushing it publishes that context. |
+| DevRelay | DEV write-ups | Confirm the DevRelay gateway is authenticated. Later write-ups are drafted unpublished, with secrets and raw locations removed. | Phase 0 does not publish. The hackathon article is drafted in P5 and published by the user. |
+| GitHub Actions | Automated checks | `.github/workflows/ci.yml` runs backend tests, frontend typecheck, lint, build, and fixture validation on pull requests and `main`. | No live ElevenLabs, Hugging Face, or other paid provider calls in CI. |
+| Excalidraw | Architecture diagrams | Commit `Docs/diagrams/architecture.excalidraw` for the locked system: browser, Render, Hugging Face ZeroGPU, and Eleven Music. | The diagram matches Section 8. P5 exports a PNG for the submission. It does not introduce a second architecture. |
+
+User-side proof required before P1 uses each tool: CodeRabbit installed on the repository, `entire enable --agent cursor` completed, and DevRelay authentication confirmed. The workflow file, `.coderabbit.yaml`, Entire hook files, and Excalidraw source are repository files prepared in P0.2.
+
 ---
 
 ## 10. Proposed Repository Structure
@@ -500,12 +519,14 @@ footwork/
     handoff-0.md
     handoff-1.md
     product-concept.md
-  docs/
     HANDOFF.md
     architecture.md
     demo-runbook.md
     submission.md
     evidence/
+    diagrams/
+      architecture.excalidraw
+    write-ups/
   frontend/
     package.json
     package-lock.json
@@ -551,6 +572,11 @@ footwork/
   .github/
     workflows/
       ci.yml
+  .coderabbit.yaml
+  .cursor/
+    hooks.json
+  .entire/
+    settings.json
   .gitignore
 ```
 
@@ -560,9 +586,11 @@ footwork/
 - `backend/`: Python processing, provider access, synthesis and job controls.
 - `hf-space/`: small standalone Gemma inference service.
 - `fixtures/`: labeled test inputs and provenance manifests.
-- `docs/`: implementation contract, evidence and submission materials.
+- `Docs/`: planning records, implementation notes, evidence, submission materials, and the Excalidraw architecture diagram.
 - `deploy/`: deployment configuration.
-- `.github/`: CI.
+- `.github/`: GitHub Actions automated checks.
+- `.coderabbit.yaml`: CodeRabbit review settings.
+- `.cursor/` and `.entire/`: Entire session capture for Cursor. Do not commit secrets or raw recordings here.
 
 Do not add a scripts directory until repeated automation justifies a script.
 
@@ -896,11 +924,14 @@ Health endpoint: `/health`.
 
 ### CI
 
+GitHub Actions is the automated-check runner. The workflow is created in P0.2 and extended as tests appear.
+
 - Backend unit/contract tests.
 - Frontend typecheck, lint and build.
 - Fixture validation.
 - Browser Hook/player tests.
 - No live paid provider calls in CI.
+- A failing check blocks treating that step as release-ready. CodeRabbit comments are review input; they do not replace these checks.
 
 ### Operations
 
@@ -976,12 +1007,17 @@ Free HF quotas and queues are operational constraints. The app must never promis
 - How to record a walk.
 - Movement-to-music mappings.
 - Architecture and stack.
+- Development toolchain: CodeRabbit, Entire, DevRelay, GitHub Actions, and Excalidraw.
 - Sponsor roles and verified limitations.
 - Local setup.
 - Tests and evidence.
 - Privacy and retention.
 - AI-assisted development disclosure.
 - Code/model/audio licensing.
+
+### Write-up Path
+
+DevRelay drafts the DEV explanation. The draft stays unpublished until the user reviews it and publishes in P5. Required challenge tags, including `#devchallenge` and `#hf26challenge`, belong on that article. Secrets, raw coordinates, and private paths are removed before a draft is created. An Entire session may be cited only after that scrub.
 
 ### Submission Outline
 
@@ -1113,6 +1149,7 @@ A reduced release cannot silently pass failed sponsor or Studio acceptance crite
 | D-14 | Six phase branches, individual step commits | Explicit user workflow. | User changes workflow. |
 | D-15 | A1 authority | Explicit user choice. | User explicitly changes autonomy. |
 | D-16 | Freeze at hour 15 | Protect final verification and writing. | Approval required; default is scope reduction. |
+| D-17 | Phase 0 development toolchain: CodeRabbit, Entire, DevRelay, GitHub Actions, Excalidraw | User request on October 8, 2026. Review, session sharing, write-ups, automated checks, and architecture diagrams. These are not product APIs. | User removes a tool. |
 
 ---
 
@@ -1160,7 +1197,7 @@ Every phase uses A1. Dependencies are sequential. The user creates the next bran
 
 | Phase / branch | Window | Outcome and done-when | Risks / criteria | Overrun response |
 |---|---|---|---|---|
-| **P0 — Stack and access foundation** `build/foundation` | 0–2 h | All selected tools configured; model/API/hosting access proved or fallback explicitly recorded. | R01–03; prerequisites for AC04, 05, 07 | Stop speculative provider debugging at gate; use documented branch. |
+| **P0 — Stack and access foundation** `build/foundation` | 0–2 h | All selected tools configured, including CodeRabbit, Entire, DevRelay, GitHub Actions, and Excalidraw; model/API/hosting access proved or fallback explicitly recorded. | R01–03; prerequisites for AC04, 05, 07 | Stop speculative provider debugging at gate; use documented branch. Toolchain setup stays inside this window. |
 | **P1 — Complete frontend experience** `build/experience` | 2–7 h | Full fixture journey, synchronized player, responsive states and first public deployment. | R07, 10; AC07, 10, 13, 18 | Cut decorative motion; preserve full journey. |
 | **P2 — Real recording and movement engine** `build/movement` | 7–11 h | Real capture, four detectors, compression and exact Sketch Hook pass. | R05, 06; AC01, 02, 09 | Tune against one real trace; no additional event types. |
 | **P3 — Sponsor-backed Soundprint** `build/soundprint` | 11–15 h | Live provider adapters, quota/job controls, genuine prepared Studio result and verified provenance. | R02, 04, 08; AC03–06, 08, 15, 17, 18 | Use documented fallback; record failed criteria; freeze at hour 15. |
@@ -1195,8 +1232,8 @@ Every row depends on the immediately preceding step unless stated otherwise. Min
 
 | ID / min | Category; action and planned area | Verification / done-when / fallback | AC and proposed commit |
 |---|---|---|---|
-| **P0.1 — 30** | PROOF: inspect baseline, preserve `Docs/`, initialize `docs/HANDOFF.md`, clock and evidence. User creates phase branch. | Repository facts and contest eligibility recorded; no existing work overwritten. Stop for material repository conflict. | AC14, 16 — `Document the implementation contract and repository baseline` |
-| **P0.2 — 30** | EDIT: configure frontend/API/HF environments, manifests, lockfiles, lint/test scripts and CI foundation. | Imports and minimal build succeed; selected stack versions recorded. Compatible dependency correction allowed. | AC07, 14, 18 — `Configure the application toolchain and quality checks` |
+| **P0.1 — 30** | PROOF: inspect baseline, preserve `Docs/`, initialize `Docs/HANDOFF_2.md`, clock and evidence. User creates phase branch. | Repository facts and contest eligibility recorded; no existing work overwritten. Stop for material repository conflict. | AC14, 16 — `Document the implementation contract and repository baseline` |
+| **P0.2 — 30** | EDIT: configure frontend/API/HF environments, manifests, lockfiles, lint/test scripts, and the Phase 0 development toolchain: GitHub Actions checks, `.coderabbit.yaml`, Entire capture for Cursor, the DevRelay write-up path, and `Docs/diagrams/architecture.excalidraw`. | Imports and minimal build succeed; selected stack versions recorded. Workflow, CodeRabbit config, Entire hook files, and the Excalidraw diagram are committed. User installs the CodeRabbit GitHub App, runs `entire enable --agent cursor`, and confirms DevRelay authentication. Compatible dependency correction allowed. | AC07, 14, 18 — `Configure the application toolchain and quality checks` |
 | **P0.3 — 30** | PROOF: minimal `hf-space/` arrangement endpoint; HF Gemma proof; Backboard catalog check. | One actual Gemma arrangement or explicit blocked gate; record identity, latency and quota. Use predetermined fallback. | AC04 — `Add the Gemma access proof and provider configuration` |
 | **P0.4 — 30** | PROOF: Eleven key/model/balance/rights and Render credit checks; sanitized evidence and env examples. | One affordable audio proof where permitted; hosting choice confirmed. No unapproved spend. | AC05, 07, 14 — `Record music API and hosting access checks` |
 
@@ -1246,7 +1283,7 @@ Every row depends on the immediately preceding step unless stated otherwise. Min
 
 | ID / min | Category; action and planned area | Verification / done-when / fallback | AC and proposed commit |
 |---|---|---|---|
-| **P5.1 — 45** | EDIT: README, architecture, submission draft, AI disclosure and asset-rights notes. | Mechanism, evidence, limitations and setup are accurate; links resolve. | AC16 — `Document the architecture demo and AI-assisted development` |
+| **P5.1 — 45** | EDIT: README, architecture, DevRelay submission draft, AI disclosure and asset-rights notes. Export the Excalidraw architecture diagram for the article. | Mechanism, evidence, limitations and setup are accurate; links resolve. The DEV draft is unpublished until the user reviews it. | AC16 — `Document the architecture demo and AI-assisted development` |
 | **P5.2 — 45** | RELEASE: user records 60-second demo; agent prepares runbook and screenshot references. | Hook appears in first ten seconds; backup video exists; no false live claim. | AC03, 16 — `Add the demonstration assets and judge runbook` |
 | **P5.3 — 45** | RELEASE: final template/tag/link review; user publishes submission and records URL. | Submission checklist complete before deadline. Prioritize links and explanation over polish. | AC16 — `Record the completed challenge submission` |
 | **P5.4 — 15** | VERIFY: update final handoff, acceptance evidence, release reference and remaining limitations. | Final state matches repository/deployment; user commits real verification record. | All — `Record final verification and release status` |
@@ -1270,7 +1307,7 @@ Within A1, the agent may prepare without additional scope approval:
 
 The user still runs commands and controls Git/deploy actions.
 
-Record changes in `docs/HANDOFF.md` with evidence and budget effect.
+Record changes in `Docs/HANDOFF_2.md` with evidence and budget effect.
 
 ### Approval Required Before
 
@@ -1354,7 +1391,7 @@ Never add fake metrics, fake testimonials or unlabeled synthetic outputs.
 
 Update this section after every completed step or meaningful interruption.
 
-A step becomes DONE only when verification evidence and the user-created commit hash are recorded.
+After each completed step, write the implementation note in `Docs/HANDOFF_2.md` using that file's step format. A step becomes DONE only when verification evidence and the user-created commit hash are recorded in both places.
 
 ---
 
@@ -1384,6 +1421,7 @@ Instruction: Execute only the active step, verify its done-when conditions, upda
 Workflow: Separate branch per phase; separate commit per step; one-line descriptive commit subjects with no phase name or number.
 Input: Browser location and movement recording. No file uploads.
 Budget: Existing Render $50, Backboard $5 and ElevenLabs Creator resources only. No new Gemma spending.
+Development toolchain: CodeRabbit, Entire, DevRelay, GitHub Actions, and Excalidraw, set up in P0.2. Not product APIs.
 ```
 
 ---

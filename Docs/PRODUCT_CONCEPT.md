@@ -601,6 +601,22 @@ Everything else is secondary.
 
 ---
 
+## Development Toolchain
+
+Set up in Phase 0. These tools support how Footwork is reviewed, checked, diagrammed, and written up. They are not part of the running application.
+
+| Tool | Role |
+|---|---|
+| CodeRabbit | Code review on pull requests |
+| Entire | Agent session sharing, linked to commits |
+| DevRelay | DEV write-ups |
+| GitHub Actions | Automated checks |
+| Excalidraw | Architecture diagrams |
+
+The locked setup, boundaries, and Phase 0 steps are in `Docs/HANDOFF_1.md`.
+
+---
+
 ## Naming Note
 
 **Footwork** was selected despite an existing soccer-training application and its established meaning as a music genre. It has not received formal trademark or domain clearance.

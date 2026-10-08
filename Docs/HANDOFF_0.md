@@ -1,5 +1,7 @@
 # Prompt 0 → Prompt 1 Idea Packet (Updated)
 
+> **Amendment (October 8, 2026):** Phase 0 also sets up CodeRabbit for code review, Entire for agent-session sharing, DevRelay for DEV write-ups, GitHub Actions for automated checks, and Excalidraw for architecture diagrams. Locked detail is in `Docs/HANDOFF_1.md`. These are development tools, not product APIs, and they do not count toward the two-external-API limit.
+
 **Project:** Footwork
 **Thesis:** Transform a real movement trace into a short instrumental composition and a synchronized Soundprint whose musical events are causally derived from turns, pace changes, pauses, loops, elevation, and return behavior.
 **Why:** Activity trackers preserve statistics but lose the emotional and structural character of a journey.
