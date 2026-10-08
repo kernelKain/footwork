@@ -1,20 +1,38 @@
 """ZeroGPU entrypoint.
 
-The arrangement function is added when Gemma access is proved.
-This module must stay importable without downloading a model.
+`/arrange` accepts an anonymized event timeline and returns a proof result.
+A blocked result is not a musical arrangement.
 """
+
+import json
 
 import gradio as gr
 
-
-def status() -> str:
-    return "Gemma arrangement is not available in this build."
+from arrange import arrange
 
 
-demo = gr.Interface(
-    fn=status,
-    inputs=None,
-    outputs=gr.Textbox(label="Status"),
-    title="Footwork",
-    description="Arrangement proof has not run. This response is not a musical plan.",
-)
+def arrange_request(timeline_json: str) -> str:
+    try:
+        timeline = json.loads(timeline_json)
+    except json.JSONDecodeError:
+        timeline = None
+    if not isinstance(timeline, dict):
+        result = {
+            "schema_version": "1",
+            "status": "invalid",
+            "code": "timeline_invalid",
+            "arrangement": None,
+            "fallback": "route_sketch",
+            "message": "The timeline must be a JSON object. No arrangement was generated.",
+        }
+    else:
+        result = arrange(timeline)
+    return json.dumps(result)
+
+
+with gr.Blocks(title="Footwork") as demo:
+    gr.Markdown("Gemma arrangement proof. A blocked response is not a musical plan.")
+    timeline = gr.Textbox(label="Anonymous event timeline JSON", lines=8)
+    result = gr.Textbox(label="Proof result", lines=8)
+    submit = gr.Button("Arrange")
+    submit.click(arrange_request, inputs=timeline, outputs=result, api_name="arrange")

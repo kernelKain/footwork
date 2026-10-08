@@ -69,7 +69,6 @@ Use these labels throughout execution:
 - Live browser location and movement recording is the input.
 - There is **no file-upload requirement or upload interface**.
 - Render credit is **$50**.
-- Backboard credit is **$5**.
 - ElevenLabs subscription is **Creator**.
 - Gemma deployment must involve **no new spending**.
 - Each phase has a separate branch.
@@ -88,7 +87,6 @@ Use these labels throughout execution:
 | [HF ZeroGPU](https://huggingface.co/docs/hub/spaces-zerogpu) | Gradio hosting, supported runtimes and shared daily quotas constrain the Gemma service. Free owner quota is five GPU minutes daily; the proxy shares that owner allowance. |
 | [Gemma checkpoint](https://huggingface.co/google/gemma-4-E2B-it) | Choose `google/gemma-4-E2B-it`; Apache 2.0 license. Use bounded text generation without thinking output. |
 | [Gemma documentation](https://ai.google.dev/gemma/docs/core) | Memory depends on precision and runtime; actual loading must be proved rather than inferred from the model name. |
-| [Backboard models](https://docs.backboard.io/concepts/models) | Query the authenticated catalog before naming a Gemma model. Explicitly select provider and model; never accept a default model substitution. |
 | [Tinker catalog](https://tinker-docs.thinkingmachines.ai/tinker/models/models_and_pricing/) | Gemma was absent from the inspected published catalog. Tinker is not the planned deployment path. |
 | [Eleven composition plans](https://elevenlabs.io/docs/eleven-api/guides/how-to/music/composition-plans) | Music v2/v2.5 uses timed `chunks`; use that contract rather than the older sections schema. |
 | [Eleven compose API](https://elevenlabs.io/docs/api-reference/music/compose) | Explicit model selection is necessary. Timed chunks do not guarantee the requested audible melodic behavior. |
@@ -748,23 +746,10 @@ Schema changes require version updates and contract tests. Unsupported versions 
 - **Quota:** Free owner quota is shared. Local cap: at most four model attempts and 240 reserved GPU seconds per daily bucket, including repairs. Check remaining actual quota before demonstration.
 - **Retry:** One repair attempt only for schema-invalid output, if both deadline and budget permit. No automatic retry after an ambiguous transport failure.
 - **Failures:** Queue timeout, quota exhaustion, model-load failure, authentication failure or invalid output.
-- **Fallback:** Verified Backboard Gemma if available; otherwise current-trace Sketch and separate cached genuine example.
+- **Fallback:** Current-trace Route Sketch and a separate cached genuine example.
 - **P0 proof:** Create eligible free Space, load exact checkpoint, obtain one valid arrangement and record latency.
 
 User-reported account age/email eligibility is not equivalent to a deployed-service proof.
-
-### Backboard — Conditional Fallback
-
-- **Budget:** Existing **$5 credit**; no new purchase.
-- **Environment:** `BACKBOARD_API_KEY`, `BACKBOARD_GEMMA_PROVIDER`, `BACKBOARD_GEMMA_MODEL`.
-- **Authentication:** Server-side API key.
-- **P0 check:** Query authenticated model catalog and identify an actual Gemma checkpoint with explicit provider/model selection.
-- **Enable only if:** Catalog, credit coverage, output contract and request price are verified.
-- **Data:** Anonymous event timeline only; no raw locations. Avoid memory, search and tools.
-- **Timeout/retry:** Same arrangement deadline; no automatic ambiguous-request retry.
-- **Unavailable Gemma:** Disable this adapter. Do not substitute Gemini or another model family.
-
-This is an alternative Gemma provider, not an additional product API category.
 
 ### Eleven Music — Studio Renderer
 
@@ -827,7 +812,7 @@ No owner-management endpoint is necessary for this MVP.
 
 | Failure | User-visible behavior | Logging/retry | Fallback | AC |
 |---|---|---|---|---|
-| Gemma unavailable | "Arrangement service unavailable; creating Route Sketch." | Safe provider code; no repeated automatic calls. | Same-trace Sketch; verified Backboard if configured and budgeted. | 06, 11 |
+| Gemma unavailable | "Arrangement service unavailable; creating Route Sketch." | Safe provider code; no repeated automatic calls. | Same-trace Sketch and the separate cached example. | 06, 11 |
 | Eleven unavailable | "Studio generation unavailable; your movement sketch is ready." | Preserve receipt state; no ambiguous retry. | Same-trace Sketch. | 06, 11 |
 | External API slow | Stage timer and bounded wait | Log elapsed stage; stop at deadline. | Sketch by 180 seconds. | 08 |
 | Quota reached | Explain daily limit and next action | Log quota class, no balance exposure. | Sketch and example. | 11, 15 |
@@ -910,8 +895,6 @@ Health endpoint: `/health`.
 - `GEMMA_MODEL_REVISION`
 - `ELEVENLABS_API_KEY`
 - `ELEVEN_MUSIC_MODEL`
-- Conditional Backboard variables from Section 13.
-
 ### Production Policy
 
 - One persistent disk; no public static mount of job artifacts.
@@ -1082,7 +1065,6 @@ Suggested distribution: approximately ten active hours per date, with meals and 
 |---|---|
 | Render | Existing $50 credit; verify applicability and prevent charges beyond credit. |
 | ElevenLabs | Creator subscription; exact remaining balance and request cost verified in P0. |
-| Backboard | Existing $5 credit; conditional Gemma fallback only. |
 | HF Gemma | Free eligible ZeroGPU; no paid upgrade. |
 | Tinker | Unspecified existing credit; not used in the locked architecture. |
 | New spending | **$0 authorized.** |
@@ -1103,7 +1085,7 @@ The inspected Render 1 CPU/2 GB price was $25/month. Five days would be approxim
 
 | ID | Risk; probability/impact | Warning and prevention | Mitigation/fallback | Retirement / owner |
 |---|---|---|---|---|
-| R-01 | Free Gemma inaccessible; medium/high | Space creation/model-load failure. Prove first. | Verified Backboard Gemma; otherwise Sketch plus cached genuine evidence. Complete live claim remains blocked. | P0.3 / user + agent |
+| R-01 | Free Gemma inaccessible; medium/high | Space creation/model-load failure. Prove first. | Sketch plus cached genuine evidence. Complete live claim remains blocked. | P0.3 / user + agent |
 | R-02 | HF queue/quota unsuitable; high/high | Slow first inference or low remaining quota. Bound tokens and attempts. | Sketch; prepared example. | P0.3, P3.2 / agent |
 | R-03 | Eleven access/rights/balance unsuitable; medium/high | Key/model failure or terms mismatch. Verify before dependency. | Sketch; do not claim live Studio integration. | P0.4 / user |
 | R-04 | Studio music misses precise Hook; high/high | Turn/pause not perceptible in listening review. | Recompile within attempt cap; use verified Sketch for exact causality and state Studio limitation. | P3.5 / agent + user |
@@ -1138,7 +1120,7 @@ A reduced release cannot silently pass failed sponsor or Studio acceptance crite
 | D-03 | Frontend fixture experience first | Approved delivery priority. | Only prerequisite access proofs precede it. |
 | D-04 | Python is the sole backend language | User preference and processing role. | Explicit approved architecture change. |
 | D-05 | HF free ZeroGPU primary | No paid Gemma hosting. Reject Render model deployment. | Failed eligibility/loading proof; use documented fallback. |
-| D-06 | Backboard conditional on actual Gemma | $5 credit exists, model availability unverified. | Authenticated catalog and successful proof. |
+| D-06 | No second arrangement provider | No key was added. Fallback is Route Sketch and the cached example. | User adds a replacement provider. |
 | D-07 | Tinker omitted | Inspected catalog did not establish Gemma support. | New official supported-model evidence plus approval if needed. |
 | D-08 | SVG abstract route | Hook does not need maps. Reject map API. | Post-hackathon requirement. |
 | D-09 | Browser/files/atomic ledger persistence | Small workload and no relational requirements. | Concurrency/workload changes. |
@@ -1163,8 +1145,7 @@ Provider feasibility remains a required **proof gate**, with predetermined outco
 
 | Proof | Pass | Fail |
 |---|---|---|
-| Free HF can run chosen Gemma and return valid arrangement | Enable HF adapter. | Test catalog-verified Backboard Gemma. |
-| Backboard provides actual Gemma within $5 credit | Enable fallback adapter. | Disable it; retain Sketch and cached evidence. Record live Gemma criterion as blocked. |
+| Free HF can run chosen Gemma and return valid arrangement | Enable HF adapter. | Keep Route Sketch and the cached example. Record the live Gemma criterion as blocked. |
 | Eleven access and intended use are valid | Enable Studio path. | Disable Studio generation; no complete Studio claim. |
 | Existing Render credit covers chosen service | Use paid small service. | Select verified smaller credit-covered service; do not authorize new spending. |
 
@@ -1181,7 +1162,6 @@ The processing architecture and result contract remain stable in every branch. A
 | Dependencies resolve | User runs locked environment setup and import/build checks | Record exact lockfiles; adjust ancillary compatible pins. | P0.2 |
 | HF eligibility works | Create ZeroGPU Space using eligible account | Free Space available; otherwise fallback gate above. | P0.3 |
 | Gemma fits and responds | Load pinned model and run one bounded timeline | Valid JSON within budget; record model revision and latency. | P0.3 |
-| Backboard model exists | Authenticated `GET /api/models`; explicit model proof | Actual Gemma only; otherwise disabled. | P0.3 |
 | Eleven key/balance/rights | Dashboard, relevant terms and one test request | Valid use and affordable call; otherwise disable Studio. | P0.4 |
 | Render credit applies | Dashboard compute/disk/credit check | Existing credit covers deploy; otherwise documented smaller option. | P0.4 |
 | Phone position quality adequate | Real HTTPS outdoor recording | Adequate trace; otherwise longer foreground capture or clearer location. | P2.6 |
@@ -1234,7 +1214,7 @@ Every row depends on the immediately preceding step unless stated otherwise. Min
 |---|---|---|---|
 | **P0.1 — 30** | PROOF: inspect baseline, preserve `Docs/`, initialize `Docs/HANDOFF_2.md`, clock and evidence. User creates phase branch. | Repository facts and contest eligibility recorded; no existing work overwritten. Stop for material repository conflict. | AC14, 16 — `Document the implementation contract and repository baseline` |
 | **P0.2 — 30** | EDIT: configure frontend/API/HF environments, manifests, lockfiles, lint/test scripts, and the Phase 0 development toolchain: GitHub Actions checks, `.coderabbit.yaml`, Entire capture for Cursor, the DevRelay write-up path, and `Docs/diagrams/architecture.excalidraw`. | Imports and minimal build succeed; selected stack versions recorded. Workflow, CodeRabbit config, Entire hook files, and the Excalidraw diagram are committed. User installs the CodeRabbit GitHub App, runs `entire enable --agent cursor`, and confirms DevRelay authentication. Compatible dependency correction allowed. | AC07, 14, 18 — `Configure the application toolchain and quality checks` |
-| **P0.3 — 30** | PROOF: minimal `hf-space/` arrangement endpoint; HF Gemma proof; Backboard catalog check. | One actual Gemma arrangement or explicit blocked gate; record identity, latency and quota. Use predetermined fallback. | AC04 — `Add the Gemma access proof and provider configuration` |
+| **P0.3 — 30** | PROOF: minimal `hf-space/` arrangement endpoint and HF Gemma proof. | One actual Gemma arrangement or explicit blocked gate; record identity, latency and quota. Use Route Sketch. | AC04 — `Add the Gemma access proof and provider configuration` |
 | **P0.4 — 30** | PROOF: Eleven key/model/balance/rights and Render credit checks; sanitized evidence and env examples. | One affordable audio proof where permitted; hosting choice confirmed. No unapproved spend. | AC05, 07, 14 — `Record music API and hosting access checks` |
 
 ### P1 — 300 minutes
@@ -1387,7 +1367,7 @@ Never add fake metrics, fake testimonials or unlabeled synthetic outputs.
 | Active build time used | 0 hours recorded |
 | Active build time remaining | 20 hours maximum |
 | New build spend recorded | $0 |
-| Known blockers | HF deployment/model proof; Backboard Gemma availability; Eleven access/balance/usage proof; Render credit coverage; actual Studio Hook validation |
+| Known blockers | HF Space has no app file yet; Eleven access/balance/usage proof; Render credit coverage; actual Studio Hook validation |
 
 Update this section after every completed step or meaningful interruption.
 
@@ -1420,7 +1400,7 @@ Critical warning: Free Gemma access and Studio audio timing require actual proof
 Instruction: Execute only the active step, verify its done-when conditions, update HANDOFF.md, then continue according to Prompt 2.
 Workflow: Separate branch per phase; separate commit per step; one-line descriptive commit subjects with no phase name or number.
 Input: Browser location and movement recording. No file uploads.
-Budget: Existing Render $50, Backboard $5 and ElevenLabs Creator resources only. No new Gemma spending.
+Budget: Existing Render $50 and ElevenLabs Creator resources only. No new Gemma spending.
 Development toolchain: CodeRabbit, Entire, DevRelay, GitHub Actions, and Excalidraw, set up in P0.2. Not product APIs.
 ```
 
