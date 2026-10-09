@@ -1,0 +1,42 @@
+Implement the first slice of the Footwork Phase 1 UI/UX extension.
+
+Repository:
+- /home/kernel-kain/Documents/Github/footwork
+- Branch: build/experience
+
+Read before editing:
+- Docs/PHASE_1_UI_UX_PLAN.md
+- Docs/FRONTEND_EXPERIENCE.md
+- Docs/HANDOFF_1.md
+- Docs/HANDOFF_2.md
+- Docs/PRODUCT_CONCEPT.md
+
+Scope:
+1. Implement the Nocturne Pulse visual system across the existing landing, recording, generation, Soundprint, and /system screens.
+2. Replace the green-led visual hierarchy with:
+   - Midnight/cobalt backgrounds and surfaces
+   - Cyan for routes and movement
+   - Violet for music and playback
+   - Amber for meaningful movement events
+   - Blue for paused states
+   - Coral only for End walk and destructive actions
+3. Refine typography, spacing, surfaces, borders, chart colors, focus states, and route framing.
+4. Add one restrained static topographic/contour SVG treatment using existing project assets or locally authored SVG.
+5. Preserve the existing page structure, controls, route synchronization, honest example labels, and accessibility behavior.
+
+Constraints:
+- Do not add Tailwind, shadcn, Three.js, WebGL, a component library, remote assets, or a new runtime dependency.
+- Do not copy layouts directly from reference sites.
+- Do not add glass-card overload, generic purple gradients, fake statistics, testimonials, or new product sections.
+- Verify all candidate colors before treating them as final tokens.
+- Preserve 44 px minimum targets, safe-area handling, visible focus, reduced motion, and text-plus-color statuses.
+- Do not modify backend behavior.
+
+Verification:
+- Run frontend typecheck, lint, format check, tests, and production build.
+- Verify 360, 390, 430, 768, and 1280 px with no horizontal overflow.
+- Run accessibility checks for /, /studio, /about, and /system.
+- Record the final token values and contrast decisions in Docs/HANDOFF_2.md.
+- Do not mark the work complete if any required check fails.
+
+Deliver a concise summary of the visual changes, files changed, test results, and remaining risks.
