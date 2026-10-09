@@ -1,0 +1,52 @@
+{
+  "cli_version": "0.11.4",
+  "checkpoint_id": "01M4G8NFKSNJNFENAEBZNS4EMF",
+  "session_id": "f606ef08-f4c6-4cd9-96ce-d3336f16d665",
+  "strategy": "manual-commit",
+  "created_at": "2026-10-09T12:02:21.924440495Z",
+  "branch": "build/experience",
+  "checkpoints_count": 2,
+  "files_touched": [
+    "Docs/FRONTEND_EXPERIENCE.md",
+    "Docs/HANDOFF_1.md",
+    "Docs/HANDOFF_2.md",
+    "Docs/PRODUCT_CONCEPT.md",
+    "README.md",
+    "frontend/index.html",
+    "frontend/src/app/useRoute.ts",
+    "frontend/src/components/StateMessage.tsx",
+    "frontend/src/components/StatePicker.tsx",
+    "frontend/src/recording/LandingView.tsx",
+    "frontend/src/studio/GenerationStateBody.tsx",
+    "frontend/src/styles/journey.css",
+    "frontend/src/styles/layout.css",
+    "frontend/src/styles/screens.css",
+    "frontend/src/styles/tokens.css",
+    "frontend/src/ui/RouteMarks.tsx",
+    "frontend/src/ui/Sheet.tsx",
+    "frontend/tests/phase1.spec.ts"
+  ],
+  "agent": "Cursor",
+  "model": "grok-4.7-high",
+  "turn_id": "4979f19dd868",
+  "checkpoint_transcript_start": 272,
+  "transcript_lines_at_start": 272,
+  "compact_transcript_start": 47,
+  "session_metrics": {
+    "turn_count": 14,
+    "context_tokens": 253085,
+    "context_window_size": 256000
+  },
+  "initial_attribution": {
+    "calculated_at": "2026-10-09T12:02:21.809455508Z",
+    "agent_lines": 246,
+    "agent_removed": 246,
+    "human_added": 0,
+    "human_modified": 0,
+    "human_removed": 0,
+    "total_committed": 246,
+    "total_lines_changed": 492,
+    "agent_percentage": 100,
+    "metric_version": 2
+  }
+}

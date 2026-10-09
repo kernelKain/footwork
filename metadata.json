@@ -1,0 +1,36 @@
+{
+  "cli_version": "0.11.4",
+  "checkpoint_id": "01M4G8NFKSNJNFENAEBZNS4EMF",
+  "strategy": "manual-commit",
+  "branch": "build/experience",
+  "checkpoints_count": 2,
+  "files_touched": [
+    "Docs/FRONTEND_EXPERIENCE.md",
+    "Docs/HANDOFF_1.md",
+    "Docs/HANDOFF_2.md",
+    "Docs/PRODUCT_CONCEPT.md",
+    "README.md",
+    "frontend/index.html",
+    "frontend/src/app/useRoute.ts",
+    "frontend/src/components/StateMessage.tsx",
+    "frontend/src/components/StatePicker.tsx",
+    "frontend/src/recording/LandingView.tsx",
+    "frontend/src/studio/GenerationStateBody.tsx",
+    "frontend/src/styles/journey.css",
+    "frontend/src/styles/layout.css",
+    "frontend/src/styles/screens.css",
+    "frontend/src/styles/tokens.css",
+    "frontend/src/ui/RouteMarks.tsx",
+    "frontend/src/ui/Sheet.tsx",
+    "frontend/tests/phase1.spec.ts"
+  ],
+  "sessions": [
+    {
+      "metadata": "/0/metadata.json",
+      "transcript": "/0/full.jsonl",
+      "compact_transcript": "/0/transcript.jsonl",
+      "content_hash": "/0/content_hash.txt",
+      "prompt": ""
+    }
+  ]
+}
