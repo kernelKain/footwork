@@ -96,7 +96,83 @@
   border: 1px solid var(--line);
 }
 
-.event-list time {
+.graph-track {
+  position: relative;
+  height: var(--space-2);
+  background: var(--ink-raised);
+  border: 1px solid var(--line);
+  overflow: hidden;
+}
+
+.graph-playhead {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 2px;
+  background: var(--mint);
+}
+
+.chapter-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-1);
+}
+
+.chapter-row > span {
+  padding: var(--space-1);
+  background: var(--ink-raised);
+  border: 1px solid var(--line);
+}
+
+.chapter-row > span.is-active {
+  border-color: var(--gold);
+}
+
+.mapping-list,
+.story-list {
+  display: grid;
+  gap: var(--space-1);
+}
+
+.mapping-list button,
+.story-list button {
+  width: 100%;
+  min-height: var(--touch);
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: var(--space-1);
+  padding: var(--space-2);
+  border: 1px solid var(--line);
+  background: var(--ink-raised);
+  color: inherit;
+  font: inherit;
+  text-align: left;
+}
+
+.mapping-list button.is-active,
+.story-list li.is-active button {
+  border-color: var(--gold);
+}
+
+.story-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.story-list li {
+  display: block;
+}
+
+.panel ul {
+  margin: 0;
+  padding-left: var(--space-3);
+}
+
+.event-list time,
+.mapping-list time,
+.story-list time {
   font-family: var(--font-mono);
 }
 

@@ -1,7 +1,9 @@
 import { useEffect, useMemo } from "react";
 import type { DemoFixture, EventType } from "../contracts/types";
 import { formatTime } from "./formatTime";
+import { MovementStory } from "./MovementStory";
 import { RouteFigure } from "./RouteFigure";
+import { RouteSoundGraph } from "./RouteSoundGraph";
 import { SoundprintPlayer } from "./SoundprintPlayer";
 import { synthesizeSketchWav } from "./sketchAudio";
 import { useAudioClock } from "./useAudioClock";
@@ -42,6 +44,13 @@ export function StudioScreen({ fixture }: { fixture: DemoFixture }) {
         onSeek={clock.seek}
       />
       <RouteFigure points={result.route.points} events={result.events} timeMs={clock.timeMs} />
+      <RouteSoundGraph result={result} timeMs={clock.timeMs} onSeek={clock.seek} />
+      <MovementStory
+        cards={result.story.cards}
+        events={result.events}
+        timeMs={clock.timeMs}
+        onSeek={clock.seek}
+      />
       <section className="stack" aria-labelledby="events-title">
         <h2 id="events-title">Movement events</h2>
         <p className="mono">Duration {formatTime(result.duration_ms)}.</p>
@@ -62,9 +71,29 @@ export function StudioScreen({ fixture }: { fixture: DemoFixture }) {
           })}
         </ol>
       </section>
+      <section className="panel" aria-labelledby="sponsors-title">
+        <h2 id="sponsors-title">Sponsors</h2>
+        <ul>
+          <li>
+            Gemma is the planned open-weight arrangement director. This synthetic fixture did not
+            call Gemma.
+          </li>
+          <li>
+            ElevenLabs is the planned Studio Track producer. This synthetic fixture did not call
+            ElevenLabs.
+          </li>
+          <li>Render is the planned public host. This screen is running locally.</li>
+        </ul>
+      </section>
       <section className="panel" aria-labelledby="provenance-title">
         <h2 id="provenance-title">Provenance</h2>
-        <p>Mapping status: planned. These relationships are intended, not measured.</p>
+        <p className="mono">
+          Mode {result.mode}. Mapping status: {result.provenance.mapping_status}.
+        </p>
+        <p>These relationships are intended, not measured.</p>
+        {result.warnings.map((warning) => (
+          <p key={warning}>{warning}</p>
+        ))}
         <p className="muted">{result.quality.summary}</p>
         <p className="muted">{result.provenance.rights_note}</p>
       </section>
