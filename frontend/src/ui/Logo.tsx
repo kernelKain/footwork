@@ -10,8 +10,8 @@ export function Logo({
   decorative?: boolean;
 }) {
   const mono = variant === "mono";
-  const line = mono ? "var(--color-text)" : "var(--color-mint)";
-  const beat = mono ? "var(--color-text)" : "var(--color-amber)";
+  const line = mono ? "var(--color-text)" : "var(--color-route)";
+  const beat = mono ? "var(--color-text)" : "var(--color-music)";
   const width = variant === "mark" ? size : Math.round(size * 6.4);
   return (
     <svg

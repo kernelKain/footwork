@@ -1,5 +1,7 @@
 import { useEffect, useState } from "react";
+import { runWhileVisible } from "../ui/motionGuard";
 import { formatTime } from "./formatTime";
+import { GenerationFigure } from "./GenerationFigure";
 import {
   GENERATION_ERROR_COPY,
   GENERATION_STAGES,
@@ -30,24 +32,25 @@ export function GenerationExperience({
   useEffect(() => {
     if (forcedTimeout) return;
     const started = performance.now();
-    let frame = 0;
-    const tick = (now: number) => {
+    return runWhileVisible((now) => {
       const elapsed = now - started;
       if (isGenerationTimeout(elapsed, false)) {
         setTimedOut(true);
-        return;
+        return false;
       }
       if (practiceRunComplete(elapsed)) {
         markGenerationFinished();
         onComplete();
-        return;
+        return false;
       }
-      setElapsedMs(elapsed);
-      setStageIndex(stageIndexForElapsed(elapsed));
-      frame = requestAnimationFrame(tick);
-    };
-    frame = requestAnimationFrame(tick);
-    return () => cancelAnimationFrame(frame);
+      const second = Math.floor(elapsed / 1000);
+      setElapsedMs((current) => (Math.floor(current / 1000) === second ? current : elapsed));
+      setStageIndex((current) => {
+        const next = stageIndexForElapsed(elapsed);
+        return current === next ? current : next;
+      });
+      return true;
+    });
   }, [forcedTimeout, onComplete]);
 
   if (timedOut) {
@@ -57,6 +60,7 @@ export function GenerationExperience({
   return (
     <section className="generation-panel" aria-labelledby="generation-title">
       <h1 id="generation-title">Making your Soundprint</h1>
+      <GenerationFigure stageId={stage.id} />
       <p className="generation-stage" key={stage.id}>
         {stage.copy}
       </p>

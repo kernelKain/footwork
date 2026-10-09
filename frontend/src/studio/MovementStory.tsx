@@ -1,5 +1,5 @@
 import type { Chapter } from "../contracts/types";
-import { currentChapter } from "./RouteSoundGraph";
+import { currentChapter } from "./journeyModel";
 
 export function MovementStory({
   chapters,

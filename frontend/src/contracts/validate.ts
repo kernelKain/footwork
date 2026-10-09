@@ -3,15 +3,40 @@ import {
   EVENT_TYPES,
   GENERATION_MODES,
   MAPPING_STATUSES,
+  PACE_QUALITIES,
+  QUALITY_GRADES,
   SCHEMA_VERSION,
   SOURCE_CATEGORIES,
+  UNCERTAIN_REASONS,
   type DemoFixture,
   type GenerationMode,
+  type QualityGrade,
   type SoundprintResult,
   type ValidationResult,
 } from "./types";
 
-const FORBIDDEN_KEYS = new Set(["latitude", "longitude", "lat", "lng", "coordinates", "raw_trace"]);
+const FORBIDDEN_KEYS = new Set([
+  "latitude",
+  "longitude",
+  "lat",
+  "lng",
+  "coordinates",
+  "raw_trace",
+  "calories",
+  "calorie",
+  "steps",
+  "step_count",
+  "heart_rate",
+  "heart_rate_bpm",
+  "cadence",
+  "elevation",
+  "elevation_m",
+  "health_advice",
+  "percentile",
+  "population",
+  "connector",
+  "route_connector",
+]);
 
 const JOB_ID = /^[a-z0-9-]{8,64}$/;
 const SHA256 = /^[a-f0-9]{64}$/;
@@ -140,6 +165,7 @@ export function validateSoundprintResult(value: unknown): ValidationResult<Sound
       "chapters",
       "arrangement",
       "story",
+      "movement_summary",
       "quality",
       "warnings",
       "mapping_verification",
@@ -187,6 +213,7 @@ export function validateSoundprintResult(value: unknown): ValidationResult<Sound
   readChapters(value.chapters, duration, errors);
   readArrangement(value.arrangement, eventIds, errors);
   readStory(value.story, eventIds, errors);
+  readMovementSummary(value.movement_summary, value.route, value.events, errors);
   readQuality(value.quality, errors);
   readWarnings(value.warnings, errors);
   readMappingChecks(value.mapping_verification, eventIds, mode, errors);
@@ -502,6 +529,483 @@ function readStory(value: unknown, eventIds: Set<string>, errors: string[]): voi
     if (eventId && !eventIds.has(eventId)) push(errors, `${path}.event_id must match an event`);
     readString(card.text, `${path}.text`, 400, errors);
   });
+}
+
+function readFinite(
+  value: unknown,
+  path: string,
+  min: number,
+  max: number,
+  errors: string[],
+): number | null {
+  if (typeof value !== "number" || !Number.isFinite(value) || value < min || value > max) {
+    push(errors, `${path} must be a finite number from ${min} to ${max}`);
+    return null;
+  }
+  return value;
+}
+
+function assertKnownKeys(
+  value: Record<string, unknown>,
+  required: readonly string[],
+  optional: readonly string[],
+  path: string,
+  errors: string[],
+): void {
+  const allowed = new Set<string>([...required, ...optional]);
+  for (const key of Object.keys(value)) {
+    if (!allowed.has(key)) push(errors, `${path}.${key} is not supported`);
+  }
+  for (const key of required) {
+    if (!(key in value)) push(errors, `${path}.${key} is required`);
+  }
+}
+
+type TimedSpan = { id: string; start: number; end: number; path: string };
+type SegmentSpan = TimedSpan & { distance: number };
+type PacePoint = { t: number; quality: "clear" | "uncertain" };
+
+const MOVEMENT_FIELDS = [
+  "active_duration_ms",
+  "elapsed_duration_ms",
+  "manual_break_duration_ms",
+  "distance_m",
+  "average_moving_speed_mps",
+  "pace_series",
+  "recording_segments",
+  "break_intervals",
+  "uncertain_intervals",
+  "event_counts",
+  "quality_grade",
+] as const;
+
+function readMovementSummary(
+  value: unknown,
+  route: unknown,
+  events: unknown,
+  errors: string[],
+): void {
+  const path = "result.movement_summary";
+  if (!isRecord(value)) {
+    push(errors, `${path} must be an object`);
+    return;
+  }
+  assertKnownKeys(value, MOVEMENT_FIELDS, ["return_proximity"], path, errors);
+  const active = readInteger(
+    value.active_duration_ms,
+    `${path}.active_duration_ms`,
+    0,
+    1_800_000,
+    errors,
+  );
+  const elapsed = readInteger(
+    value.elapsed_duration_ms,
+    `${path}.elapsed_duration_ms`,
+    0,
+    1_800_000,
+    errors,
+  );
+  const manual = readInteger(
+    value.manual_break_duration_ms,
+    `${path}.manual_break_duration_ms`,
+    0,
+    1_800_000,
+    errors,
+  );
+  const distance = readFinite(value.distance_m, `${path}.distance_m`, 0, 100_000, errors);
+  const speed = readSpeed(
+    value.average_moving_speed_mps,
+    `${path}.average_moving_speed_mps`,
+    errors,
+  );
+  const grade = readEnum(value.quality_grade, QUALITY_GRADES, `${path}.quality_grade`, errors);
+  if ("return_proximity" in value) {
+    readFinite(value.return_proximity, `${path}.return_proximity`, 0, 1, errors);
+  }
+  const segments = readSegments(value.recording_segments, errors);
+  const breaks = readBreakIntervals(value.break_intervals, errors);
+  const uncertain = readUncertainIntervals(value.uncertain_intervals, errors);
+  const pace = readPaceSeries(value.pace_series, errors);
+  readEventCounts(value.event_counts, events, errors);
+  if (
+    active === null ||
+    elapsed === null ||
+    manual === null ||
+    distance === null ||
+    !speed.ok ||
+    !grade ||
+    !segments ||
+    !breaks ||
+    !uncertain ||
+    !pace
+  ) {
+    return;
+  }
+  rejectDuplicateIntervalIds(segments, breaks, uncertain, errors);
+  checkMovementTimeline(segments, breaks, uncertain, active, elapsed, manual, distance, errors);
+  checkMovingSpeed(grade, active, distance, speed.value, errors);
+  checkPaceAgainstGrade(grade, pace, uncertain.length, errors);
+  checkMovementSamples(segments, breaks, uncertain, pace, route, events, errors);
+}
+
+function readSpeed(
+  value: unknown,
+  path: string,
+  errors: string[],
+): { ok: true; value: number | null } | { ok: false } {
+  if (value === null) return { ok: true, value: null };
+  const speed = readFinite(value, path, 0, 12, errors);
+  if (speed === null) return { ok: false };
+  return { ok: true, value: speed };
+}
+
+function readSegments(value: unknown, errors: string[]): SegmentSpan[] | null {
+  return readIntervals(
+    value,
+    "result.movement_summary.recording_segments",
+    ["id", "start_ms", "end_ms", "distance_m"],
+    1,
+    errors,
+    (item, path) => {
+      const distance = readFinite(item.distance_m, `${path}.distance_m`, 0, 100_000, errors);
+      return distance === null ? null : { distance };
+    },
+  );
+}
+
+function readBreakIntervals(value: unknown, errors: string[]): TimedSpan[] | null {
+  return readIntervals(
+    value,
+    "result.movement_summary.break_intervals",
+    ["id", "start_ms", "end_ms"],
+    0,
+    errors,
+    () => ({}),
+  );
+}
+
+function readUncertainIntervals(value: unknown, errors: string[]): TimedSpan[] | null {
+  return readIntervals(
+    value,
+    "result.movement_summary.uncertain_intervals",
+    ["id", "start_ms", "end_ms", "reason"],
+    0,
+    errors,
+    (item, path) => {
+      const reason = readEnum(item.reason, UNCERTAIN_REASONS, `${path}.reason`, errors);
+      return reason ? {} : null;
+    },
+  );
+}
+
+function readIntervals<T extends Record<string, unknown>>(
+  value: unknown,
+  path: string,
+  keys: readonly string[],
+  minimum: number,
+  errors: string[],
+  extra: (item: Record<string, unknown>, path: string) => T | null,
+): Array<TimedSpan & T> | null {
+  if (!Array.isArray(value) || value.length < minimum || value.length > 32) {
+    push(errors, `${path} must contain ${minimum} to 32 intervals`);
+    return null;
+  }
+  const spans: Array<TimedSpan & T> = [];
+  let failed = false;
+  const ids = new Set<string>();
+  value.forEach((item, index) => {
+    const itemPath = `${path}[${index}]`;
+    if (!isRecord(item)) {
+      push(errors, `${itemPath} must be an object`);
+      failed = true;
+      return;
+    }
+    assertExactKeys(item, keys, itemPath, errors);
+    const id = readId(item.id, `${itemPath}.id`, errors);
+    const start = readInteger(item.start_ms, `${itemPath}.start_ms`, 0, 1_800_000, errors);
+    const end = readInteger(item.end_ms, `${itemPath}.end_ms`, 0, 1_800_000, errors);
+    const rest = extra(item, itemPath);
+    if (!id || start === null || end === null || !rest) {
+      failed = true;
+      return;
+    }
+    if (ids.has(id)) {
+      push(errors, `${itemPath}.id must be unique`);
+      failed = true;
+    }
+    ids.add(id);
+    if (end <= start) {
+      push(errors, `${itemPath}.end_ms must be after start_ms`);
+      failed = true;
+      return;
+    }
+    const previous = spans[spans.length - 1];
+    if (previous && start < previous.start) {
+      push(errors, `${itemPath} must stay in time order`);
+      failed = true;
+    } else if (previous && start < previous.end) {
+      push(errors, `${itemPath} must not overlap the previous interval`);
+      failed = true;
+    }
+    spans.push({ id, start, end, path: itemPath, ...rest });
+  });
+  return failed ? null : spans;
+}
+
+function readPaceSeries(value: unknown, errors: string[]): PacePoint[] | null {
+  const path = "result.movement_summary.pace_series";
+  if (!Array.isArray(value) || value.length > 64) {
+    push(errors, `${path} must be an array of at most 64 samples`);
+    return null;
+  }
+  const samples: PacePoint[] = [];
+  let failed = false;
+  let previous = -1;
+  value.forEach((item, index) => {
+    const itemPath = `${path}[${index}]`;
+    if (!isRecord(item)) {
+      push(errors, `${itemPath} must be an object`);
+      failed = true;
+      return;
+    }
+    assertExactKeys(item, ["t_ms", "pace", "quality"], itemPath, errors);
+    const time = readInteger(item.t_ms, `${itemPath}.t_ms`, 0, 1_800_000, errors);
+    readFinite(item.pace, `${itemPath}.pace`, 0, 1, errors);
+    const quality = readEnum(item.quality, PACE_QUALITIES, `${itemPath}.quality`, errors);
+    if (time === null || !quality) {
+      failed = true;
+      return;
+    }
+    if (time <= previous) {
+      push(errors, `${itemPath}.t_ms must increase`);
+      failed = true;
+    }
+    previous = time;
+    samples.push({ t: time, quality });
+  });
+  return failed ? null : samples;
+}
+
+function readEventCounts(value: unknown, events: unknown, errors: string[]): void {
+  const path = "result.movement_summary.event_counts";
+  if (!isRecord(value)) {
+    push(errors, `${path} must be an object`);
+    return;
+  }
+  assertExactKeys(value, EVENT_TYPES, path, errors);
+  const actual = Object.fromEntries(EVENT_TYPES.map((type) => [type, 0])) as Record<
+    (typeof EVENT_TYPES)[number],
+    number
+  >;
+  if (Array.isArray(events)) {
+    events.forEach((event) => {
+      if (!isRecord(event) || typeof event.type !== "string") return;
+      if (EVENT_TYPES.includes(event.type as (typeof EVENT_TYPES)[number])) {
+        actual[event.type as (typeof EVENT_TYPES)[number]] += 1;
+      }
+    });
+  }
+  EVENT_TYPES.forEach((type) => {
+    const count = readInteger(value[type], `${path}.${type}`, 0, 64, errors);
+    if (count === null) return;
+    if (count !== actual[type]) {
+      const meaning = type === "pause" ? "detected pause events" : `${type} events`;
+      push(errors, `${path}.${type} must match the accepted ${meaning}`);
+    }
+  });
+}
+
+function rejectDuplicateIntervalIds(
+  segments: TimedSpan[],
+  breaks: TimedSpan[],
+  uncertain: TimedSpan[],
+  errors: string[],
+): void {
+  const ids = new Set<string>();
+  for (const span of [...segments, ...breaks, ...uncertain]) {
+    if (ids.has(span.id)) push(errors, `${span.path}.id must be unique across movement intervals`);
+    ids.add(span.id);
+  }
+}
+
+function checkMovementTimeline(
+  segments: SegmentSpan[],
+  breaks: TimedSpan[],
+  uncertain: TimedSpan[],
+  active: number,
+  elapsed: number,
+  manual: number,
+  distance: number,
+  errors: string[],
+): void {
+  const path = "result.movement_summary";
+  const ordered = [...segments, ...breaks, ...uncertain].sort(
+    (left, right) => left.start - right.start || left.end - right.end,
+  );
+  for (let index = 1; index < ordered.length; index += 1) {
+    const previous = ordered[index - 1];
+    const current = ordered[index];
+    if (!previous || !current) continue;
+    if (current.start < previous.end) {
+      push(errors, `${current.path} overlaps ${previous.path}`);
+    } else if (current.start > previous.end) {
+      push(errors, `${path} has an unclassified gap before ${current.path}`);
+    }
+  }
+  const activeSum = segments.reduce((total, segment) => total + (segment.end - segment.start), 0);
+  const breakSum = breaks.reduce((total, gap) => total + (gap.end - gap.start), 0);
+  const uncertainSum = uncertain.reduce((total, gap) => total + (gap.end - gap.start), 0);
+  const distanceSum = segments.reduce((total, segment) => total + segment.distance, 0);
+  if (activeSum !== active) {
+    push(errors, `${path}.active_duration_ms must equal the sum of recording segments`);
+  }
+  if (breakSum !== manual) {
+    push(errors, `${path}.manual_break_duration_ms must equal the sum of manual breaks`);
+  }
+  const first = ordered[0];
+  const last = ordered[ordered.length - 1];
+  if (first && last && elapsed !== last.end - first.start) {
+    push(errors, `${path}.elapsed_duration_ms must run from the first interval to the final end`);
+  }
+  if (elapsed !== activeSum + breakSum + uncertainSum) {
+    push(
+      errors,
+      `${path}.elapsed_duration_ms must keep active time, manual breaks, and uncertain intervals separate`,
+    );
+  }
+  if (Math.abs(distanceSum - distance) > 0.001) {
+    push(errors, `${path}.distance_m must equal the sum of distances inside recording segments`);
+  }
+}
+
+function checkMovingSpeed(
+  grade: QualityGrade,
+  active: number,
+  distance: number,
+  speed: number | null,
+  errors: string[],
+): void {
+  const path = "result.movement_summary.average_moving_speed_mps";
+  if (active === 0) {
+    if (distance !== 0) {
+      push(errors, "result.movement_summary.distance_m must be 0 when active time is 0");
+    }
+    if (speed !== null) push(errors, `${path} must be null when active time is 0`);
+    return;
+  }
+  if (grade === "limited") {
+    if (speed !== null) push(errors, `${path} must be null when quality is limited`);
+    return;
+  }
+  if (speed === null) {
+    if (grade === "clear") {
+      push(errors, `${path} must divide accepted distance by active time when quality is clear`);
+    }
+    return;
+  }
+  const expected = distance / (active / 1000);
+  if (Math.abs(speed - expected) > 0.001) {
+    push(errors, `${path} must equal accepted distance divided by active duration`);
+  }
+}
+
+function checkPaceAgainstGrade(
+  grade: QualityGrade,
+  pace: PacePoint[],
+  uncertainCount: number,
+  errors: string[],
+): void {
+  const uncertainPace = pace.some((sample) => sample.quality === "uncertain");
+  const clearPace = pace.some((sample) => sample.quality === "clear");
+  if (grade === "clear") {
+    if (pace.length < 1 || uncertainPace) {
+      push(
+        errors,
+        "result.movement_summary.pace_series must contain only clear samples when quality is clear",
+      );
+    }
+    if (uncertainCount > 0) {
+      push(
+        errors,
+        "result.movement_summary.uncertain_intervals must be empty when quality is clear",
+      );
+    }
+  }
+  if (grade === "mixed" && !uncertainPace && uncertainCount === 0) {
+    push(
+      errors,
+      "result.movement_summary.quality_grade mixed requires an uncertain sample or interval",
+    );
+  }
+  if (grade === "limited" && clearPace) {
+    push(
+      errors,
+      "result.movement_summary.pace_series must not use a clear flag when quality is limited",
+    );
+  }
+}
+
+function checkMovementSamples(
+  segments: SegmentSpan[],
+  breaks: TimedSpan[],
+  uncertain: TimedSpan[],
+  pace: PacePoint[],
+  route: unknown,
+  events: unknown,
+  errors: string[],
+): void {
+  const gaps = [...breaks, ...uncertain];
+  pace.forEach((sample, index) => {
+    if (!insideSegment(segments, gaps, sample.t)) {
+      push(
+        errors,
+        `result.movement_summary.pace_series[${index}].t_ms must fall inside a recording segment`,
+      );
+    }
+  });
+  const routeTimes = routePointTimes(route);
+  routeTimes.forEach((time, index) => {
+    if (!insideSegment(segments, gaps, time)) {
+      push(errors, `result.route.points[${index}].t_ms must fall inside a recording segment`);
+    }
+  });
+  for (let index = 1; index < routeTimes.length; index += 1) {
+    const left = routeTimes[index - 1];
+    const right = routeTimes[index];
+    if (left === undefined || right === undefined) continue;
+    if (gaps.some((gap) => left < gap.end && gap.start < right)) {
+      push(
+        errors,
+        "result.route.points must not draw a connector across a manual break or uncertain interval",
+      );
+      break;
+    }
+  }
+  if (!Array.isArray(events)) return;
+  events.forEach((event, index) => {
+    if (!isRecord(event) || typeof event.source_offset_ms !== "number") return;
+    if (insideSegment(segments, gaps, event.source_offset_ms)) return;
+    const kind = event.type === "pause" ? "detected pause" : "movement event";
+    push(
+      errors,
+      `result.events[${index}].source_offset_ms ${kind} must stay inside a recording segment`,
+    );
+  });
+}
+
+function insideSegment(segments: TimedSpan[], gaps: TimedSpan[], time: number): boolean {
+  const inSegment = segments.some((segment) => time >= segment.start && time <= segment.end);
+  const inGap = gaps.some((gap) => time > gap.start && time < gap.end);
+  return inSegment && !inGap;
+}
+
+function routePointTimes(route: unknown): number[] {
+  if (!isRecord(route) || !Array.isArray(route.points)) return [];
+  return route.points.flatMap((point) =>
+    isRecord(point) && typeof point.t_ms === "number" && Number.isFinite(point.t_ms)
+      ? [point.t_ms]
+      : [],
+  );
 }
 
 function readQuality(value: unknown, errors: string[]): void {

@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { Button } from "../ui/Button";
+import { WalkerMark } from "../ui/Walker";
 
 type MomentId = "turn" | "pause" | "pace";
 
@@ -53,8 +54,21 @@ export function LandingView({
         <figure className="hero-figure">
           <svg viewBox="0 0 320 140" role="img" aria-label="A walk route becoming a short waveform">
             <title>A walk route becoming a short waveform</title>
-            <path className="ui-route-line" d="M16 108 C 52 108 64 40 112 40 H 156" />
+            <defs>
+              <linearGradient id="hero-trace" x1="0" y1="0" x2="1" y2="0">
+                <stop offset="0" stopColor="var(--color-route)" />
+                <stop offset="0.55" stopColor="var(--color-music)" />
+                <stop offset="1" stopColor="var(--color-event)" />
+              </linearGradient>
+            </defs>
+            <path
+              className="ui-route-line trace-signature"
+              d="M16 108 C 52 108 64 40 112 40 H 156"
+            />
             <circle className="ui-waypoint" cx="16" cy="108" r="6" />
+            <g transform="translate(2 78) scale(0.7)">
+              <WalkerMark pose="ready" />
+            </g>
             <rect className="ui-beat" x="148" y="32" width="14" height="14" rx="2" />
             {[18, 28, 16, 36, 22, 32, 14, 26].map((height, index) => (
               <rect
@@ -112,7 +126,7 @@ export function LandingView({
           <svg viewBox="0 0 220 72" role="img" aria-label={current.visual}>
             <title>{current.visual}</title>
             {moment === "pause" ? (
-              <path className="ui-route-line" d="M12 48 H 70 M 130 48 H 190" />
+              <path className="ui-route-line is-paused" d="M12 48 H 70 M 130 48 H 190" />
             ) : (
               <path
                 className="ui-route-line"

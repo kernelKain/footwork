@@ -2,11 +2,6 @@
   display: grid;
   gap: var(--space-3);
   padding-bottom: var(--safe-bottom);
-  background-color: var(--color-bg);
-  background-image: url("/brand/trail-wash.svg");
-  background-repeat: no-repeat;
-  background-position: right bottom;
-  background-size: 100% auto;
 }
 
 .ui-button {
@@ -37,8 +32,13 @@
 }
 
 .ui-button-primary {
-  background: var(--color-mint);
-  color: var(--color-mint-ink);
+  background: var(--color-route);
+  color: var(--color-on-signal);
+}
+
+.ui-button-playback {
+  background: var(--color-music);
+  color: var(--color-on-signal);
 }
 
 .ui-button-secondary {
@@ -60,7 +60,7 @@
 
 .ui-button-destructive {
   background: var(--color-coral);
-  color: var(--color-coral-ink);
+  color: var(--color-on-signal);
 }
 
 .ui-icon-button {
@@ -153,11 +153,19 @@
 }
 
 .ui-chip-music {
-  border-color: var(--color-amber);
+  border-color: var(--color-music);
 }
 
 .ui-chip-live {
-  border-color: var(--color-mint);
+  border-color: var(--color-route);
+}
+
+.ui-chip-event {
+  border-color: var(--color-event);
+}
+
+.ui-chip-pause {
+  border-color: var(--color-pause);
 }
 
 .ui-sheet {
@@ -172,7 +180,7 @@
 }
 
 .ui-sheet::backdrop {
-  background: rgb(8 10 14 / 0.72);
+  background: rgb(8 12 24 / 0.72);
 }
 
 .ui-disclosure {
@@ -199,19 +207,24 @@
   width: 12px;
   height: 12px;
   border-radius: 999px;
-  background: var(--color-mint);
+  background: var(--color-route);
 }
 
 @media (prefers-reduced-motion: no-preference) {
   .ui-recording-dot {
     animation: ui-pulse 1.4s var(--ease-standard) infinite;
+    animation-play-state: paused;
+  }
+
+  html:not(.is-background) .ui-recording.is-onstage .ui-recording-dot {
+    animation-play-state: running;
   }
 }
 
 .ui-timer {
   margin: 0;
   min-height: var(--touch);
-  font-size: var(--font-size-4);
+  font-size: clamp(2rem, 1.25rem + 2vw, 3.25rem);
   font-variant-numeric: tabular-nums;
   font-weight: 700;
   letter-spacing: 0;
@@ -238,21 +251,31 @@
 
 .ui-route-line {
   fill: none;
-  stroke: var(--color-mint);
+  stroke: var(--color-route);
   stroke-width: 3;
   stroke-linecap: round;
 }
 
+.ui-route-line.is-paused {
+  stroke: var(--color-pause);
+  stroke-dasharray: 7 6;
+}
+
+.trace-signature {
+  stroke: url("#hero-trace");
+}
+
 .ui-waypoint {
-  fill: var(--color-mint);
+  fill: var(--color-route);
 }
 
 .ui-beat {
-  fill: var(--color-amber);
+  fill: var(--color-event);
 }
 
-.ui-wave rect {
-  fill: var(--color-mint);
+.ui-wave rect,
+.ui-wave-bar {
+  fill: var(--color-music);
 }
 
 .ui-visually-hidden {

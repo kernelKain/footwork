@@ -9,9 +9,13 @@ import {
   requestGenerationRetry,
   type GenerationErrorCode,
 } from "./generationContract";
+import { JourneyComposition } from "./JourneyComposition";
+import { JourneyGlance } from "./JourneyGlance";
+import { clarityLine, drawnSpans, gapLines, speedLine } from "./journeyModel";
+import { MomentCards } from "./MomentCards";
+import { MovementRibbon } from "./MovementRibbon";
 import { MovementStory } from "./MovementStory";
 import { RouteFigure } from "./RouteFigure";
-import { RouteSoundGraph } from "./RouteSoundGraph";
 import { SoundprintPlayer } from "./SoundprintPlayer";
 import { synthesizeSketchWav } from "./sketchAudio";
 import { useAudioClock } from "./useAudioClock";
@@ -77,7 +81,7 @@ export function StudioScreen({ fixture, onNavigate }: StudioScreenProps) {
     setView({ name: "running", forcedTimeout: false });
   }, []);
   const label = resultLabel(result.mode);
-  const poly = result.route.points.map((point) => `${point.x * 100},${point.y * 100}`).join(" ");
+  const coverSpans = drawnSpans(result.route.points, result.movement_summary);
 
   return (
     <div className="studio">
@@ -100,7 +104,19 @@ export function StudioScreen({ fixture, onNavigate }: StudioScreenProps) {
               <StatusChip label={label} tone="music" />
               <div className="studio-cover" aria-hidden="true">
                 <svg viewBox="0 0 100 100">
-                  <polyline className="route-path" points={poly} />
+                  {coverSpans.map((span) =>
+                    span.kind === "segment" ? (
+                      <polyline
+                        key={span.id}
+                        className="route-path cover-signature"
+                        data-pace={span.pace}
+                        points={span.points}
+                        pathLength={100}
+                      />
+                    ) : (
+                      <polyline key={span.id} className="route-gap" points={span.points} />
+                    ),
+                  )}
                 </svg>
               </div>
               <h1 id="studio-title">Corner and pause</h1>
@@ -122,14 +138,24 @@ export function StudioScreen({ fixture, onNavigate }: StudioScreenProps) {
                 onReplay={clock.replay}
               />
             </section>
+            <JourneyGlance summary={result.movement_summary} />
             <RouteFigure
               points={result.route.points}
               events={result.events}
+              summary={result.movement_summary}
+              timeMs={clock.timeMs}
+              playing={clock.playing}
+              onSeek={clock.seek}
+            />
+            <MovementRibbon
+              summary={result.movement_summary}
+              chapters={result.chapters}
+              events={result.events}
+              durationMs={result.duration_ms}
               timeMs={clock.timeMs}
             />
-          </div>
-          <div className="studio-story">
-            <RouteSoundGraph result={result} timeMs={clock.timeMs} onSeek={clock.seek} />
+            <MomentCards events={result.events} timeMs={clock.timeMs} onSeek={clock.seek} />
+            <JourneyComposition summary={result.movement_summary} />
             <MovementStory
               chapters={result.chapters}
               durationMs={result.duration_ms}
@@ -137,7 +163,12 @@ export function StudioScreen({ fixture, onNavigate }: StudioScreenProps) {
               summary={STORY}
             />
             <Disclosure title="About this example">
-              <p>This example lasts one minute and was made for the page.</p>
+              <p>{clarityLine(result.movement_summary)}</p>
+              {gapLines(result.movement_summary).map((line) => (
+                <p key={line}>{line}</p>
+              ))}
+              <p>{speedLine(result.movement_summary)}</p>
+              <p>This is an example, not a recorded walk.</p>
               <p>The sound was made in the browser. It is not a studio recording.</p>
               <p>
                 The musical changes are planned and have not been heard in a finished recording.

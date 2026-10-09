@@ -20,7 +20,7 @@ export function SoundprintPlayer({
   return (
     <div className="player">
       <div className="player-controls">
-        <button type="button" className="ui-button ui-button-primary" onClick={onToggle}>
+        <button type="button" className="ui-button ui-button-playback" onClick={onToggle}>
           {playing ? "Pause" : "Play"}
         </button>
         <button type="button" className="ui-button ui-button-secondary" onClick={onReplay}>

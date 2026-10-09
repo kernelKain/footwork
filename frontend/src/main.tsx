@@ -7,6 +7,7 @@ import "./styles/system.css";
 import "./styles/journey.css";
 import "./styles/screens.css";
 import "./styles/studio.css";
+import "./styles/recap.css";
 
 const root = document.getElementById("root");
 if (!root) {

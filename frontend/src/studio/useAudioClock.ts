@@ -13,7 +13,11 @@ export function useAudioClock(source: string, durationMs: number) {
     const readClock = () => setTimeMs(Math.round(audio.currentTime * 1000));
     const tick = () => {
       readClock();
-      if (!audio.paused) frame = requestAnimationFrame(tick);
+      if (!audio.paused && !document.hidden) frame = requestAnimationFrame(tick);
+    };
+    const onVisibility = () => {
+      cancelAnimationFrame(frame);
+      if (!audio.paused && !document.hidden) frame = requestAnimationFrame(tick);
     };
     const onPlay = () => {
       setPlaying(true);
@@ -29,11 +33,13 @@ export function useAudioClock(source: string, durationMs: number) {
     audio.addEventListener("play", onPlay);
     audio.addEventListener("pause", onPause);
     audio.addEventListener("ended", onPause);
+    document.addEventListener("visibilitychange", onVisibility);
     return () => {
       cancelAnimationFrame(frame);
       audio.removeEventListener("play", onPlay);
       audio.removeEventListener("pause", onPause);
       audio.removeEventListener("ended", onPause);
+      document.removeEventListener("visibilitychange", onVisibility);
     };
   }, [source]);
 

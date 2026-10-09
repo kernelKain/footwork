@@ -44,8 +44,12 @@ for (const width of [390, 1280]) {
     }
     expect(routeBox!.x).toBeGreaterThanOrEqual(0);
     expect(routeBox!.x + routeBox!.width).toBeLessThanOrEqual(width + 1);
-    await expect(page.getByRole("listitem").filter({ hasText: "Turn" })).toBeVisible();
-    await expect(page.getByRole("listitem").filter({ hasText: "Pause" })).toBeVisible();
+    await expect(
+      page.locator(".mapping-list").getByRole("listitem").filter({ hasText: "Turn" }),
+    ).toBeVisible();
+    await expect(
+      page.locator(".mapping-list").getByRole("listitem").filter({ hasText: "Pause" }),
+    ).toBeVisible();
     const example = page.getByRole("link", { name: "Start another walk" });
     const box = await example.boundingBox();
     expect(box).not.toBeNull();

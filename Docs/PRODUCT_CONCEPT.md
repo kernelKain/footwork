@@ -10,13 +10,27 @@ The public journey for this build is: Understand Footwork, start walking, record
 
 This is what the application shows now.
 
-- `/` explains Footwork and holds the practice walk. Start walking opens a readiness sheet. The practice does not ask for location, does not hold the screen awake, and does not save a route.
+- `/` explains Footwork and holds the practice walk. Start walking opens a readiness sheet. The practice does not ask for location and does not hold the screen awake. A paused practice keeps its time and segments on this phone. It does not save a location route.
 - Ending the practice opens generation on `/studio`. The wait names four stages and an elapsed time. It does not show a percent. The result is the labeled example.
-- `/studio` is the Soundprint: hero, route, movement-to-music timeline, a short walk story, and optional details. Hear an example opens that same example.
+- `/studio` is the Soundprint: hero, glance totals, a segmented route, a movement ribbon, movement-to-music cards, composition counts, a short walk story, and optional details. Hear an example opens that same example. A small walker marks ready, recording, paused, generation, and playback.
 - `/about` opens How it works on `/`.
 - There is no global Walk / Soundprint / How it works navigation, no Sponsors section, and no Provenance section. Sponsor roles and technical provenance stay in this file, `Docs/HANDOFF_1.md`, and `README.md`.
+- The pages use two themes with the same roles. Nocturne Pulse is the dark theme: midnight and cobalt surfaces, cyan for the route, violet for music and playback, amber for movement moments, blue for a pause, and coral only for ending a walk. Daylight is the light theme: warm paper surfaces and deeper versions of those same colors so text and controls stay readable. The header switches them. The device choice is the default.
 
 Mood choice, Pocket Mode, a public share link, and a desktop QR code are later product ideas. They are not controls on these pages.
+
+## Planned Phase 1 experience extension
+
+`Docs/PHASE_1_UI_UX_PLAN.md` is the spec for the October 9, 2026 extension. Pause and resume, Nocturne Pulse, Daylight, the movement summary, the walker, and the visual recap are on this branch.
+
+- Recording has Pause walk, Resume walk, separate active and break timers, and restoration of a paused draft on this phone.
+- A manual break creates a gap between recording segments. It is not counted as movement and is not the same as a naturally detected pause that may influence the music.
+- The public pages use Nocturne Pulse. The walker and the visual journey recap are on the current screens.
+- One small walker carries the person from landing to recording, pause, generation, and synchronized playback. Motion stays state-driven and has a static reduced-motion equivalent.
+- The Soundprint is a visual journey recap with at-a-glance stats, a segmented route, a movement ribbon, movement-to-music moments, an event-composition visual, and a short story.
+- Visual analytics stay limited to data in the validated movement summary: active and elapsed time, manual-break time, within-segment distance, relative pace, accepted event counts, gaps, and a plain quality state. Calories, heart rate, steps, elevation, and health advice remain out of scope.
+
+The extension is planned as steps P1.7–P1.13. Its estimated 290 minutes still need an explicit budget decision because the original 20-hour plan was already fully allocated. P1.7 was not a separate implementation step; those decisions are the plan document.
 
 ## Product Summary
 
@@ -59,7 +73,7 @@ The user opens Footwork on their phone. In the current build they read the landi
 
 ### During the Walk
 
-The current practice shows Recording, an elapsed clock, a plain signal, and Hold to end walk. It does not track location. A later recording build is planned to enter Pocket Mode:
+The current practice shows Recording, active walking time, a plain signal, Pause walk, and Hold to end walk. A paused practice shows the current break separately and can be restored in this tab. It does not track location. A later recording build is planned to enter Pocket Mode:
 
 - The interface becomes almost black.
 - The browser requests a Screen Wake Lock.

@@ -18,8 +18,11 @@ export function SystemScreen() {
   const [confirmed, setConfirmed] = useState(false);
   return (
     <div className="ui-catalog">
-      <h1>Night Trail Studio</h1>
-      <p>This catalog is not part of the public walk. It shows the brand and controls.</p>
+      <h1>Nocturne Pulse</h1>
+      <p>
+        This catalog is not part of the public walk. It shows the brand and controls. Daylight is
+        the light theme. Nocturne Pulse is the dark theme.
+      </p>
       <Logo variant="wordmark" size={32} />
       <Logo variant="mark" size={16} />
       <Logo variant="mono" size={32} />
@@ -49,8 +52,10 @@ export function SystemScreen() {
         <p>Elevated surfaces stay opaque.</p>
       </Surface>
       <StatusChip label="Example" />
-      <StatusChip label="Turn" tone="music" />
+      <StatusChip label="Music" tone="music" />
       <StatusChip label="Recording" tone="live" />
+      <StatusChip label="Turn" tone="event" />
+      <StatusChip label="Paused" tone="pause" />
       <Alert title="Location is off" tone="alert">
         <p>Allow location for this site in the browser settings, then try again.</p>
       </Alert>

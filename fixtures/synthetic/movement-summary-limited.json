@@ -1,0 +1,72 @@
+{
+  "schema_version": "1",
+  "label": "synthetic",
+  "purpose": "Fictional walk with limited movement quality. Pace samples are marked uncertain and the average speed is withheld. This is not a recorded walk.",
+  "manifest": {
+    "schema_version": "1",
+    "source_category": "synthetic",
+    "generation_mode": "synthetic_fixture",
+    "model_identity": null,
+    "asset_hashes": {},
+    "rights_note": "Original synthetic geometry and copy created for Footwork. No recorded trace and no provider audio are included.",
+    "verification": {
+      "mapping_status": "planned",
+      "human_reviewed": false
+    }
+  },
+  "result": {
+    "schema_version": "1",
+    "job_id": "synthetic-limited-quality",
+    "mode": "synthetic_fixture",
+    "provenance": {
+      "source_category": "synthetic",
+      "generation_mode": "synthetic_fixture",
+      "model_identity": null,
+      "rights_note": "Original synthetic geometry and copy created for Footwork. No recorded trace and no provider audio are included.",
+      "mapping_status": "planned"
+    },
+    "duration_ms": 12000,
+    "audio_available": false,
+    "audio_format": null,
+    "route": {
+      "points": [
+        { "x": 0.3, "y": 0.7, "t_ms": 0 },
+        { "x": 0.45, "y": 0.55, "t_ms": 12000 }
+      ]
+    },
+    "events": [],
+    "chapters": [{ "id": "short", "start_ms": 0, "end_ms": 12000, "title": "Short" }],
+    "arrangement": {
+      "mood": "warm_cinematic",
+      "style": ["instrumental"],
+      "event_refs": []
+    },
+    "story": { "cards": [] },
+    "movement_summary": {
+      "active_duration_ms": 12000,
+      "elapsed_duration_ms": 12000,
+      "manual_break_duration_ms": 0,
+      "distance_m": 15,
+      "average_moving_speed_mps": null,
+      "pace_series": [
+        { "t_ms": 0, "pace": 0.3, "quality": "uncertain" },
+        { "t_ms": 6000, "pace": 0.5, "quality": "uncertain" }
+      ],
+      "recording_segments": [
+        { "id": "seg-short", "start_ms": 0, "end_ms": 12000, "distance_m": 15 }
+      ],
+      "break_intervals": [],
+      "uncertain_intervals": [],
+      "event_counts": { "turn": 0, "pace_change": 0, "pause": 0, "loop": 0 },
+      "quality_grade": "limited"
+    },
+    "quality": {
+      "usable": false,
+      "summary": "Not enough clear data for an average speed. This short geometry is fictional."
+    },
+    "warnings": [
+      "Synthetic fixture. The pace marks are uncertain, so no average speed is published."
+    ],
+    "mapping_verification": []
+  }
+}

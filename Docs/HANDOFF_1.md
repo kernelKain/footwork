@@ -9,7 +9,7 @@
 - **Feature freeze:** Build hour 15, at 75% of the budget.
 - **Stack:** React/TypeScript/Vite → Python/FastAPI on Render → Gemma on free Hugging Face ZeroGPU → Eleven Music.
 - **Development toolchain (Phase 0):** CodeRabbit for code review, Entire for agent-session sharing, DevRelay for DEV write-ups, GitHub Actions for automated checks, Excalidraw for architecture diagrams. These are not part of the running application.
-- **Plan:** Six phases, 30 separately committed steps, one branch per phase.
+- **Plan:** Six phases, 30 original separately committed steps plus the Phase 1 UI/UX extension, one branch per phase. P1.8 through P1.13 and Daylight are on `build/experience`. The 290-minute budget decision is still open.
 - **Largest risk:** Free Gemma availability and whether generated Studio audio makes the intended movement mappings perceptible.
 
 ---
@@ -241,7 +241,7 @@ These are not scheduled work.
 | Paid Gemma deployment | User constraint. |
 | Redis, Celery, Kubernetes or a second backend language | No workload requirement. |
 | Production-grade privacy guarantees | Cannot establish them within this build. |
-| Analytics and LangSmith | Extra dependency, data handling and integration scope. |
+| Product telemetry analytics and LangSmith | Extra dependency, data handling and integration scope. This does not exclude the local, privacy-safe movement summary planned for the Soundprint result. |
 
 ---
 
@@ -1138,6 +1138,7 @@ A reduced release cannot silently pass failed sponsor or Studio acceptance crite
 | D-15 | A1 authority | Explicit user choice. | User explicitly changes autonomy. |
 | D-16 | Freeze at hour 15 | Protect final verification and writing. | Approval required; default is scope reduction. |
 | D-17 | Phase 0 development toolchain: CodeRabbit, Entire, DevRelay, GitHub Actions, Excalidraw | User request on October 8, 2026. Review, session sharing, write-ups, automated checks, and architecture diagrams. These are not product APIs. | User removes a tool. |
+| D-18 | Extend Phase 1 with pause/resume, Nocturne Pulse, visual journey analytics, and state-driven motion | Explicit user request on October 9, 2026. Keep the work in Phase 1 and plan it as separately verifiable steps. Manual breaks remain distinct from detected movement pauses. | Implementation starts only after the unchanged 20-hour ceiling is reconciled with the additional 290-minute estimate. |
 
 ---
 
@@ -1184,7 +1185,7 @@ Every phase uses A1. Dependencies are sequential. The user creates the next bran
 | Phase / branch | Window | Outcome and done-when | Risks / criteria | Overrun response |
 |---|---|---|---|---|
 | **P0 — Stack and access foundation** `build/foundation` | 0–2 h | All selected tools configured, including CodeRabbit, Entire, DevRelay, GitHub Actions, and Excalidraw; model/API/hosting access proved or fallback explicitly recorded. | R01–03; prerequisites for AC04, 05, 07 | Stop speculative provider debugging at gate; use documented branch. Toolchain setup stays inside this window. |
-| **P1 — Complete frontend experience** `build/experience` | 2–7 h | Full fixture journey, synchronized player, responsive states and first public deployment. | R07, 10; AC07, 10, 13, 18 | Cut decorative motion; preserve full journey. |
+| **P1 — Complete frontend experience** `build/experience` | Original 2–7 h; extension +290 min pending budget decision | Full fixture journey, pause/resume contract, Nocturne Pulse theme, visual movement recap, synchronized player, responsive states and first public deployment. | R07, 10; AC07, 10, 12, 13, 18 | Preserve pause semantics and visual result comprehension; cut background variants and extra decorative effects first. |
 | **P2 — Real recording and movement engine** `build/movement` | 7–11 h | Real capture, four detectors, compression and exact Sketch Hook pass. | R05, 06; AC01, 02, 09 | Tune against one real trace; no additional event types. |
 | **P3 — Sponsor-backed Soundprint** `build/soundprint` | 11–15 h | Live provider adapters, quota/job controls, genuine prepared Studio result and verified provenance. | R02, 04, 08; AC03–06, 08, 15, 17, 18 | Use documented fallback; record failed criteria; freeze at hour 15. |
 | **P4 — Release verification** `build/release` | 15–17 h | Privacy, accessibility, responsive and failure checks; final deployed release. | R08, 09; AC11–14 | Fix required failures only. |
@@ -1233,6 +1234,20 @@ Every row depends on the immediately preceding step unless stated otherwise. Min
 | **P1.4 — 50** | EDIT: Route–Sound Graph, Movement Story and honest sponsor/provenance regions. | Marker selection aligns views; intended mappings are labeled as such. | AC10, 18 — `Add movement markers and Soundprint explanations` |
 | **P1.5 — 50** | EDIT: fixture recording/generation flow and every required state. | State matrix covers permission, loading, partial, invalid, quota and provider failure. No fake live success. | AC06, 11, 18 — `Implement recording and generation interface states` |
 | **P1.6 — 50** | VERIFY: user reviews full experience; agent makes targeted hierarchy/mobile revisions. | Complete fixture experience accepted; 390/1280 layouts usable. Cut decoration if behind. | AC12, 13 — `Refine the mobile Soundprint experience` |
+
+#### Phase 1 UI/UX extension — 290 planned minutes
+
+This extension was requested on October 9, 2026 and is documented in `Docs/PHASE_1_UI_UX_PLAN.md`. P1.8 through P1.13 are in the working tree and are not committed. The 290-minute budget decision is still open. P1.7 was not a separate implementation step; its decisions are the plan document. No row is Done until a commit hash exists.
+
+| ID / min | Category; action and planned area | Verification / done-when / fallback | AC and proposed commit |
+|---|---|---|---|
+| **P1.7 — 30** | EDIT: lock pause semantics, Nocturne Pulse art direction, result wireframes, and permitted analytics. | One target flow, one theme, and one source definition for every displayed value. | AC11–14, 18 — `Plan the pause journey and visual Soundprint extension` |
+| **P1.8 — 45** | EDIT: practice pause, paused restoration, active/break clocks, safe end, and usable-fix resume. | A paused fixture restores and resumes into a new segment without invented movement. | AC11–14, 18 — `Add pause and resume states to the walk journey` |
+| **P1.9 — 40** | EDIT: typed movement summary, segments, gaps, pace buckets, event counts, quality state, and fixture validation. | Each result visual has valid data and a tested unavailable state. | AC09, 14, 18 — `Add honest movement summaries to the Soundprint contract` |
+| **P1.10 — 45** | EDIT: apply the midnight/cyan/violet/amber/coral theme without changing the two-destination structure. | Semantic color and text states pass contrast and remain coherent at target widths. | AC12, 13 — `Apply the Nocturne Pulse visual system` |
+| **P1.11 — 55** | EDIT: visual stats, segmented route, movement ribbon, event distribution, and richer synchronized cards. | The result is understandable visually, accessible in text, and stays within 500 ms of the audio clock. | AC10, 12, 13, 18 — `Turn the Soundprint result into a visual journey recap` |
+| **P1.12 — 40** | EDIT: one SVG walker motif and route-to-Soundprint transformation across ready, recording, paused, generation, and playback. | Motion communicates state, stops when irrelevant, and has static reduced-motion equivalents. | AC10, 12, 13 — `Animate the walk to Soundprint transformation` |
+| **P1.13 — 35** | VERIFY: regression, accessibility, responsive, restoration, synchronization, motion, and performance checks. | Required tests pass at 360–1280 px and the Step 5 performance delta is recorded. | AC10–14, 18 — `Verify the upgraded walk and Soundprint experience` |
 
 ### P2 — 240 minutes
 
@@ -1374,9 +1389,9 @@ The Phase 1 frontend that this handoff now starts from is the landing and practi
 | Status | **IN PROGRESS** |
 | Current phase | P1 — Complete frontend experience |
 | Last completed step | Frontend polishing step 5 — verification and rebaseline |
-| Next step | P2.0 — publish the shell and health endpoint, after this branch is pushed. |
+| Next step | Decide the 290-minute budget, then start P2.0. The frontend extension and Daylight are on `build/experience`. |
 | Current execution branch | `build/experience` |
-| Last execution commit | `d7988b4` |
+| Last execution commit | `847a294` |
 | Existing baseline commit | `22df0e7` |
 | Last PR | NONE |
 | Live URL | NOT YET DEPLOYED |
@@ -1384,7 +1399,7 @@ The Phase 1 frontend that this handoff now starts from is the landing and practi
 | Active build time used | 0 hours recorded |
 | Active build time remaining | 20 hours maximum |
 | New build spend recorded | $0 |
-| Known blockers | Public Render URL is deferred to P2.0; Gemma arrangement is still unproved; CodeRabbit GitHub App install is unconfirmed |
+| Known blockers | The Phase 1 extension adds about 290 minutes without a budget change; public Render URL is deferred to P2.0; Gemma arrangement is still unproved; CodeRabbit GitHub App install is unconfirmed |
 
 Update this section after every completed step or meaningful interruption.
 
@@ -1407,7 +1422,7 @@ Feature freeze: Build hour 15, at 75%
 Autonomy: A1 — agent edits; user runs commands and controls Git/deployment
 Status: IN PROGRESS
 Last completed: Frontend polishing step 5 — verification and rebaseline
-Next step: P2.0 — publish the shell and health endpoint, after this branch is pushed. The experience contract is Docs/FRONTEND_EXPERIENCE.md.
+Next step: Decide the 290-minute budget, then start P2.0. The frontend extension and Daylight are on build/experience. The plan is Docs/PHASE_1_UI_UX_PLAN.md and the measured notes are in Docs/HANDOFF_2.md.
 Active phase: P1 — Complete frontend experience
 Branch: build/experience
 Live URL: NOT YET DEPLOYED

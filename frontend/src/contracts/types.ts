@@ -17,6 +17,12 @@ export const MAPPING_STATUSES = [
 
 export const EVENT_TYPES = ["turn", "pace_change", "pause", "loop"] as const;
 
+export const QUALITY_GRADES = ["clear", "mixed", "limited"] as const;
+
+export const PACE_QUALITIES = ["clear", "uncertain"] as const;
+
+export const UNCERTAIN_REASONS = ["visibility", "signal"] as const;
+
 export const AUDIO_FORMATS = ["audio/mpeg", "audio/wav"] as const;
 
 export type GenerationMode = (typeof GENERATION_MODES)[number];
@@ -24,6 +30,57 @@ export type SourceCategory = (typeof SOURCE_CATEGORIES)[number];
 export type MappingStatus = (typeof MAPPING_STATUSES)[number];
 export type EventType = (typeof EVENT_TYPES)[number];
 export type AudioFormat = (typeof AUDIO_FORMATS)[number];
+export type QualityGrade = (typeof QUALITY_GRADES)[number];
+export type PaceQuality = (typeof PACE_QUALITIES)[number];
+export type UncertainReason = (typeof UNCERTAIN_REASONS)[number];
+
+export type PaceSample = {
+  t_ms: number;
+  pace: number;
+  quality: PaceQuality;
+};
+
+export type RecordingSegment = {
+  id: string;
+  start_ms: number;
+  end_ms: number;
+  distance_m: number;
+};
+
+export type ManualBreakInterval = {
+  id: string;
+  start_ms: number;
+  end_ms: number;
+};
+
+export type UncertainInterval = {
+  id: string;
+  start_ms: number;
+  end_ms: number;
+  reason: UncertainReason;
+};
+
+export type EventCounts = {
+  turn: number;
+  pause: number;
+  pace_change: number;
+  loop: number;
+};
+
+export type MovementSummary = {
+  active_duration_ms: number;
+  elapsed_duration_ms: number;
+  manual_break_duration_ms: number;
+  distance_m: number;
+  average_moving_speed_mps: number | null;
+  pace_series: PaceSample[];
+  recording_segments: RecordingSegment[];
+  break_intervals: ManualBreakInterval[];
+  uncertain_intervals: UncertainInterval[];
+  event_counts: EventCounts;
+  return_proximity?: number;
+  quality_grade: QualityGrade;
+};
 
 export type Provenance = {
   source_category: SourceCategory;
@@ -85,6 +142,7 @@ export type SoundprintResult = {
   chapters: Chapter[];
   arrangement: ArrangementPlan;
   story: { cards: StoryCard[] };
+  movement_summary: MovementSummary;
   quality: { usable: boolean; summary: string };
   warnings: string[];
   mapping_verification: MappingCheck[];

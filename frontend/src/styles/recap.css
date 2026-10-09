@@ -1,0 +1,301 @@
+.walk-title-row {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.glance-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--space-2);
+  margin: 0;
+}
+
+.glance-tile {
+  margin: 0;
+  padding: var(--space-2);
+  background: var(--color-surface);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-1);
+}
+
+.glance-tile dt {
+  color: var(--color-text-muted);
+  font-size: var(--font-size-1);
+}
+
+.glance-tile dd {
+  margin: 0;
+  font-size: var(--font-size-3);
+  font-variant-numeric: tabular-nums;
+}
+
+.glance-active {
+  border-top: 3px solid var(--color-route);
+}
+
+.glance-elapsed {
+  border-top: 3px solid var(--color-text-muted);
+}
+
+.glance-distance {
+  border-top: 3px solid var(--color-route);
+}
+
+.glance-moments {
+  border-top: 3px solid var(--color-event);
+}
+
+.route-figure {
+  position: relative;
+}
+
+.route-layer {
+  grid-area: 1 / 1;
+}
+
+.route-gap {
+  fill: none;
+  stroke-width: 1.4;
+  stroke-linecap: round;
+}
+
+.route-gap[data-kind="break"] {
+  stroke: var(--color-pause);
+  stroke-dasharray: 2 2;
+}
+
+.route-gap[data-kind="uncertain"] {
+  stroke: var(--color-line);
+  stroke-dasharray: 0.8 1.6;
+}
+
+.route-loop {
+  fill: none;
+  stroke: var(--color-music);
+  stroke-width: 0.7;
+}
+
+.route-path[data-pace="steady"] {
+  stroke: var(--color-music);
+}
+
+.route-path[data-pace="energetic"] {
+  stroke: var(--color-event);
+}
+
+.route-path[data-pace="uncertain"] {
+  stroke: var(--color-line);
+}
+
+.route-marker {
+  cursor: pointer;
+}
+
+.route-marker.is-current .route-turn,
+.route-marker.is-current .route-pace,
+.route-marker.is-current .route-pause,
+.route-marker.is-current .route-loop {
+  stroke: var(--color-text);
+  stroke-width: 1.2;
+}
+
+.ribbon {
+  position: relative;
+  height: 4.5rem;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-1);
+  background: var(--color-surface);
+  overflow: hidden;
+}
+
+.ribbon-band,
+.ribbon-chapter,
+.ribbon-event,
+.ribbon .graph-playhead {
+  position: absolute;
+}
+
+.ribbon-band {
+  bottom: 0;
+}
+
+.ribbon-segment {
+  background: var(--color-route);
+}
+
+.ribbon-break {
+  background: var(--color-pause);
+}
+
+.ribbon-uncertain {
+  background: repeating-linear-gradient(135deg, var(--color-line) 0 2px, transparent 2px 6px);
+}
+
+.ribbon-chapter {
+  top: 0;
+  bottom: 0;
+  width: 1px;
+  background: var(--color-text-muted);
+}
+
+.ribbon-event {
+  top: 6px;
+  width: 8px;
+  height: 8px;
+  margin-left: -4px;
+  background: var(--color-event);
+}
+
+.ribbon-event.is-current {
+  outline: 2px solid var(--color-text);
+  outline-offset: 2px;
+}
+
+.mapping-list button.moment-card {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  align-items: center;
+}
+
+.moment-glyph {
+  width: 2rem;
+  height: 2rem;
+}
+
+.moment-wave {
+  fill: var(--color-music);
+}
+
+.moment-copy {
+  display: grid;
+  gap: 2px;
+}
+
+.composition-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: var(--space-2);
+}
+
+.composition-track {
+  display: block;
+  height: 8px;
+  margin-top: var(--space-1);
+  background: var(--color-surface-raised);
+}
+
+.composition-fill {
+  display: block;
+  height: 100%;
+  background: var(--color-music);
+}
+
+.composition-turn,
+.composition-pace_change {
+  background: var(--color-event);
+}
+
+.composition-pause {
+  background: var(--color-pause);
+}
+
+.composition-loop {
+  background: var(--color-route);
+}
+
+.walker-head,
+.walker-body,
+.walker-arm,
+.walker-leg {
+  fill: none;
+  stroke: var(--color-text);
+  stroke-width: 1.6;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.generation-figure svg {
+  display: block;
+  width: min(100%, 18rem);
+  height: auto;
+}
+
+.generation-cover {
+  fill: var(--color-surface-raised);
+  stroke: var(--color-line);
+}
+
+.generation-route {
+  fill: none;
+}
+
+@media (min-width: 64rem) {
+  .glance-grid {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .route-path {
+    stroke-dasharray: 100;
+    stroke-dashoffset: 100;
+    animation: route-draw 700ms var(--ease-standard) forwards;
+  }
+
+  .walker-ready .walker-leg-a,
+  .walker-ready .walker-leg-b {
+    transform-box: fill-box;
+    transform-origin: center;
+    animation: walker-step 800ms var(--ease-standard) 1;
+  }
+
+  .walker-stride .walker-leg-a,
+  .walker-stride .walker-leg-b,
+  .route-cursor.is-playing .walker-leg-a,
+  .route-cursor.is-playing .walker-leg-b {
+    transform-box: fill-box;
+    transform-origin: center;
+    animation: walker-step 700ms var(--ease-standard) infinite alternate;
+    animation-play-state: paused;
+  }
+
+  html:not(.is-background) .walker-frame.is-onstage .walker-stride .walker-leg-a,
+  html:not(.is-background) .walker-frame.is-onstage .walker-stride .walker-leg-b,
+  html:not(.is-background) .route-figure.is-onstage .route-cursor.is-playing .walker-leg-a,
+  html:not(.is-background) .route-figure.is-onstage .route-cursor.is-playing .walker-leg-b {
+    animation-play-state: running;
+  }
+
+  .route-marker.is-current {
+    animation: event-pulse 400ms var(--ease-standard) 1;
+  }
+}
+
+@keyframes route-draw {
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+
+@keyframes walker-step {
+  from {
+    transform: rotate(-12deg);
+  }
+
+  to {
+    transform: rotate(12deg);
+  }
+}
+
+@keyframes event-pulse {
+  from {
+    opacity: 0.45;
+  }
+
+  to {
+    opacity: 1;
+  }
+}
