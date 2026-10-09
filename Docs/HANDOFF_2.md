@@ -3,8 +3,8 @@
 Step-by-step record of what actually happened. The locked plan stays in `Docs/HANDOFF_1.md`. This file is the place to read after a step is finished.
 
 **Status:** P1 continues locally. The public Render deploy is the first activity of P2. CodeRabbit GitHub App install is still unconfirmed.  
-**Next step:** P1.4 on `build/experience`.  
-**Last completed step:** P1.3 synchronized playback — `23c247b`. Public deploy is P2.0.  
+**Next step:** P1.5 on `build/experience`.  
+**Last completed step:** P1.4 movement markers and explanations — `466a238`. Public deploy is P2.0.  
 **Active build time:** 0 of 20 hours recorded. This session was not measured.
 
 Execution notes stay in this file. The diagram and write-up path are under `Docs/`. Each **Notes** section is filled only after that step is finished.
@@ -88,7 +88,7 @@ Check the ElevenLabs key, model, balance, and usage rights, and confirm Render c
 **Branch:** `build/experience`  
 **Window:** Build hours 2–7 (300 minutes)  
 **Outcome:** A full fixture journey, synchronized player, responsive states, and the first public deployment.  
-**Phase note:** P1.1 is committed as `33e8a8c`. P1.2 is committed as `a7ac1ab`. P1.3 is committed as `23c247b`. On October 9, 2026 the user moved the public Render deploy to the start of P2.
+**Phase note:** P1.1 is committed as `33e8a8c`. P1.2 is committed as `a7ac1ab`. P1.3 is committed as `23c247b`. P1.4 is committed as `466a238`. On October 9, 2026 the user moved the public Render deploy to the start of P2.
 
 ### P1.1 — Build the Soundprint interface and fixture contracts
 
@@ -136,15 +136,16 @@ Add the audio player, SVG route, and scrubbing, driven by one audio clock and de
 
 ### P1.4 — Add movement markers and Soundprint explanations
 
-**Status:** Not started  
+**Status:** Done  
 **Kind:** Edit · 50 minutes · AC-10, AC-18  
-**Commit subject:** Add movement markers and Soundprint explanations
+**Commit subject:** Add movement markers and Soundprint explanations  
+**Commit:** `466a238`
 
 Add the Route–Sound Graph, Movement Story, and sponsor and provenance labels.
 
 **Done when.** Choosing a marker moves the route, graph, and story together, and planned mappings are labeled as planned.
 
-**Notes.** Not implemented.
+**Notes.** Committed as `466a238`. The graph, story cards, and route share the existing audio clock. Choosing the turn mapping seeks that clock, and the route cursor, graph playhead, and story time stay within 500 ms of one another. Mapping status stays the fixture value `planned`. Sponsor copy says this synthetic fixture did not call Gemma or ElevenLabs, and that Render is the planned host while this screen is local. `npm run typecheck`, `npm run lint`, and `npm run format` passed. `npm test` passed, 11 tests. No active time was measured.
 
 ### P1.5 — Implement recording and generation interface states
 
