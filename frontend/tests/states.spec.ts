@@ -2,6 +2,7 @@ import { expect, test } from "@playwright/test";
 
 test("recording and generation previews stay honest", async ({ page }) => {
   await page.goto("/");
+  await page.getByRole("button", { name: "Show recording preview states" }).click();
   await page.getByRole("button", { name: "Permission" }).click();
   const permission = page.getByRole("alert");
   await expect(permission).toContainText("Location access was denied");
@@ -19,6 +20,7 @@ test("recording and generation previews stay honest", async ({ page }) => {
   await expect(invalid.getByRole("link", { name: "Play example" })).toBeVisible();
 
   await page.goto("/studio");
+  await page.getByRole("button", { name: "Show generation preview states" }).click();
   await page.getByRole("button", { name: "Processing" }).click();
   const processing = page.getByRole("status", { name: "Processing" });
   await expect(processing).toContainText("Processing movement");

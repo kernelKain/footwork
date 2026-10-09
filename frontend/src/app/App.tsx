@@ -22,7 +22,8 @@ export function App() {
     </section>
   );
   if (path === "/") screen = <WalkScreen onNavigate={navigate} />;
-  if (path === "/studio" && fixture.ok) screen = <StudioScreen fixture={fixture.value} />;
+  if (path === "/studio" && fixture.ok)
+    screen = <StudioScreen fixture={fixture.value} onNavigate={navigate} />;
   if (path === "/about") screen = <AboutScreen />;
 
   return (

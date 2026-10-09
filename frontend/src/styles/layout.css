@@ -46,6 +46,29 @@
   font-size: 0.875rem;
 }
 
+@media (max-width: 40rem) {
+  .app-header {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    align-items: center;
+  }
+
+  .brand {
+    grid-column: 1;
+    grid-row: 1;
+  }
+
+  .mode-badge {
+    grid-column: 2;
+    grid-row: 1;
+  }
+
+  .app-nav {
+    grid-column: 1 / -1;
+    grid-row: 2;
+  }
+}
+
 .app-main {
   width: min(100% - var(--space-4), 56rem);
   margin: 0 auto;

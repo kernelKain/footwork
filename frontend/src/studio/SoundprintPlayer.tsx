@@ -23,10 +23,6 @@ export function SoundprintPlayer({
   return (
     <section className="player panel" aria-labelledby="player-title">
       <h2 id="player-title">Playback</h2>
-      <p>
-        Deterministic sketch generated in the browser. The tone falls until the corner, then rises.
-        The hold is silent. This is not ElevenLabs audio.
-      </p>
       <div className="player-controls">
         <button type="button" className="action" onClick={onToggle}>
           {playing ? "Pause" : "Play"}
@@ -45,6 +41,10 @@ export function SoundprintPlayer({
         aria-label="Scrub Soundprint"
         onInput={(event) => onSeek(Number(event.currentTarget.value))}
       />
+      <p>
+        Deterministic sketch generated in the browser. The tone falls until the corner, then rises.
+        The hold is silent. This is not ElevenLabs audio.
+      </p>
       {playbackError ? <p role="alert">{playbackError}</p> : null}
       <audio ref={audioRef} src={source} preload="auto" aria-hidden="true" />
     </section>

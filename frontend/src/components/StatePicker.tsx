@@ -1,3 +1,5 @@
+import { useState } from "react";
+
 export function StatePicker<T extends string>({
   legend,
   note,
@@ -11,22 +13,33 @@ export function StatePicker<T extends string>({
   value: T;
   onChange: (id: T) => void;
 }) {
+  const [open, setOpen] = useState(false);
   return (
-    <fieldset className="state-picker">
-      <legend>{legend}</legend>
-      <p className="muted">{note}</p>
-      <div className="state-picker-options">
-        {options.map((option) => (
-          <button
-            key={option.id}
-            type="button"
-            aria-pressed={value === option.id}
-            onClick={() => onChange(option.id)}
-          >
-            {option.label}
-          </button>
-        ))}
-      </div>
-    </fieldset>
+    <section className="state-picker">
+      <button type="button" aria-expanded={open} onClick={() => setOpen((current) => !current)}>
+        {legend}
+      </button>
+      {open ? (
+        <div className="state-picker-body">
+          <p className="muted">{note}</p>
+          <div className="state-picker-options">
+            {options.map((option) => {
+              const selected = value === option.id;
+              return (
+                <button
+                  key={option.id}
+                  type="button"
+                  aria-pressed={selected}
+                  onClick={() => onChange(option.id)}
+                >
+                  {option.label}
+                  {selected ? " Showing" : ""}
+                </button>
+              );
+            })}
+          </div>
+        </div>
+      ) : null}
+    </section>
   );
 }

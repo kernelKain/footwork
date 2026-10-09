@@ -7,8 +7,17 @@
   margin: 0;
   padding: var(--space-2);
   border: 1px solid var(--line);
+}
+
+.state-picker > button {
+  width: 100%;
+  font-weight: 700;
+}
+
+.state-picker-body {
   display: grid;
   gap: var(--space-2);
+  margin-top: var(--space-2);
 }
 
 .state-picker-options {
@@ -87,43 +96,6 @@
   accent-color: var(--mint);
 }
 
-.event-list button {
-  width: 100%;
-  min-height: var(--touch);
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: space-between;
-  gap: var(--space-1);
-  padding: 0;
-  border: 0;
-  background: transparent;
-  color: inherit;
-  font: inherit;
-  text-align: left;
-}
-
-.event-list {
-  list-style: none;
-  margin: 0;
-  padding: 0;
-  display: grid;
-  gap: var(--space-1);
-}
-
-.event-list li.is-active {
-  border-color: var(--gold);
-}
-
-.event-list li {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: space-between;
-  gap: var(--space-1);
-  padding: var(--space-2);
-  background: var(--ink-raised);
-  border: 1px solid var(--line);
-}
-
 .graph-track {
   position: relative;
   height: var(--space-2);
@@ -183,7 +155,8 @@
   border-color: var(--gold);
 }
 
-.story-list {
+.story-list,
+.mapping-list {
   list-style: none;
   margin: 0;
   padding: 0;
@@ -200,7 +173,6 @@
   padding-left: var(--space-3);
 }
 
-.event-list time,
 .mapping-list time,
 .story-list time {
   font-family: var(--font-mono);

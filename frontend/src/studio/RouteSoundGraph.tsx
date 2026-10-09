@@ -64,28 +64,29 @@ export function RouteSoundGraph({
           );
         })}
       </div>
-      <div className="mapping-list">
+      <ol className="mapping-list">
         {result.events.map((event) => {
           const check = result.mapping_verification.find((item) => item.event_id === event.id);
           const active = Math.abs(timeMs - event.audio_offset_ms) <= 500;
           return (
-            <button
-              key={event.id}
-              type="button"
-              className={active ? "is-active" : undefined}
-              onClick={() => onSeek(event.audio_offset_ms)}
-            >
-              <span>{EVENT_LABELS[event.type]}</span>
-              {active ? <span>Now</span> : null}
-              <span>{check?.status ?? "planned"}</span>
-              <span>{check?.note}</span>
-              <time dateTime={`PT${Math.floor(event.audio_offset_ms / 1000)}S`}>
-                {formatTime(event.audio_offset_ms)}
-              </time>
-            </button>
+            <li key={event.id}>
+              <button
+                type="button"
+                className={active ? "is-active" : undefined}
+                onClick={() => onSeek(event.audio_offset_ms)}
+              >
+                <span>{EVENT_LABELS[event.type]}</span>
+                {active ? <span>Now</span> : null}
+                <span>{check?.status ?? "planned"}</span>
+                <span>{check?.note}</span>
+                <time dateTime={`PT${Math.floor(event.audio_offset_ms / 1000)}S`}>
+                  {formatTime(event.audio_offset_ms)}
+                </time>
+              </button>
+            </li>
           );
         })}
-      </div>
+      </ol>
     </section>
   );
 }

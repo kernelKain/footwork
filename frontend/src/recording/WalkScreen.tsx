@@ -36,13 +36,6 @@ export function WalkScreen({ onNavigate }: WalkScreenProps) {
           </a>
         </div>
       </section>
-      <StatePicker
-        legend="Recording preview"
-        note="These states are a fixture. They do not request location or store a walk."
-        options={WALK_STATES}
-        value={state}
-        onChange={setState}
-      />
       {state === "empty" ? (
         <section className="panel" aria-labelledby="recording-title">
           <h2 id="recording-title">Recording</h2>
@@ -95,6 +88,13 @@ export function WalkScreen({ onNavigate }: WalkScreenProps) {
           <p>Return to this tab before recording continues. This preview is not recording.</p>
         </StateMessage>
       ) : null}
+      <StatePicker
+        legend="Show recording preview states"
+        note="These states are a fixture. They do not request location or store a walk."
+        options={WALK_STATES}
+        value={state}
+        onChange={setState}
+      />
     </div>
   );
 }

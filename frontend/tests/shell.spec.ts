@@ -35,6 +35,18 @@ for (const width of [390, 1280]) {
     await page.goto("/studio");
     await expect(page.getByRole("status")).toContainText("Synthetic fixture");
     await expect(page.getByRole("img", { name: "Synthetic route" })).toBeVisible();
+    const routeBox = await page.getByRole("img", { name: "Synthetic route" }).boundingBox();
+    const playBox = await page.getByRole("button", { name: "Play" }).boundingBox();
+    const statesBox = await page
+      .getByRole("button", { name: "Show generation preview states" })
+      .boundingBox();
+    expect(routeBox).not.toBeNull();
+    expect(playBox).not.toBeNull();
+    expect(statesBox).not.toBeNull();
+    expect(playBox!.y).toBeLessThan(routeBox!.y);
+    expect(routeBox!.y).toBeLessThan(statesBox!.y);
+    expect(routeBox!.x).toBeGreaterThanOrEqual(0);
+    expect(routeBox!.x + routeBox!.width).toBeLessThanOrEqual(width + 1);
     await expect(page.getByRole("listitem").filter({ hasText: "Turn" })).toBeVisible();
     await expect(page.getByRole("listitem").filter({ hasText: "Pause" })).toBeVisible();
     const example = page.getByRole("link", { name: "Soundprint" });
@@ -47,10 +59,17 @@ for (const width of [390, 1280]) {
     await page.goto("/");
     const play = page.getByRole("link", { name: "Play example" });
     await expect(play).toBeVisible();
-    const playBox = await play.boundingBox();
-    expect(playBox).not.toBeNull();
-    expect(playBox!.x).toBeGreaterThanOrEqual(0);
-    expect(playBox!.x + playBox!.width).toBeLessThanOrEqual(width + 1);
+    const recordingBox = await page.getByRole("heading", { name: "Recording" }).boundingBox();
+    const previewBox = await page
+      .getByRole("button", { name: "Show recording preview states" })
+      .boundingBox();
+    expect(recordingBox).not.toBeNull();
+    expect(previewBox).not.toBeNull();
+    expect(recordingBox!.y).toBeLessThan(previewBox!.y);
+    const exampleBox = await play.boundingBox();
+    expect(exampleBox).not.toBeNull();
+    expect(exampleBox!.x).toBeGreaterThanOrEqual(0);
+    expect(exampleBox!.x + exampleBox!.width).toBeLessThanOrEqual(width + 1);
     await expectNoHorizontalOverflow(page);
   });
 }

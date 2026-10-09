@@ -21,7 +21,7 @@ test("scrubbing and marker selection stay within 500 ms of the audio clock", asy
   expect(Math.abs(scrubbed - 18000)).toBeLessThanOrEqual(500);
   expect(Math.abs(scrubbedAudio - scrubbed)).toBeLessThanOrEqual(500);
 
-  await page.locator(".event-list").getByRole("button", { name: /Pause/ }).click();
+  await page.locator(".mapping-list").getByRole("button", { name: /Pause/ }).click();
   const paused = Number(await cursor.getAttribute("data-time-ms"));
   const pausedAudio = await page.locator("audio").evaluate((element) => {
     const audio = element as HTMLAudioElement;
@@ -29,7 +29,7 @@ test("scrubbing and marker selection stay within 500 ms of the audio clock", asy
   });
   expect(Math.abs(paused - 36000)).toBeLessThanOrEqual(500);
   expect(Math.abs(pausedAudio - paused)).toBeLessThanOrEqual(500);
-  await expect(page.locator(".event-list").getByRole("button", { name: /Pause/ })).toContainText(
+  await expect(page.locator(".mapping-list").getByRole("button", { name: /Pause/ })).toContainText(
     "Now",
   );
 });
