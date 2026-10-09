@@ -1,0 +1,50 @@
+{
+  "cli_version": "0.11.4",
+  "checkpoint_id": "01M4FD58GX1HHGDQ0XD237ZEWF",
+  "strategy": "manual-commit",
+  "branch": "build/experience",
+  "checkpoints_count": 1,
+  "files_touched": [
+    "Docs/HANDOFF_1.md",
+    "Docs/HANDOFF_2.md",
+    "fixtures/synthetic/soundprint-shell.json",
+    "frontend/.prettierignore",
+    "frontend/src/App.tsx",
+    "frontend/src/app/AboutScreen.tsx",
+    "frontend/src/app/App.tsx",
+    "frontend/src/app/useRoute.ts",
+    "frontend/src/components/AppHeader.tsx",
+    "frontend/src/components/Notice.tsx",
+    "frontend/src/contracts/demoFixture.ts",
+    "frontend/src/contracts/types.ts",
+    "frontend/src/contracts/validate.ts",
+    "frontend/src/main.tsx",
+    "frontend/src/recording/WalkScreen.tsx",
+    "frontend/src/studio/RouteFigure.tsx",
+    "frontend/src/studio/StudioScreen.tsx",
+    "frontend/src/studio/formatTime.ts",
+    "frontend/src/styles.css",
+    "frontend/src/styles/layout.css",
+    "frontend/src/styles/screens.css",
+    "frontend/src/styles/tokens.css",
+    "frontend/tests/fixture-contract.spec.ts",
+    "frontend/tests/shell.spec.ts",
+    "frontend/tsconfig.app.json"
+  ],
+  "sessions": [
+    {
+      "metadata": "/0/metadata.json",
+      "transcript": "/0/full.jsonl",
+      "compact_transcript": "/0/transcript.jsonl",
+      "content_hash": "/0/content_hash.txt",
+      "prompt": "/0/prompt.txt"
+    }
+  ],
+  "token_usage": {
+    "input_tokens": 156155,
+    "cache_creation_tokens": 0,
+    "cache_read_tokens": 2372608,
+    "output_tokens": 11366,
+    "api_call_count": 1
+  }
+}
