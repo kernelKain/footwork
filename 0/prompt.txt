@@ -6,14 +6,6 @@ Stage the changes you worked on and create a commit for this branch.
 - Write a concise commit message.
 - Do not push.
 - Do not include unrelated files in the commit.
-<timestamp>Friday, Oct 9, 2026, 10:08 AM (UTC+5:30)</timestamp>
-
-Execute the selected diff-tab commit action.
-
----
-
-move to next
-
----
+<timestamp>Friday, Oct 9, 2026, 10:23 AM (UTC+5:30)</timestamp>
 
 Execute the selected diff-tab commit action.
