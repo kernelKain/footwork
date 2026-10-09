@@ -1,0 +1,71 @@
+{
+  "cli_version": "0.11.4",
+  "checkpoint_id": "01M4FFACFD52KSYD9NT3H22XAE",
+  "session_id": "f606ef08-f4c6-4cd9-96ce-d3336f16d665",
+  "strategy": "manual-commit",
+  "created_at": "2026-10-09T04:39:13.430726384Z",
+  "branch": "build/experience",
+  "checkpoints_count": 2,
+  "save_step_count": 1,
+  "files_touched": [
+    "frontend/src/components/StateMessage.tsx",
+    "frontend/src/components/StatePicker.tsx",
+    "frontend/src/recording/WalkScreen.tsx",
+    "frontend/src/studio/GenerationStateBody.tsx",
+    "frontend/src/studio/StudioScreen.tsx",
+    "frontend/src/styles/screens.css",
+    "frontend/tests/states.spec.ts"
+  ],
+  "agent": "Cursor",
+  "model": "grok-4.7-high",
+  "turn_id": "a7fbe0198fac",
+  "checkpoint_transcript_start": 174,
+  "transcript_lines_at_start": 174,
+  "compact_transcript_start": 31,
+  "token_usage": {
+    "input_tokens": 337835,
+    "cache_creation_tokens": 0,
+    "cache_read_tokens": 1048448,
+    "output_tokens": 4942,
+    "api_call_count": 1
+  },
+  "session_metrics": {
+    "turn_count": 10,
+    "context_tokens": 237610,
+    "context_window_size": 256000
+  },
+  "initial_attribution": {
+    "calculated_at": "2026-10-09T04:39:13.373916713Z",
+    "agent_lines": 378,
+    "agent_removed": 76,
+    "human_added": 0,
+    "human_modified": 0,
+    "human_removed": 0,
+    "total_committed": 378,
+    "total_lines_changed": 454,
+    "agent_percentage": 100,
+    "metric_version": 2
+  },
+  "prompt_attributions": [
+    {
+      "checkpoint_number": 1,
+      "user_lines_added": 269,
+      "user_lines_removed": 0,
+      "agent_lines_added": 0,
+      "agent_lines_removed": 0,
+      "user_added_per_file": {
+        ".opencode/plugins/entire.ts": 269
+      }
+    },
+    {
+      "checkpoint_number": 2,
+      "user_lines_added": 269,
+      "user_lines_removed": 0,
+      "agent_lines_added": 384,
+      "agent_lines_removed": 82,
+      "user_added_per_file": {
+        ".opencode/plugins/entire.ts": 269
+      }
+    }
+  ]
+}
