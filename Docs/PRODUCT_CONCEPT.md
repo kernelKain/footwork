@@ -4,6 +4,8 @@
 
 **Brand line:** Your route is the score. Your movement is the performance.
 
+The public journey for this build is: Understand Footwork, start walking, record safely, end the walk, generate, and hear the Soundprint. Page structure, plain-language copy, and the interface states are in `Docs/FRONTEND_EXPERIENCE.md`. Where this concept is broader than that file or `Docs/HANDOFF_1.md` — extra moods, MapLibre, or a longer track — those implementation documents win.
+
 ---
 
 ## Product Summary

@@ -2,9 +2,9 @@
 
 Step-by-step record of what actually happened. The locked plan stays in `Docs/HANDOFF_1.md`. This file is the place to read after a step is finished.
 
-**Status:** P1 continues locally. The public Render deploy is the first activity of P2. CodeRabbit GitHub App install is still unconfirmed.  
-**Next step:** Accept the fixture journey at 390 px and 1280 px. Public deploy stays P2.0.  
-**Last completed step:** P1.6 mobile layout committed as `4d3e9d1`, awaiting acceptance. Public deploy is P2.0.  
+**Status:** P1 continues locally. The public experience contract is `Docs/FRONTEND_EXPERIENCE.md`. The public Render deploy is the first activity of P2. CodeRabbit GitHub App install is still unconfirmed.  
+**Next step:** Frontend polishing step 2 is not started.  
+**Last completed step:** Frontend polishing step 1, in this commit. P1.6 layout remains `4d3e9d1`. Public deploy is P2.0.  
 **Active build time:** 0 of 20 hours recorded. This session was not measured.
 
 Execution notes stay in this file. The diagram and write-up path are under `Docs/`. Each **Notes** section is filled only after that step is finished.
@@ -171,7 +171,25 @@ The user reviews the full fixture experience. Revise hierarchy and mobile layout
 
 **Done when.** The fixture journey is accepted and usable at 390 px and 1280 px.
 
-**Notes.** Committed as `4d3e9d1`. The Soundprint now leads with the synthetic label, Play, and the route. Generation preview states sit behind a disclosure after the route, graph, story, and provenance. The separate movement-event list is gone because the graph already seeks those markers. The walk screen shows the empty recording before its preview-state disclosure. A selected preview state says Showing, not only a gold border. The narrow header places the mode badge beside the name. `npm run typecheck`, `npm run lint`, and `npm run format` passed. `npm test` passed, 12 tests, including route-before-states order and no horizontal overflow at 390 px and 1280 px. The fixture journey is not yet accepted by the user. No active time was measured.
+**Notes.** Committed as `4d3e9d1`. The Soundprint now leads with the synthetic label, Play, and the route. Generation preview states sit behind a disclosure after the route, graph, story, and provenance. The separate movement-event list is gone because the graph already seeks those markers. The walk screen shows the empty recording before its preview-state disclosure. A selected preview state says Showing, not only a gold border. The narrow header places the mode badge beside the name. `npm run typecheck`, `npm run lint`, and `npm run format` passed. `npm test` passed, 12 tests, including route-before-states order and no horizontal overflow at 390 px and 1280 px. The user then approved a frontend-polishing plan instead of closing this step by acceptance. The public contract that replaces this shell is `Docs/FRONTEND_EXPERIENCE.md`. No active time was measured.
+
+---
+
+## Frontend polishing
+
+The user approved this plan on October 9, 2026, on `build/experience`. It does not replace the Hook, the stack, or the phase order. Step 1 is documentation only.
+
+### Step 1 — Rebaseline the frontend experience and visual direction
+
+**Status:** Done  
+**Kind:** Edit · documentation  
+**Commit subject:** Rebaseline the frontend experience and visual direction
+
+Write the public flow, page contract, plain-language copy, state model, and design-research notes. Do not change components.
+
+**Done when.** `Docs/FRONTEND_EXPERIENCE.md`, `Docs/HANDOFF_1.md`, `Docs/HANDOFF_2.md`, and `Docs/PRODUCT_CONCEPT.md` agree on the public journey, and no frontend component was edited.
+
+**Notes.** This commit adds `Docs/FRONTEND_EXPERIENCE.md` and aligns the handoff and product concept with that contract. No frontend component was edited. `.opencode/` and `.playwright-mcp/` stayed untracked. No active time was measured.
 
 ---
 
@@ -180,7 +198,7 @@ The user reviews the full fixture experience. Revise hierarchy and mobile layout
 **Branch:** `build/movement`  
 **Window:** Build hours 7–11 (240 minutes)  
 **Outcome:** Real capture, four detectors, compression, and an exact Route Sketch Hook.  
-**Phase note:** Not started. The public shell deploy was added at the start of this phase on October 9, 2026. P1 continues locally until then.
+**Phase note:** Not started. The public shell deploy was added at the start of this phase on October 9, 2026. P1 continues locally until then. The recording adapter for this phase is geolocation, Screen Wake Lock, IndexedDB recovery, and a monotonic timer, using the public states in `Docs/FRONTEND_EXPERIENCE.md`.
 
 ### P2.0 — Publish the shell and health endpoint
 
@@ -273,7 +291,7 @@ The user records the outdoor seed walk. Inspect the derived events and save only
 **Branch:** `build/soundprint`  
 **Window:** Build hours 11–15 (240 minutes)  
 **Outcome:** Live Gemma and Eleven Music adapters, job controls, and one reviewed Studio result. Feature freeze is at the end of this phase.  
-**Phase note:** Not started. Depends on P2.
+**Phase note:** Not started. Depends on P2. Generation uses the stage codes and error codes in `Docs/FRONTEND_EXPERIENCE.md`. Retry is explicit, and the same finished walk does not start a second piece. Transport paths are not fixed.
 
 ### P3.1 — Add protected generation jobs and durable usage limits
 
@@ -354,7 +372,7 @@ Check provider failure, deadline, quota, and fixture parity. Freeze features at 
 **Branch:** `build/release`  
 **Window:** Build hours 15–17 (120 minutes)  
 **Outcome:** Privacy, accessibility, responsive, and failure checks, then the final deployed release.  
-**Phase note:** Not started. Depends on P3. Fixes only. No new features.
+**Phase note:** Not started. Depends on P3. Fixes only. No new features. Checks include integration, accessibility, performance, and device regression for the rebaselined journey.
 
 ### P4.1 — Harden location privacy and generation access controls
 
@@ -411,7 +429,7 @@ The user deploys the reviewed release. Record the smoke check, the rollback comm
 **Branch:** `build/submission`  
 **Window:** Build hours 17–20 (150 minutes, plus a 30-minute emergency buffer)  
 **Outcome:** Demo video, DEV article, README, links, and the final evidence record.  
-**Phase note:** Not started. Depends on P4.
+**Phase note:** Not started. Depends on P4. Sponsor roles and technical provenance belong in the README and submission evidence, not in the application UI.
 
 The 30-minute buffer is not a step. If emergency work happens, add it under the step it belongs to, with its own commit and note.
 

@@ -137,9 +137,9 @@ Use these labels throughout execution:
 - An abstract route with synchronized cursor and markers.
 - A **Route–Sound Graph** showing intended musical mappings.
 - A short **Movement Story**.
-- Explicit provenance and generation mode.
+- A plain label for what the person is hearing: their walk, an example, or a simpler version. Technical provenance stays in metadata and submission evidence, not in a public section.
 
-**Sponsor roles:**
+**Sponsor roles** are real product responsibilities. They are documented in the README and submission evidence, not as sections of the application:
 
 - Gemma: open-weight arrangement director.
 - ElevenLabs: Studio Track production.
@@ -270,23 +270,25 @@ These are not scheduled work.
 - **FR-08:** Generate and inspect Eleven Music audio.
 - **FR-09:** Produce deterministic audio for the same user trace.
 - **FR-10:** Play and scrub all result views together.
-- **FR-11:** Show factual Movement Story and provenance.
+- **FR-11:** Show a factual Movement Story. Keep technical provenance in metadata and submission evidence, not as a public section.
 - **FR-12:** Replay fixtures through the same result interface.
 - **FR-13:** Enforce payload, concurrency, quota and idempotency limits.
 - **FR-14:** Deploy and document a checkable demonstration.
 
 ### Required Visible States
 
-| State | Expected display |
-|---|---|
-| Initial | Product explanation, recording action and example. |
-| Loading | Waiting for position or generation stage. |
-| Empty | No recorded walk; no fabricated statistics. |
-| Success | Valid result with explicit mode. |
-| Partial | Valid trace but insufficient event variety, or Sketch instead of Studio. |
-| Recoverable error | Permission, network or playback problem with next action. |
-| Dependency unavailable | Provider disabled/unavailable; Sketch and cached example offered. |
-| Invalid input | Inadequate or inconsistent movement; explain what was missing. |
+The public names and copy are in `Docs/FRONTEND_EXPERIENCE.md`. This table is the acceptance vocabulary. It maps onto those names rather than adding a second public interface.
+
+| State | Expected display | Public name |
+|---|---|---|
+| Initial | Product explanation, recording action and example. | Ready |
+| Loading | Waiting for position or generation stage. | Checking location, or Processing |
+| Empty | No recorded walk; no fabricated statistics. | Ready, before a walk starts |
+| Success | Valid result with explicit mode. | Complete, with a plain label |
+| Partial | Valid trace but insufficient event variety, or Sketch instead of Studio. | Complete, labeled as a simpler version |
+| Recoverable error | Permission, network or playback problem with next action. | Permission denied, or Recoverable error |
+| Dependency unavailable | Provider disabled/unavailable; Sketch and cached example offered. | Recoverable error, with the example kept separate |
+| Invalid input | Inadequate or inconsistent movement; explain what was missing. | Recoverable error for a short or unclear walk |
 
 No account creation is required.
 
@@ -311,25 +313,27 @@ No account creation is required.
 | Reduced motion | Static route plus active marker and text; no animated travel required |
 | Controls | Intentionally styled, visible focus, labeled icons and usable touch targets |
 
-### Screens (maximum three)
+### Screens (maximum two public destinations)
+
+`Docs/FRONTEND_EXPERIENCE.md` is the public page contract from October 9, 2026. The table below matches it. The code on `build/experience` still has the older three-link header, `/about` page, preview-state controls, and public sponsor and provenance sections until a later polishing step removes them.
 
 | Screen | Purpose/content | Actions | States and Hook relationship |
 |---|---|---|---|
-| `/` — Walk | Explain, record and end a walk; duration and quality indicators | Start/End; Play example; Clear draft | Initial, permission, recording, interruption, invalid trace. Establishes real movement input. |
-| `/studio` — Soundprint | Route, player, graph, story and provenance | Play/Pause; Scrub; Start another walk | Generation, Studio, Sketch, partial and errors. Contains the Hook. |
-| `/about` — How it works | Concise mechanism, privacy limitations, sponsor roles and source link | Back to walk | Makes causality and limitations understandable. |
+| `/` — Walk | Explain the product, record, and end a walk. How it works is `#how-it-works` on this page. | Start walking; Hear an example; End walk | Ready through recording, ending, and recoverable recording errors. |
+| `/studio` — Soundprint | Route, player, graph, and story. No sponsor or provenance sections. | Play/Pause; Scrub; Start another walk | Processing, complete, and generation errors. Contains the Hook. |
+| `/about` | Redirect to `/#how-it-works` once that redirect is built. | None of its own | Not a third destination. |
 
 ### Reusable Regions
 
-- App header and generation-mode badge.
-- Recording status panel.
+- Recording status, in words as well as color.
 - Route canvas built with SVG.
 - Shared player and scrubber.
 - Route–Sound Graph.
 - Movement Story cards.
-- Generation-state panel.
-- Recovery/action notice.
-- Sponsor and provenance details.
+- Recovery notice with a next action.
+- How it works, on `/`.
+
+Developer fixture controls, a global Walk / Soundprint / How it works navigation bar, and public Sponsor or Provenance sections are not part of this region list. Technical provenance stays in fixtures, developer docs, and submission evidence.
 
 ### Quality Floor
 
@@ -841,7 +845,7 @@ Tests are added with the behavior they protect.
 | Provider integration | User-triggered smoke runs | Exact Gemma identity, valid arrangement, genuine Eleven audio and sanitized receipts. | P0, P3 / 04, 05 |
 | Job controls | pytest | Duplicate request, conflicting body, quota exhaustion, restart and unknown provider outcome. | P3 / 15 |
 | Browser journey | Playwright | Fixture journey, recording permission states, generation, playback and scrubbing. | P1–P3 / 01, 10, 11 |
-| Fixture parity | Playwright + contract validation | Identical result renderer across Studio, Sketch and fixture modes; visible provenance. | P3 / 06, 18 |
+| Fixture parity | Playwright + contract validation | Identical result renderer across Studio, Sketch and fixture modes; the plain mode label is visible. Technical provenance stays in the result data. | P3 / 06, 18 |
 | Accessibility | axe-core plus manual keyboard | Core controls, focus, names, contrast and reduced-motion information. | P4 / 12 |
 | Responsive | Playwright screenshots / manual | 390 px and 1280 px, no overflow, usable actions. | P1, P4 / 13 |
 | Privacy/security | Focused artifact/log review | No secrets/raw coordinates in provider payloads, repository or public assets; unauthorized artifact requests denied. | P4 / 14 |
@@ -1232,6 +1236,8 @@ Every row depends on the immediately preceding step unless stated otherwise. Min
 
 On October 9, 2026 the user moved the public Render deploy to the start of this phase. P1 continues locally. P2.0 runs after `build/experience` is pushed and before P2.1.
 
+The public recording states are the names in `Docs/FRONTEND_EXPERIENCE.md`. This phase supplies the real recording adapter: geolocation, Screen Wake Lock, IndexedDB draft recovery, and a monotonic timer. It does not add a public route or an HTTP API for the phone.
+
 | ID / min | Category; action and planned area | Verification / done-when / fallback | AC and proposed commit |
 |---|---|---|---|
 | **P2.0 — user** | RELEASE: create the Render Blueprint from `deploy/render.yaml` on the pushed branch, deploy it manually, and record the public URL. | Public HTTPS page and `/health` both work. No new spend beyond the locked `1c-2g` service. | AC07 — `Record the public shell and health endpoint` |
@@ -1244,6 +1250,8 @@ On October 9, 2026 the user moved the public Render deploy to the start of this 
 
 ### P3 — 240 minutes
 
+The interface consumes the processing stage codes and error codes in `Docs/FRONTEND_EXPERIENCE.md`. Retry is an explicit user action. Submitting the same finished walk again is idempotent. This plan does not fix URL paths or payload shapes for that work.
+
 | ID / min | Category; action and planned area | Verification / done-when / fallback | AC and proposed commit |
 |---|---|---|---|
 | **P3.1 — 40** | EDIT: job endpoints, capability access, atomic ledger, concurrency and idempotency. | Duplicate/restart/quota tests pass; reservation precedes provider dispatch. | AC08, 14, 15 — `Add protected generation jobs and durable usage limits` |
@@ -1254,6 +1262,8 @@ On October 9, 2026 the user moved the public Render deploy to the start of this 
 | **P3.6 — 40** | VERIFY: provider failure, deadline, quota and fixture-parity checks; freeze scope. | Same-trace Sketch works; cached example stays separately labeled; freeze recorded. | AC06, 08, 11, 15, 18 — `Verify provider fallbacks and freeze the feature set` |
 
 ### P4 — 120 minutes
+
+Release checks cover the rebaselined journey: integration, accessibility, performance, and device regression at 390 px and 1280 px. Fixes only.
 
 | ID / min | Category; action and planned area | Verification / done-when / fallback | AC and proposed commit |
 |---|---|---|---|
@@ -1266,7 +1276,7 @@ On October 9, 2026 the user moved the public Render deploy to the start of this 
 
 | ID / min | Category; action and planned area | Verification / done-when / fallback | AC and proposed commit |
 |---|---|---|---|
-| **P5.1 — 45** | EDIT: README, architecture, DevRelay submission draft, AI disclosure and asset-rights notes. Export the Excalidraw architecture diagram for the article. | Mechanism, evidence, limitations and setup are accurate; links resolve. The DEV draft is unpublished until the user reviews it. | AC16 — `Document the architecture demo and AI-assisted development` |
+| **P5.1 — 45** | EDIT: README, architecture, DevRelay submission draft, AI disclosure and asset-rights notes. Export the Excalidraw architecture diagram for the article. Sponsor roles and technical provenance go in the README and submission evidence, not in the application UI. | Mechanism, evidence, limitations and setup are accurate; links resolve. The DEV draft is unpublished until the user reviews it. | AC16 — `Document the architecture demo and AI-assisted development` |
 | **P5.2 — 45** | RELEASE: user records 60-second demo; agent prepares runbook and screenshot references. | Hook appears in first ten seconds; backup video exists; no false live claim. | AC03, 16 — `Add the demonstration assets and judge runbook` |
 | **P5.3 — 45** | RELEASE: final template/tag/link review; user publishes submission and records URL. | Submission checklist complete before deadline. Prioritize links and explanation over polish. | AC16 — `Record the completed challenge submission` |
 | **P5.4 — 15** | VERIFY: update final handoff, acceptance evidence, release reference and remaining limitations. | Final state matches repository/deployment; user commits real verification record. | All — `Record final verification and release status` |
@@ -1360,7 +1370,7 @@ Never add fake metrics, fake testimonials or unlabeled synthetic outputs.
 | Status | **IN PROGRESS** |
 | Current phase | P1 — Complete frontend experience |
 | Last completed step | P1.5 — Implement recording and generation interface states |
-| Next step | Accept the P1.6 fixture journey at 390 px and 1280 px (`4d3e9d1`) |
+| Next step | Frontend polishing step 2 is not started. Step 1 is `Docs/FRONTEND_EXPERIENCE.md`. |
 | Current execution branch | `build/experience` |
 | Last execution commit | `4d3e9d1` |
 | Existing baseline commit | `22df0e7` |
@@ -1393,7 +1403,7 @@ Feature freeze: Build hour 15, at 75%
 Autonomy: A1 — agent edits; user runs commands and controls Git/deployment
 Status: IN PROGRESS
 Last completed: P1.5 — 0540af5
-Next step: Accept the P1.6 fixture journey at 390 px and 1280 px — 4d3e9d1
+Next step: Frontend polishing step 2 is not started. The experience contract is Docs/FRONTEND_EXPERIENCE.md.
 Active phase: P1 — Complete frontend experience
 Branch: build/experience
 Live URL: NOT YET DEPLOYED
