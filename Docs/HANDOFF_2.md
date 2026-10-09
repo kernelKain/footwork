@@ -3,8 +3,8 @@
 Step-by-step record of what actually happened. The locked plan stays in `Docs/HANDOFF_1.md`. This file is the place to read after a step is finished.
 
 **Status:** P1 continues locally. The public Render deploy is the first activity of P2. CodeRabbit GitHub App install is still unconfirmed.  
-**Next step:** P1.5 on `build/experience`.  
-**Last completed step:** P1.4 movement markers and explanations — `466a238`. Public deploy is P2.0.  
+**Next step:** P1.6 on `build/experience`.  
+**Last completed step:** P1.5 recording and generation states — `0540af5`. Public deploy is P2.0.  
 **Active build time:** 0 of 20 hours recorded. This session was not measured.
 
 Execution notes stay in this file. The diagram and write-up path are under `Docs/`. Each **Notes** section is filled only after that step is finished.
@@ -88,7 +88,7 @@ Check the ElevenLabs key, model, balance, and usage rights, and confirm Render c
 **Branch:** `build/experience`  
 **Window:** Build hours 2–7 (300 minutes)  
 **Outcome:** A full fixture journey, synchronized player, responsive states, and the first public deployment.  
-**Phase note:** P1.1 is committed as `33e8a8c`. P1.2 is committed as `a7ac1ab`. P1.3 is committed as `23c247b`. P1.4 is committed as `466a238`. On October 9, 2026 the user moved the public Render deploy to the start of P2.
+**Phase note:** P1.1 is committed as `33e8a8c`. P1.2 is committed as `a7ac1ab`. P1.3 is committed as `23c247b`. P1.4 is committed as `466a238`. P1.5 is committed as `0540af5`. On October 9, 2026 the user moved the public Render deploy to the start of P2.
 
 ### P1.1 — Build the Soundprint interface and fixture contracts
 
@@ -149,15 +149,16 @@ Add the Route–Sound Graph, Movement Story, and sponsor and provenance labels.
 
 ### P1.5 — Implement recording and generation interface states
 
-**Status:** Not started  
+**Status:** Done  
 **Kind:** Edit · 50 minutes · AC-06, AC-11, AC-18  
-**Commit subject:** Implement recording and generation interface states
+**Commit subject:** Implement recording and generation interface states  
+**Commit:** `0540af5`
 
 Build the fixture recording and generation flow, including every required visible state.
 
 **Done when.** Permission, loading, partial, invalid, quota, and provider-failure states are present, and none of them pretends a live generation succeeded.
 
-**Notes.** Not implemented.
+**Notes.** Committed as `0540af5`. The walk screen previews permission denial, waiting for a position fix, an invalid trace, and a hidden-page gap. The Soundprint screen previews processing, arranging, and composing, plus partial, quota, and provider failure. Those views hide the synthetic result. Provider failure uses the locked sentences for an unavailable arrangement service and unavailable Studio generation, and it says this preview did not produce a Studio Track. Returning to the synthetic fixture shows that example again, still labeled synthetic. `npm run typecheck`, `npm run lint`, and `npm run format` passed. `npm test` passed, 12 tests. No active time was measured.
 
 ### P1.6 — Refine the mobile Soundprint experience
 
