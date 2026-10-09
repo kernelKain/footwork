@@ -1352,14 +1352,14 @@ Never add fake metrics, fake testimonials or unlabeled synthetic outputs.
 
 ## 27. Execution State — Initialize
 
-| Field | Initial state |
+| Field | Current state |
 |---|---|
-| Status | **NOT STARTED** |
-| Current phase | P0 — Stack and access foundation |
-| Last completed step | NONE |
-| Next step | **P0.1 — Verify baseline and initialize execution record** |
-| Current execution branch | NOT CREATED |
-| Last execution commit | NONE |
+| Status | **IN PROGRESS** |
+| Current phase | P1 — Complete frontend experience |
+| Last completed step | P0.4 — Record music API and hosting access checks |
+| Next step | User commits P1.1, then **P1.2 — Deploy the frontend shell and API health endpoint** |
+| Current execution branch | `build/experience` |
+| Last execution commit | `f9fa92d` |
 | Existing baseline commit | `22df0e7` |
 | Last PR | NONE |
 | Live URL | NOT YET DEPLOYED |
@@ -1367,7 +1367,7 @@ Never add fake metrics, fake testimonials or unlabeled synthetic outputs.
 | Active build time used | 0 hours recorded |
 | Active build time remaining | 20 hours maximum |
 | New build spend recorded | $0 |
-| Known blockers | HF Space has no app file yet; Eleven access/balance/usage proof; Render credit coverage; actual Studio Hook validation |
+| Known blockers | Gemma arrangement is still unproved; CodeRabbit GitHub App install is unconfirmed; full pytest collection fails because the Gemma proof test puts `hf-space` ahead of the API package |
 
 Update this section after every completed step or meaningful interruption.
 
@@ -1388,11 +1388,11 @@ Working dates: October 9–10, 2026 only
 Active-work ceiling: 20 hours
 Feature freeze: Build hour 15, at 75%
 Autonomy: A1 — agent edits; user runs commands and controls Git/deployment
-Status: NOT STARTED
-Last completed: NONE
-Next step: P0.1 — Verify baseline and initialize execution record
-Active phase: P0 — Stack and access foundation
-Branch: NOT CREATED
+Status: IN PROGRESS
+Last completed: P0.4
+Next step: User commits P1.1, then P1.2 — Deploy the frontend shell and API health endpoint
+Active phase: P1 — Complete frontend experience
+Branch: build/experience
 Live URL: NOT YET DEPLOYED
 Locked Hook: A sharp route turn changes melodic direction; a pause becomes an audible musical break.
 Primary fallback: Deterministic Route Sketch for the current trace, plus a separately labeled cached genuine Studio example.

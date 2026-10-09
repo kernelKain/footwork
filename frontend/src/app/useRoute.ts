@@ -1,0 +1,40 @@
+import { useEffect, useState } from "react";
+
+const TITLES: Record<string, string> = {
+  "/": "Walk · Footwork",
+  "/studio": "Soundprint · Footwork",
+  "/about": "How it works · Footwork",
+};
+
+export function normalizePath(pathname: string): string {
+  if (pathname.length > 1 && pathname.endsWith("/")) return pathname.slice(0, -1);
+  return pathname;
+}
+
+export function useRoute(): {
+  path: string;
+  navigate: (event: { preventDefault: () => void; currentTarget: { href: string } }) => void;
+} {
+  const [path, setPath] = useState(() => normalizePath(window.location.pathname));
+
+  useEffect(() => {
+    const onPop = () => setPath(normalizePath(window.location.pathname));
+    window.addEventListener("popstate", onPop);
+    return () => window.removeEventListener("popstate", onPop);
+  }, []);
+
+  useEffect(() => {
+    document.title = TITLES[path] ?? "Footwork";
+  }, [path]);
+
+  const navigate = (event: { preventDefault: () => void; currentTarget: { href: string } }) => {
+    event.preventDefault();
+    const next = normalizePath(new URL(event.currentTarget.href).pathname);
+    if (next !== window.location.pathname) {
+      window.history.pushState(null, "", next);
+    }
+    setPath(next);
+  };
+
+  return { path, navigate };
+}

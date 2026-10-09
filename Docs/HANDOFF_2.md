@@ -2,10 +2,10 @@
 
 Step-by-step record of what actually happened. The locked plan stays in `Docs/HANDOFF_1.md`. This file is the place to read after a step is finished.
 
-**Status:** P0 is recorded. The user stated the Render balance is $50. CodeRabbit GitHub App install is still unconfirmed.  
-**Next step:** P1 on `build/experience`. Do not start until asked.  
-**Last completed step:** P0.4 — proof `acf03ad`, credit confirmation `8c11719`.  
-**Active build time:** 0 of 20 hours recorded.
+**Status:** P1.1 is implemented and verified locally. It is not Done until the user commits it. CodeRabbit GitHub App install is still unconfirmed.  
+**Next step:** User commits P1.1 on `build/experience`, then P1.2.  
+**Last completed step:** P0.4 — proof `acf03ad`, credit confirmation `8c11719`. The later handoff commit is `f9fa92d`.  
+**Active build time:** 0 of 20 hours recorded. This session was not measured.
 
 Execution notes stay in this file. The diagram and write-up path are under `Docs/`. Each **Notes** section is filled only after that step is finished.
 
@@ -88,11 +88,11 @@ Check the ElevenLabs key, model, balance, and usage rights, and confirm Render c
 **Branch:** `build/experience`  
 **Window:** Build hours 2–7 (300 minutes)  
 **Outcome:** A full fixture journey, synchronized player, responsive states, and the first public deployment.  
-**Phase note:** Not started. Depends on P0.
+**Phase note:** P1.1 is implemented on `build/experience` and waiting for its commit. P1.2 has not started.
 
 ### P1.1 — Build the Soundprint interface and fixture contracts
 
-**Status:** Not started  
+**Status:** Partial  
 **Kind:** Edit · 50 minutes · AC-13, AC-18  
 **Commit subject:** Build the Soundprint interface and fixture contracts
 
@@ -100,7 +100,7 @@ Build design tokens, the three-screen shell, reusable layout, and typed fixture 
 
 **Done when.** A labeled fixture renders at 390 px and 1280 px, and contract validation passes.
 
-**Notes.** Not implemented.
+**Notes.** Added dark-ink tokens, the Walk, Soundprint, and How it works screens, and a shared result validator. `fixtures/synthetic/soundprint-shell.json` is labeled synthetic, has no location fields, and does not claim live Gemma or ElevenLabs audio. `npm run typecheck`, `npm run lint`, and `npm run format` passed in `frontend/`. `npm test` passed, 8 tests, including 390 px and 1280 px overflow checks and the fixture contract. `uv run pytest tests/unit/test_fixtures.py` passed, 2 tests. Browser check of `http://127.0.0.1:4173` opened the walk, played the example, and opened How it works. The route figure is capped at 26rem so the path stays visible. No commit hash yet. Full `uv run pytest` still fails during collection because `backend/tests/unit/test_arrange_gate.py` inserts `hf-space` at the front of `sys.path` before `test_imports.py` loads. That failure is pre-existing and was not changed here. No active time was measured.
 
 ### P1.2 — Deploy the frontend shell and API health endpoint
 

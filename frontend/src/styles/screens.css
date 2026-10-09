@@ -1,0 +1,67 @@
+.stack {
+  display: grid;
+  gap: var(--space-3);
+}
+
+.fixture-banner strong {
+  font-family: var(--font-mono);
+}
+
+.route-figure {
+  display: grid;
+  gap: var(--space-2);
+  margin: 0;
+}
+
+.route-figure svg {
+  display: block;
+  width: min(100%, 26rem);
+  height: auto;
+  margin-inline: auto;
+  background: var(--ink-raised);
+  border: 1px solid var(--line);
+}
+
+.route-path {
+  fill: none;
+  stroke: var(--mint);
+  stroke-width: 1.8;
+  stroke-linejoin: round;
+  stroke-linecap: round;
+}
+
+.route-turn {
+  fill: var(--gold);
+}
+
+.route-pause {
+  fill: none;
+  stroke: var(--gold);
+  stroke-width: 0.7;
+}
+
+.event-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: var(--space-1);
+}
+
+.event-list li {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: var(--space-1);
+  padding: var(--space-2);
+  background: var(--ink-raised);
+  border: 1px solid var(--line);
+}
+
+.event-list time {
+  font-family: var(--font-mono);
+}
+
+.mono {
+  font-family: var(--font-mono);
+}
