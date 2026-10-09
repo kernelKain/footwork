@@ -1230,8 +1230,11 @@ Every row depends on the immediately preceding step unless stated otherwise. Min
 
 ### P2 — 240 minutes
 
+On October 9, 2026 the user moved the public Render deploy to the start of this phase. P1 continues locally. P2.0 runs after `build/experience` is pushed and before P2.1.
+
 | ID / min | Category; action and planned area | Verification / done-when / fallback | AC and proposed commit |
 |---|---|---|---|
+| **P2.0 — user** | RELEASE: create the Render Blueprint from `deploy/render.yaml` on the pushed branch, deploy it manually, and record the public URL. | Public HTTPS page and `/health` both work. No new spend beyond the locked `1c-2g` service. | AC07 — `Record the public shell and health endpoint` |
 | **P2.1 — 40** | EDIT: real browser geolocation, permission handling, bounded samples and IndexedDB draft. | Start/end stops watch correctly; reload recovers draft. No upload UI. | AC01, 14 — `Record browser movement and recover local drafts` |
 | **P2.2 — 40** | EDIT: visibility gaps, optional wake lock, recording guidance and clear action. | Hidden/resumed page marks interruption; no screen-off promise. | AC01, 11 — `Handle recording interruptions and screen visibility` |
 | **P2.3 — 40** | EDIT: Python sample validation, cleaning, projection and quality gates; unit fixtures. | Noise/jumps/invalid timestamps rejected; low-quality trace explained. | AC09, 14 — `Validate and clean recorded movement samples` |
@@ -1357,7 +1360,7 @@ Never add fake metrics, fake testimonials or unlabeled synthetic outputs.
 | Status | **IN PROGRESS** |
 | Current phase | P1 — Complete frontend experience |
 | Last completed step | P1.1 — Build the Soundprint interface and fixture contracts |
-| Next step | **P1.2 — Deploy the frontend shell and API health endpoint** |
+| Next step | **P1.3 — Synchronize route playback and audio scrubbing** |
 | Current execution branch | `build/experience` |
 | Last execution commit | `33e8a8c` |
 | Existing baseline commit | `22df0e7` |
@@ -1367,7 +1370,7 @@ Never add fake metrics, fake testimonials or unlabeled synthetic outputs.
 | Active build time used | 0 hours recorded |
 | Active build time remaining | 20 hours maximum |
 | New build spend recorded | $0 |
-| Known blockers | Gemma arrangement is still unproved; CodeRabbit GitHub App install is unconfirmed; full pytest collection fails because the Gemma proof test puts `hf-space` ahead of the API package |
+| Known blockers | Public Render URL is deferred to P2.0; Gemma arrangement is still unproved; CodeRabbit GitHub App install is unconfirmed |
 
 Update this section after every completed step or meaningful interruption.
 
@@ -1390,7 +1393,7 @@ Feature freeze: Build hour 15, at 75%
 Autonomy: A1 — agent edits; user runs commands and controls Git/deployment
 Status: IN PROGRESS
 Last completed: P1.1 — 33e8a8c
-Next step: P1.2 — Deploy the frontend shell and API health endpoint
+Next step: P1.3 — Synchronize route playback and audio scrubbing
 Active phase: P1 — Complete frontend experience
 Branch: build/experience
 Live URL: NOT YET DEPLOYED

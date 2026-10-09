@@ -2,9 +2,12 @@ import json
 import sys
 from pathlib import Path
 
-sys.path.insert(0, str(Path(__file__).resolve().parents[3] / "hf-space"))
-
-from arrange import MODEL_ID, arrange
+SPACE = str(Path(__file__).resolve().parents[3] / "hf-space")
+sys.path.insert(0, SPACE)
+try:
+    from arrange import MODEL_ID, arrange
+finally:
+    sys.path.remove(SPACE)
 
 
 def test_unproved_gemma_does_not_invent_an_arrangement() -> None:

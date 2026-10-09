@@ -2,9 +2,9 @@
 
 Step-by-step record of what actually happened. The locked plan stays in `Docs/HANDOFF_1.md`. This file is the place to read after a step is finished.
 
-**Status:** P1.1 is committed. CodeRabbit GitHub App install is still unconfirmed.  
-**Next step:** P1.2 on `build/experience`.  
-**Last completed step:** P1.1 — `33e8a8c`.  
+**Status:** P1 continues locally. The public Render deploy is the first activity of P2. CodeRabbit GitHub App install is still unconfirmed.  
+**Next step:** P1.3 on `build/experience`.  
+**Last completed step:** P1.1 — `33e8a8c`. P1.2 local health and blueprint work is in the following commit.  
 **Active build time:** 0 of 20 hours recorded. This session was not measured.
 
 Execution notes stay in this file. The diagram and write-up path are under `Docs/`. Each **Notes** section is filled only after that step is finished.
@@ -88,7 +88,7 @@ Check the ElevenLabs key, model, balance, and usage rights, and confirm Render c
 **Branch:** `build/experience`  
 **Window:** Build hours 2–7 (300 minutes)  
 **Outcome:** A full fixture journey, synchronized player, responsive states, and the first public deployment.  
-**Phase note:** P1.1 is committed as `33e8a8c`. P1.2 has not started.
+**Phase note:** P1.1 is committed as `33e8a8c`. P1.2 serves the built shell and `/health` locally. On October 9, 2026 the user moved the public Render deploy to the start of P2 and kept the rest of P1 local.
 
 ### P1.1 — Build the Soundprint interface and fixture contracts
 
@@ -104,7 +104,7 @@ Build design tokens, the three-screen shell, reusable layout, and typed fixture 
 
 ### P1.2 — Deploy the frontend shell and API health endpoint
 
-**Status:** Not started  
+**Status:** Partial  
 **Kind:** Release · 50 minutes · AC-07  
 **Commit subject:** Deploy the frontend shell and API health endpoint
 
@@ -112,7 +112,14 @@ Serve the frontend and a FastAPI health endpoint from one Render service. The us
 
 **Done when.** The public HTTPS page and `/health` both work.
 
-**Notes.** Not implemented.
+**Notes.** `GET /health` returns status, API version `v1`, and schema version `1`, and it does not call a provider. The same FastAPI app serves the built shell for `/`, `/studio`, and `/about`. `deploy/render.yaml` selects Python, plan `1c-2g`, region `singapore`, a 1 GB disk, and `autoDeployTrigger: off`. Secret values stay out of the file. `uv run --directory backend ruff check .` passed. `uv run --directory backend pytest` passed, 9 tests. A local TestClient check of `frontend/dist` returned 200 for `/health`, `/`, `/studio`, `/about`, and the built JavaScript asset. The public URL check moved to P2.0. AC-07 stays open until that deploy. No active time was measured.
+
+#### P1.2a — Keep the API import test collectable
+
+**Status:** Done with P1.2  
+**Reason:** The full backend suite could not collect after the Gemma proof test inserted `hf-space` ahead of the API package. CI runs that suite, and this step needs it green before a deploy is treated as ready.
+
+**Notes.** `backend/tests/unit/test_arrange_gate.py` now removes that path immediately after importing `arrange`. The Gemma proof assertions are unchanged. The same 9-test run covers this fix.
 
 ### P1.3 — Synchronize route playback and audio scrubbing
 
@@ -169,7 +176,19 @@ The user reviews the full fixture experience. Revise hierarchy and mobile layout
 **Branch:** `build/movement`  
 **Window:** Build hours 7–11 (240 minutes)  
 **Outcome:** Real capture, four detectors, compression, and an exact Route Sketch Hook.  
-**Phase note:** Not started. Depends on P1.
+**Phase note:** Not started. The public shell deploy was added at the start of this phase on October 9, 2026. P1 continues locally until then.
+
+### P2.0 — Publish the shell and health endpoint
+
+**Status:** Not started  
+**Kind:** Release · user-directed · AC-07  
+**Commit subject:** Record the public shell and health endpoint
+
+After `build/experience` is pushed, create the Render Blueprint from `deploy/render.yaml`, deploy it manually, and record the public page and `/health`.
+
+**Done when.** The public HTTPS page and `/health` both work.
+
+**Notes.** Not started. The user will deploy after pushing this branch. Provider keys stay in the Render dashboard.
 
 ### P2.1 — Record browser movement and recover local drafts
 
