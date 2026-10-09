@@ -1360,9 +1360,9 @@ Never add fake metrics, fake testimonials or unlabeled synthetic outputs.
 | Status | **IN PROGRESS** |
 | Current phase | P1 — Complete frontend experience |
 | Last completed step | P1.5 — Implement recording and generation interface states |
-| Next step | **P1.6 — Refine the mobile Soundprint experience** |
+| Next step | Accept the P1.6 fixture journey at 390 px and 1280 px (`4d3e9d1`) |
 | Current execution branch | `build/experience` |
-| Last execution commit | `0540af5` |
+| Last execution commit | `4d3e9d1` |
 | Existing baseline commit | `22df0e7` |
 | Last PR | NONE |
 | Live URL | NOT YET DEPLOYED |
@@ -1393,7 +1393,7 @@ Feature freeze: Build hour 15, at 75%
 Autonomy: A1 — agent edits; user runs commands and controls Git/deployment
 Status: IN PROGRESS
 Last completed: P1.5 — 0540af5
-Next step: P1.6 — Refine the mobile Soundprint experience
+Next step: Accept the P1.6 fixture journey at 390 px and 1280 px — 4d3e9d1
 Active phase: P1 — Complete frontend experience
 Branch: build/experience
 Live URL: NOT YET DEPLOYED

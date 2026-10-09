@@ -3,8 +3,8 @@
 Step-by-step record of what actually happened. The locked plan stays in `Docs/HANDOFF_1.md`. This file is the place to read after a step is finished.
 
 **Status:** P1 continues locally. The public Render deploy is the first activity of P2. CodeRabbit GitHub App install is still unconfirmed.  
-**Next step:** P1.6 on `build/experience`.  
-**Last completed step:** P1.5 recording and generation states — `0540af5`. Public deploy is P2.0.  
+**Next step:** Accept the fixture journey at 390 px and 1280 px. Public deploy stays P2.0.  
+**Last completed step:** P1.6 mobile layout committed as `4d3e9d1`, awaiting acceptance. Public deploy is P2.0.  
 **Active build time:** 0 of 20 hours recorded. This session was not measured.
 
 Execution notes stay in this file. The diagram and write-up path are under `Docs/`. Each **Notes** section is filled only after that step is finished.
@@ -88,7 +88,7 @@ Check the ElevenLabs key, model, balance, and usage rights, and confirm Render c
 **Branch:** `build/experience`  
 **Window:** Build hours 2–7 (300 minutes)  
 **Outcome:** A full fixture journey, synchronized player, responsive states, and the first public deployment.  
-**Phase note:** P1.1 is committed as `33e8a8c`. P1.2 is committed as `a7ac1ab`. P1.3 is committed as `23c247b`. P1.4 is committed as `466a238`. P1.5 is committed as `0540af5`. On October 9, 2026 the user moved the public Render deploy to the start of P2.
+**Phase note:** P1.1 is committed as `33e8a8c`. P1.2 is committed as `a7ac1ab`. P1.3 is committed as `23c247b`. P1.4 is committed as `466a238`. P1.5 is committed as `0540af5`. P1.6 is committed as `4d3e9d1` and is waiting for acceptance of the fixture journey. On October 9, 2026 the user moved the public Render deploy to the start of P2.
 
 ### P1.1 — Build the Soundprint interface and fixture contracts
 
@@ -162,15 +162,16 @@ Build the fixture recording and generation flow, including every required visibl
 
 ### P1.6 — Refine the mobile Soundprint experience
 
-**Status:** Not started  
+**Status:** Partial  
 **Kind:** Verify · 50 minutes · AC-12, AC-13  
-**Commit subject:** Refine the mobile Soundprint experience
+**Commit subject:** Refine the mobile Soundprint experience  
+**Commit:** `4d3e9d1`
 
 The user reviews the full fixture experience. Revise hierarchy and mobile layout from that review.
 
 **Done when.** The fixture journey is accepted and usable at 390 px and 1280 px.
 
-**Notes.** Not implemented.
+**Notes.** Committed as `4d3e9d1`. The Soundprint now leads with the synthetic label, Play, and the route. Generation preview states sit behind a disclosure after the route, graph, story, and provenance. The separate movement-event list is gone because the graph already seeks those markers. The walk screen shows the empty recording before its preview-state disclosure. A selected preview state says Showing, not only a gold border. The narrow header places the mode badge beside the name. `npm run typecheck`, `npm run lint`, and `npm run format` passed. `npm test` passed, 12 tests, including route-before-states order and no horizontal overflow at 390 px and 1280 px. The fixture journey is not yet accepted by the user. No active time was measured.
 
 ---
 
