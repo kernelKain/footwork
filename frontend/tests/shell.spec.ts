@@ -15,8 +15,8 @@ test("walk screen explains the practice and offers the example", async ({ page }
   await expect(page.getByRole("navigation")).toHaveCount(0);
   await page.getByRole("link", { name: "Hear an example" }).first().click();
   await expect(page).toHaveURL(/\/studio$/);
-  await expect(page.getByRole("status")).toContainText("Synthetic fixture");
-  await expect(page.getByRole("status")).toContainText("not a recorded walk");
+  await expect(page.getByText("Example walk")).toBeVisible();
+  await expect(page.getByText("not a recorded walk")).toBeVisible();
 });
 
 test("about redirects to how it works", async ({ page }) => {
@@ -29,18 +29,19 @@ for (const width of [390, 1280]) {
   test(`labeled fixture renders at ${width}px without horizontal overflow`, async ({ page }) => {
     await page.setViewportSize({ width, height: width === 390 ? 844 : 800 });
     await page.goto("/studio");
-    await expect(page.getByRole("status")).toContainText("Synthetic fixture");
-    await expect(page.getByRole("img", { name: "Synthetic route" })).toBeVisible();
-    const routeBox = await page.getByRole("img", { name: "Synthetic route" }).boundingBox();
-    const playBox = await page.getByRole("button", { name: "Play" }).boundingBox();
-    const statesBox = await page
-      .getByRole("button", { name: "Show generation preview states" })
-      .boundingBox();
+    await expect(page.getByText("Example walk")).toBeVisible();
+    await expect(page.getByRole("img", { name: "Example route" })).toBeVisible();
+    const routeBox = await page.getByRole("img", { name: "Example route" }).boundingBox();
+    const playBox = await page.getByRole("button", { name: "Play", exact: true }).boundingBox();
+    const moments = page.getByRole("heading", { name: "Moments in the music" });
+    const momentsBox = await moments.boundingBox();
     expect(routeBox).not.toBeNull();
     expect(playBox).not.toBeNull();
-    expect(statesBox).not.toBeNull();
+    expect(momentsBox).not.toBeNull();
     expect(playBox!.y).toBeLessThan(routeBox!.y);
-    expect(routeBox!.y).toBeLessThan(statesBox!.y);
+    if (width < 1024) {
+      expect(routeBox!.y).toBeLessThan(momentsBox!.y);
+    }
     expect(routeBox!.x).toBeGreaterThanOrEqual(0);
     expect(routeBox!.x + routeBox!.width).toBeLessThanOrEqual(width + 1);
     await expect(page.getByRole("listitem").filter({ hasText: "Turn" })).toBeVisible();

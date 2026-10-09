@@ -1,33 +1,33 @@
-import type { RefObject } from "react";
 import { formatTime } from "./formatTime";
 
 export function SoundprintPlayer({
-  source,
   durationMs,
   timeMs,
   playing,
   playbackError,
-  audioRef,
   onToggle,
   onSeek,
+  onReplay,
 }: {
-  source: string;
   durationMs: number;
   timeMs: number;
   playing: boolean;
   playbackError: string | null;
-  audioRef: RefObject<HTMLAudioElement | null>;
   onToggle: () => void;
   onSeek: (timeMs: number) => void;
+  onReplay: () => void;
 }) {
   return (
-    <section className="player panel" aria-labelledby="player-title">
-      <h2 id="player-title">Playback</h2>
+    <div className="player">
       <div className="player-controls">
-        <button type="button" className="action" onClick={onToggle}>
+        <button type="button" className="ui-button ui-button-primary" onClick={onToggle}>
           {playing ? "Pause" : "Play"}
         </button>
-        <span className="mono">
+        <button type="button" className="ui-button ui-button-secondary" onClick={onReplay}>
+          Replay
+        </button>
+        <span className="studio-clock">
+          <span className="ui-visually-hidden">Playback time</span>
           {formatTime(timeMs)} / {formatTime(durationMs)}
         </span>
       </div>
@@ -39,14 +39,11 @@ export function SoundprintPlayer({
         step={100}
         value={timeMs}
         aria-label="Scrub Soundprint"
+        onChange={(event) => onSeek(Number(event.currentTarget.value))}
         onInput={(event) => onSeek(Number(event.currentTarget.value))}
       />
-      <p>
-        Deterministic sketch generated in the browser. The tone falls until the corner, then rises.
-        The hold is silent. This is not ElevenLabs audio.
-      </p>
+      <p>This sound is an example made in the browser. It is not a studio recording.</p>
       {playbackError ? <p role="alert">{playbackError}</p> : null}
-      <audio ref={audioRef} src={source} preload="auto" aria-hidden="true" />
-    </section>
+    </div>
   );
 }

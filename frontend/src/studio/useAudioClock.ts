@@ -56,5 +56,16 @@ export function useAudioClock(source: string, durationMs: number) {
     audio.pause();
   };
 
-  return { audioRef, timeMs, playing, playbackError, seek, toggle };
+  const replay = () => {
+    const audio = audioRef.current;
+    if (!audio) return;
+    audio.currentTime = 0;
+    setTimeMs(0);
+    setPlaybackError(null);
+    void audio.play().catch(() => {
+      setPlaybackError("Playback did not start. Press Play to try again.");
+    });
+  };
+
+  return { audioRef, timeMs, playing, playbackError, seek, toggle, replay };
 }

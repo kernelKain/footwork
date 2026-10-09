@@ -3,8 +3,8 @@
 Step-by-step record of what actually happened. The locked plan stays in `Docs/HANDOFF_1.md`. This file is the place to read after a step is finished.
 
 **Status:** P1 continues locally. The public experience contract is `Docs/FRONTEND_EXPERIENCE.md`. The public Render deploy is the first activity of P2. CodeRabbit GitHub App install is still unconfirmed.  
-**Next step:** Frontend polishing step 4 is not started.  
-**Last completed step:** Frontend polishing step 3, in this commit. P1.6 layout remains `4d3e9d1`. Public deploy is P2.0.  
+**Next step:** Frontend polishing step 5 is not started.  
+**Last completed step:** Frontend polishing step 4, in this commit. P1.6 layout remains `4d3e9d1`. Public deploy is P2.0.  
 **Active build time:** 0 of 20 hours recorded. This session was not measured.
 
 Execution notes stay in this file. The diagram and write-up path are under `Docs/`. Each **Notes** section is filled only after that step is finished.
@@ -281,6 +281,26 @@ Fixture boundary: the public page has no state picker. Tests set `sessionStorage
 Known limits: the timer is a practice clock, not a stored walk. The route line is not the person's path. Ending a practice walk does not generate music. `/studio` still shows the fixture banner, the generation preview control, and the sponsor and provenance sections.
 
 `npm run typecheck`, `npm run lint`, and `npm run format` passed. `npm test` passed, 29 tests, including 360, 390, 430, 768, and 1280 px, keyboard focus, reduced motion, hold completion, early release, permission denial, and the unsupported browser.
+
+### Step 4 — Redesign the generation and Soundprint experience
+
+**Status:** Done  
+**Kind:** Edit  
+**Commit subject:** Redesign the generation and Soundprint experience
+
+Show a clear wait after a walk ends, then a Soundprint with a hero, a route, a movement-to-music timeline, a short story, and optional details.
+
+**Done when.** Ending a practice walk opens generation. The result no longer shows sponsors, provenance, or fixture controls. Audio and route stay within 500 ms.
+
+**Notes.** This commit replaces the older Soundprint screen. No new dependency. `.opencode/` stayed untracked. No active time was measured.
+
+Ending a practice walk waits briefly, then opens `/studio`. The practice stages are Reading your walk, Finding meaningful moments, Turning them into music, and Creating your track. Their ids (`reading_walk`, `finding_moments`, `shaping_music`, `recording_piece`) are not the labels. The page shows the active line and the elapsed time. It does not show a percent. The 180 second boundary from AC-08 uses the same check: past that, or when the attempt is `timed_out`, the page says the piece took too long and offers Try again. Phase 1 practice finishes the four lines on a short timer and does not call a model. The result is still the example.
+
+The result order is the hero (title, summary, cover, Play, Pause, Replay, scrub, and Example walk), the route, the timeline, the walk story, and a closed About this example disclosure. Generated from your walk is reserved for a later result whose mode is not an example. Provenance stays on the result object and in the fixture. It is not a public panel.
+
+Fixture boundary: tests set `sessionStorage` key `footwork-generation` to `run` or an error code before load. `footwork-generation-complete` keeps a second practice ending from starting another piece. There is no public picker.
+
+Verification for this commit: `npm run typecheck`, `npm run lint`, and `npm run format` passed. `npm test` passed, 39 tests. Those tests cover play, pause, seek, replay, event selection, keyboard activation, the 500 ms clock, empty, partial, timeout, error, retry, example, and repeat states, reduced motion, and 360, 390, 430, 768, and 1280 px. Sponsors, Provenance, the generation picker, `synthetic_fixture`, and `mapping_status` are absent from the public page. The route cursor, timeline playhead, and story time still share the audio clock within 500 ms.
 
 ---
 

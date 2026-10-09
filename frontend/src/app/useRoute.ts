@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 
 const TITLES: Record<string, string> = {
   "/": "Footwork",
@@ -24,6 +24,7 @@ function settlePath(pathname: string): string {
 export function useRoute(): {
   path: string;
   navigate: (event: { preventDefault: () => void; currentTarget: { href: string } }) => void;
+  go: (pathname: string) => void;
 } {
   const [path, setPath] = useState(() => settlePath(window.location.pathname));
 
@@ -46,5 +47,13 @@ export function useRoute(): {
     setPath(next);
   };
 
-  return { path, navigate };
+  const go = useCallback((pathname: string) => {
+    const next = normalizePath(pathname);
+    if (next !== window.location.pathname) {
+      window.history.pushState(null, "", next);
+    }
+    setPath(next);
+  }, []);
+
+  return { path, navigate, go };
 }

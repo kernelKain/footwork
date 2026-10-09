@@ -315,21 +315,23 @@ No account creation is required.
 
 ### Screens (maximum two public destinations)
 
-`Docs/FRONTEND_EXPERIENCE.md` is the public page contract from October 9, 2026. The table below matches it. `/` is the landing and practice recording journey, and `/about` redirects to `/#how-it-works`. `/studio` still shows the older fixture screen, including sponsor and provenance sections and the generation preview control, until a later polishing step removes them.
+`Docs/FRONTEND_EXPERIENCE.md` is the public page contract from October 9, 2026. The table below matches it. `/` is the landing and practice recording journey, and `/about` redirects to `/#how-it-works`. `/studio` is the generation screen and the Soundprint. It has no sponsor section, provenance section, or generation preview control.
 
 | Screen | Purpose/content | Actions | States and Hook relationship |
 |---|---|---|---|
 | `/` — Walk | Explain the product, record, and end a walk. How it works is `#how-it-works` on this page. | Start walking; Hear an example; End walk | Ready through recording, ending, and recoverable recording errors. |
-| `/studio` — Soundprint | Route, player, graph, and story. No sponsor or provenance sections. | Play/Pause; Scrub; Start another walk | Processing, complete, and generation errors. Contains the Hook. |
+| `/studio` — Soundprint | Hero, route, movement-to-music timeline, short story, and optional details. No sponsor or provenance sections. | Play, Pause, Replay, scrub, choose a moment, Start another walk | Processing, complete, and generation errors. Contains the Hook. |
 | `/about` | Redirects to `/#how-it-works`. | None of its own | Not a third destination. |
 
 ### Reusable Regions
 
 - Recording status, in words as well as color.
-- Route canvas built with SVG.
+- Soundprint hero, with the honest example or generated label.
+- Route canvas built with SVG, including start, end, and event markers.
 - Shared player and scrubber.
-- Route–Sound Graph.
-- Movement Story cards.
+- Movement-to-music timeline.
+- Short walk story.
+- Optional details in a disclosure. Provenance stays in the result data and is not a public region.
 - Recovery notice with a next action.
 - How it works, on `/`.
 
@@ -1369,10 +1371,10 @@ Never add fake metrics, fake testimonials or unlabeled synthetic outputs.
 |---|---|
 | Status | **IN PROGRESS** |
 | Current phase | P1 — Complete frontend experience |
-| Last completed step | Frontend polishing step 3 — guided landing and recording journey |
-| Next step | Frontend polishing step 4 is not started. |
+| Last completed step | Frontend polishing step 4 — generation and Soundprint |
+| Next step | Frontend polishing step 5 is not started. |
 | Current execution branch | `build/experience` |
-| Last execution commit | `4d3e9d1` |
+| Last execution commit | `6151607` |
 | Existing baseline commit | `22df0e7` |
 | Last PR | NONE |
 | Live URL | NOT YET DEPLOYED |
@@ -1402,8 +1404,8 @@ Active-work ceiling: 20 hours
 Feature freeze: Build hour 15, at 75%
 Autonomy: A1 — agent edits; user runs commands and controls Git/deployment
 Status: IN PROGRESS
-Last completed: Frontend polishing step 3 — guided landing and recording journey
-Next step: Frontend polishing step 4 is not started. The experience contract is Docs/FRONTEND_EXPERIENCE.md.
+Last completed: Frontend polishing step 4 — generation and Soundprint
+Next step: Frontend polishing step 5 is not started. The experience contract is Docs/FRONTEND_EXPERIENCE.md.
 Active phase: P1 — Complete frontend experience
 Branch: build/experience
 Live URL: NOT YET DEPLOYED

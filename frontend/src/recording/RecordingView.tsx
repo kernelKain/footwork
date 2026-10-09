@@ -109,9 +109,7 @@ export function RecordingView({
       <section className="recording-view" aria-labelledby="end-title">
         <h1 id="end-title">{finished ? "Practice walk finished" : "Finishing"}</h1>
         <p role="status">
-          {finished
-            ? "This practice walk is finished. No location was stored."
-            : "Finishing this practice walk. Nothing is being saved."}
+          Finishing this practice walk. Nothing is being saved. No location was stored.
         </p>
         {finished ? (
           <div className="actions">

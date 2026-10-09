@@ -77,6 +77,20 @@
   stroke-width: 0.7;
 }
 
+.route-start {
+  fill: var(--mint);
+}
+
+.route-end {
+  fill: none;
+  stroke: var(--mint);
+  stroke-width: 0.7;
+}
+
+.route-pace {
+  fill: var(--gold);
+}
+
 .route-cursor {
   fill: var(--ink);
   stroke: var(--text);

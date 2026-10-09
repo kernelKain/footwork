@@ -8,19 +8,6 @@ const EVENT_LABELS: Record<MovementEvent["type"], string> = {
   loop: "Loop",
 };
 
-function pointAt(points: RoutePoint[], time: number): RoutePoint | null {
-  let best: RoutePoint | null = null;
-  let bestDelta = Number.POSITIVE_INFINITY;
-  for (const point of points) {
-    const delta = Math.abs(point.t_ms - time);
-    if (delta < bestDelta) {
-      best = point;
-      bestDelta = delta;
-    }
-  }
-  return best;
-}
-
 export function RouteFigure({
   points,
   events,
@@ -31,20 +18,25 @@ export function RouteFigure({
   timeMs: number;
 }) {
   const poly = points.map((point) => `${point.x * 100},${point.y * 100}`).join(" ");
-  const marks = events.filter((event) => event.type === "turn" || event.type === "pause");
+  const start = points[0];
+  const end = points[points.length - 1];
   const cursor = pointOnRoute(points, timeMs);
 
   return (
     <figure className="route-figure">
       <svg viewBox="0 0 100 100" role="img" aria-labelledby="route-title route-desc">
-        <title id="route-title">Synthetic route</title>
+        <title id="route-title">Example route</title>
         <desc id="route-desc">
-          A constructed path with a corner and a pause. It is not a map of a real place.
+          An example path with a start, an end, a turn, a pause, and a change in pace. It is not a
+          map of a real place.
         </desc>
         <polyline className="route-path" points={poly} />
-        {marks.map((event) => {
-          const point = pointAt(points, event.audio_offset_ms);
-          if (!point) return null;
+        {start ? (
+          <circle className="route-start" cx={start.x * 100} cy={start.y * 100} r="2.4" />
+        ) : null}
+        {end ? <circle className="route-end" cx={end.x * 100} cy={end.y * 100} r="3.2" /> : null}
+        {events.map((event) => {
+          const point = pointOnRoute(points, event.audio_offset_ms);
           const cx = point.x * 100;
           const cy = point.y * 100;
           if (event.type === "pause") {
@@ -59,6 +51,17 @@ export function RouteFigure({
               >
                 <title>{EVENT_LABELS[event.type]}</title>
               </rect>
+            );
+          }
+          if (event.type === "pace_change") {
+            return (
+              <polygon
+                key={event.id}
+                className="route-pace"
+                points={`${cx},${cy - 2.6} ${cx + 2.6},${cy} ${cx},${cy + 2.6} ${cx - 2.6},${cy}`}
+              >
+                <title>{EVENT_LABELS[event.type]}</title>
+              </polygon>
             );
           }
           return (
@@ -78,8 +81,9 @@ export function RouteFigure({
         </circle>
       </svg>
       <figcaption>
-        Synthetic route. The line is the path. The gold circle is a turn and the square is a pause.
-        The outlined circle is the playback position.
+        Example route. The filled circle is the start and the ring is the end. Gold marks a turn, a
+        square marks a pause, and a diamond marks a change in pace. The outlined circle follows the
+        music.
       </figcaption>
     </figure>
   );

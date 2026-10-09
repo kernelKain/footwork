@@ -19,9 +19,10 @@ type Phase =
 
 type WalkScreenProps = {
   onNavigate: (event: { preventDefault: () => void; currentTarget: { href: string } }) => void;
+  onGo: (pathname: string) => void;
 };
 
-export function WalkScreen({ onNavigate }: WalkScreenProps) {
+export function WalkScreen({ onNavigate, onGo }: WalkScreenProps) {
   const port = useMemo(() => createPracticePort(readPracticeScenario()), []);
   const [phase, setPhase] = useState<Phase>("ready");
   const [sheetOpen, setSheetOpen] = useState(false);
@@ -45,9 +46,16 @@ export function WalkScreen({ onNavigate }: WalkScreenProps) {
 
   useEffect(() => {
     if (phase !== "ending") return;
-    const timer = window.setTimeout(() => setPhase("finished"), 700);
+    const timer = window.setTimeout(() => {
+      try {
+        sessionStorage.setItem("footwork-generation", "run");
+      } catch {
+        return;
+      }
+      onGo("/studio");
+    }, 700);
     return () => window.clearTimeout(timer);
-  }, [phase]);
+  }, [phase, onGo]);
 
   useEffect(() => {
     if (phase !== "recording") return;

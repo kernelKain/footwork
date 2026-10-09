@@ -1,6 +1,6 @@
 # Footwork frontend experience
 
-Public information architecture, copy, and interface contract for the polishing work. The landing and practice recording journey follow this file. `/studio` is still the older Soundprint screen.
+Public information architecture, copy, and interface contract for the polishing work. The landing, the practice recording journey, and the Soundprint follow this file.
 
 When this file disagrees with an older screen list in `Docs/HANDOFF_1.md` or a broader idea in `Docs/PRODUCT_CONCEPT.md`, this file wins for the public pages. `Docs/HANDOFF_1.md` still wins for the Hook, acceptance criteria, stack, privacy rules, and phase order.
 
@@ -15,7 +15,7 @@ One page introduces the product and holds the walk. A second page is the Soundpr
 | Decision | Meaning |
 |---|---|
 | `/` is the landing and the recording entry | The person understands Footwork and starts, records, and ends a walk here. |
-| `/studio` is the Soundprint | Play, the route, the graph, and the story live here after generation, and for a clearly labeled example. |
+| `/studio` is the Soundprint | Generation, then the result: hero, route, timeline, a short story, and optional details. Hear an example opens the same result, labeled as an example. |
 | `/about` redirects to `/#how-it-works` | How it works is a section on `/`, not a third destination. |
 | No global Walk / Soundprint / How it works navigation | Movement through the product is the flow above, plus Start another walk from the Soundprint. |
 | Sponsors and Provenance are not public sections | The application does not show those headings. |
@@ -26,14 +26,11 @@ One page introduces the product and holds the walk. A second page is the Soundpr
 
 The Hook is unchanged: a sharp turn is meant to change the melody's direction, and a pause is meant to become a musical break. Until generated audio is actually heard and checked, the page says the change is planned.
 
-## What the built shell still does
+## What the built shell does
 
-`/studio` is behind this contract. It still has:
+`/` and `/studio` follow this contract. `/about` redirects to `/#how-it-works`. The public pages do not show a state picker, a fixture banner, Sponsors, or Provenance.
 
-- A fixture banner and a generation preview control.
-- Public Sponsors and Provenance sections.
-
-Those stay until a later polishing step removes them. `/` no longer shows the three-link header, the mode badge, or a recording state picker. `/about` redirects to `/#how-it-works`.
+Phase 1 generation is still practice. Ending a practice walk opens the generation screen, but nothing is sent to a model or a music studio. The result that follows is the example, labeled Example walk. A real walk is not called "Generated from your walk" until a later phase returns a non-example result.
 
 ## Pages
 
@@ -51,15 +48,17 @@ Start walking is the primary action. Hear an example is secondary and visibly an
 
 ### `/studio` — Hear the Soundprint
 
-Order on the page:
+On a phone the page is one reading order. At desktop width the player and route can stay beside the timeline.
 
-1. An honest label: your walk, an example, or a simpler version.
-2. Play and the scrubber.
-3. The route.
-4. The route-to-music explanation and the short story.
-5. Start another walk, which returns to `/`.
+1. Soundprint hero: track title, a short walk summary, a cover, the primary audio controls, and one honest label. The label is Example walk or Generated from your walk. Phase 1's example uses Example walk.
+2. Route: the path, the playback position, a clear start and end, and markers for a turn, a pause, and a change in pace.
+3. Movement-to-music timeline: what a turn, pause, or pace change is meant to do. Choosing or focusing a moment seeks the shared audio clock. The route, the timeline, and the story stay within 500 ms of that clock.
+4. Short walk story: one plain summary of the shape of the walk. It does not repeat the timeline.
+5. Optional details: a closed disclosure. It is not a provenance panel and it does not print internal fields.
 
-No Sponsors section. No Provenance section. Technical fields from the result contract stay in data. The page may say, in plain words, that a musical change is planned or that it was heard. It does not print `synthetic_fixture`, `mapping_status`, or other internal names.
+No Sponsors section. No Provenance section. No generation picker. Technical provenance stays in the result object, the fixture, and these notes. The page may say, in plain words, that a musical change is planned. It does not print `synthetic_fixture`, `mapping_status`, stage ids, or a percent complete.
+
+Start another walk returns to `/`.
 
 ### `/about`
 
@@ -95,9 +94,11 @@ The public journey uses these states. Internal preview names in the current shel
 | `unsupported_browser` | Unsupported browser |
 | `offline_or_interrupted` | Offline or interrupted session |
 
-Processing stage codes, in order: `reading_walk`, `shaping_music`, `recording_piece`.
+Processing stage ids, in order, are internal and are not shown as labels: `reading_walk`, `finding_moments`, `shaping_music`, `recording_piece`.
 
-Public stage lines: Reading the walk. Shaping the music. Recording the piece.
+Public stage lines, in that same order: Reading your walk. Finding meaningful moments. Turning them into music. Creating your track.
+
+The existing generation boundary is 180 seconds (AC-08). The page shows the elapsed time and the active stage. It does not show a percent. If that time passes, or the attempt reports `timed_out`, the page shows "Making the piece took too long." and offers Try again. It does not invent a finished track.
 
 Error codes the interface understands:
 
@@ -163,21 +164,21 @@ No account balance is shown. No stack trace, coordinate, or secret is shown.
 
 ### Processing
 
-- The person sees that their Soundprint is being made, with the three stage lines above.
+- The person sees that their Soundprint is being made, with the four stage lines above and the elapsed time.
 - Actions: wait. Hear an example stays available and is labeled as a separate example, not as this walk's result.
-- Data: one generation attempt and the current stage code.
-- Phase 1: practice stages. Nothing is sent to a model or a music studio. The finished example route is hidden so the screen does not look successful.
-- Real behavior: Phase 3. Repeating the same finished walk does not start a second piece. Retry is a button the person presses, not an automatic loop. The transport is not fixed here.
-- Accessibility: the current stage is text. Motion is optional.
+- Data: one generation attempt and the current stage id. The id is not the label.
+- Phase 1: practice stages on a short timer, plus the same 180 second check a live attempt will use. Nothing is sent to a model or a music studio. The finished example stays hidden so the screen does not look successful.
+- Real behavior: Phase 3 reports the same stage ids or an error code. It does not send a percent. Repeating the same finished walk does not start a second piece. Retry is a button the person presses, not an automatic loop. The transport is not fixed here.
+- Accessibility: the current stage is one text status, and it changes only when the stage changes. The elapsed time is not a live announcement. Motion is optional.
 
 ### Complete
 
-- The person sees the Soundprint: play, scrub, route, explanation, and story. The label says your walk, an example, or a simpler version.
-- Actions: Play, Pause, scrub, Start another walk.
-- Data: the existing result contract in `frontend/src/contracts/types.ts`. Sponsor and provenance objects are not rendered.
+- The person sees the Soundprint in the order above. The label is Example walk for an example, or Generated from your walk for a later non-example result.
+- Actions: Play, Pause, Replay, scrub, choose a moment, Start another walk. About this example can be opened.
+- Data: the existing result contract in `frontend/src/contracts/types.ts`. Provenance stays on that object and is not rendered.
 - Phase 1: the synthetic example. Its sound is the browser sketch. The page says it is an example and not a studio recording. Planned musical changes stay planned.
-- Real behavior: Phase 3 fills the same screen from a real walk, a simpler version, or a separate cached example. Those three stay visually distinct.
-- Accessibility: one audio clock drives the route, graph, and story. At chosen moments they stay within 500 ms. The active moment is named, not only colored. Reduced motion still shows the place in the piece as text.
+- Real behavior: Phase 3 fills the same screen from a real walk. A simpler version and a cached example stay labeled Example walk when their mode is an example mode.
+- Accessibility: one audio clock drives the route, timeline, and story. At chosen moments they stay within 500 ms. The active moment is named, not only colored. Playback time is visible and is not announced on every tick. Reduced motion still shows the place in the piece as text.
 
 ### Recoverable error
 
@@ -225,17 +226,20 @@ Recording adapter, implemented in Phase 2:
 Generation adapter, implemented in Phase 3:
 
 - Start one attempt from a finished local draft.
-- Report a stage code, an error code, or a result.
+- Report one of the stage ids above, an error code, or a result. Do not report a percent, and do not make the stage id the public sentence.
+- Stop or return `timed_out` at the 180 second boundary.
 - Treat a repeat of the same finished walk as the same attempt.
-- Retry only when the person asks, and only for the codes listed above.
+- Retry only when the person asks, and only for `timed_out`, `arrangement_unavailable`, and `music_unavailable`.
 
-The result the page already understands remains the Soundprint result contract. Public rendering uses the route, events, chapters, story, duration, and a plain mode label. It does not render provenance or sponsor blocks.
+The result the page already understands remains the Soundprint result contract, including provenance. Public rendering uses the route, events, chapters, duration, and the Example walk or Generated from your walk label. It does not render a provenance panel, sponsor block, or raw processing payload.
+
+Phase 1 practice uses `sessionStorage` key `footwork-generation`. The public page has no control that sets it. `run` plays the four stages. An error code shows that recovery state. After one practice attempt, `footwork-generation-complete` keeps a second ending from starting another piece. Direct `/studio` and Hear an example leave the key unset and show the example.
 
 ## Design research
 
 These references guided the Night Trail Studio direction. They are not layouts to copy. The locked stack stays. No component library, no WebGL, and no new product dependency.
 
-The chosen tokens, logo files, and controls are recorded in `Docs/HANDOFF_2.md` under frontend polishing step 2. The landing and practice recording journey are step 3. `/system` is an unlinked catalog for the controls. `/studio` still uses the older screen.
+The chosen tokens, logo files, and controls are recorded in `Docs/HANDOFF_2.md` under frontend polishing step 2. The landing and practice recording journey are step 3. The generation screen and Soundprint are step 4. `/system` is an unlinked catalog for the controls.
 
 | Reference | Use |
 |---|---|
@@ -259,7 +263,7 @@ Real geolocation, Screen Wake Lock, IndexedDB recovery, and a monotonic timer. P
 
 ### Phase 3 — generation contract
 
-Backend processing uses the stage codes and error codes in this file. Retry is explicit. Starting generation for the same finished walk is idempotent. This file does not name routes, methods, or payload shapes. Live results, simpler versions, and cached examples stay separately labeled.
+Backend processing uses the stage ids and error codes in this file. The public sentences stay separate from those ids. Retry is explicit. A live attempt ends or falls back at 180 seconds and does not invent a percent. Starting generation for the same finished walk is idempotent. This file does not name routes, methods, or payload shapes. Example results stay labeled Example walk. A later non-example result uses Generated from your walk. Provenance remains on the result and out of the public page.
 
 ### Phase 4 — release checks
 

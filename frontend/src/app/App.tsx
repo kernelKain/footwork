@@ -8,7 +8,7 @@ import { StudioScreen } from "../studio/StudioScreen";
 import { SystemScreen } from "../ui/SystemScreen";
 
 export function App() {
-  const { path, navigate } = useRoute();
+  const { path, navigate, go } = useRoute();
   const fixture = validateDemoFixture(demoFixture);
 
   let screen = (
@@ -20,10 +20,10 @@ export function App() {
       </a>
     </section>
   );
-  if (path === "/") screen = <WalkScreen onNavigate={navigate} />;
+  if (path === "/") screen = <WalkScreen onNavigate={navigate} onGo={go} />;
   if (path === "/studio" && fixture.ok)
     screen = <StudioScreen fixture={fixture.value} onNavigate={navigate} />;
-  if (path === "/about") screen = <WalkScreen onNavigate={navigate} />;
+  if (path === "/about") screen = <WalkScreen onNavigate={navigate} onGo={go} />;
   if (path === "/system") screen = <SystemScreen />;
 
   return (

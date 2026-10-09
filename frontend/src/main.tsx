@@ -6,6 +6,7 @@ import "./styles/layout.css";
 import "./styles/system.css";
 import "./styles/journey.css";
 import "./styles/screens.css";
+import "./styles/studio.css";
 
 const root = document.getElementById("root");
 if (!root) {

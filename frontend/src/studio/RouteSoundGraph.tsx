@@ -1,4 +1,4 @@
-import type { EventType, SoundprintResult } from "../contracts/types";
+import type { Chapter, EventType, SoundprintResult } from "../contracts/types";
 import { formatTime } from "./formatTime";
 
 const EVENT_LABELS: Record<EventType, string> = {
@@ -8,7 +8,14 @@ const EVENT_LABELS: Record<EventType, string> = {
   loop: "Loop",
 };
 
-function isCurrentChapter(
+const EVENT_LINES: Record<EventType, string> = {
+  turn: "A sharp turn is meant to change the melody's direction. This change is planned.",
+  pause: "A pause is meant to become a musical break. This change is planned.",
+  pace_change: "A change in pace is meant to change the energy. This change is planned.",
+  loop: "A loop is meant to bring a musical idea back. This change is planned.",
+};
+
+export function isCurrentChapter(
   timeMs: number,
   startMs: number,
   endMs: number,
@@ -35,11 +42,8 @@ export function RouteSoundGraph({
   const playhead = Math.min(100, Math.max(0, (timeMs / result.duration_ms) * 100));
   return (
     <section className="stack" aria-labelledby="graph-title">
-      <h2 id="graph-title">Route–Sound Graph</h2>
-      <p>
-        Intended musical mappings. The word planned means the relationship has not been measured in
-        audio.
-      </p>
+      <h2 id="graph-title">Moments in the music</h2>
+      <p>Choose a moment to hear where it sits in the piece.</p>
       <div className="graph-track" aria-hidden="true">
         <span
           className="graph-playhead"
@@ -66,7 +70,6 @@ export function RouteSoundGraph({
       </div>
       <ol className="mapping-list">
         {result.events.map((event) => {
-          const check = result.mapping_verification.find((item) => item.event_id === event.id);
           const active = Math.abs(timeMs - event.audio_offset_ms) <= 500;
           return (
             <li key={event.id}>
@@ -77,8 +80,7 @@ export function RouteSoundGraph({
               >
                 <span>{EVENT_LABELS[event.type]}</span>
                 {active ? <span>Now</span> : null}
-                <span>{check?.status ?? "planned"}</span>
-                <span>{check?.note}</span>
+                <span>{EVENT_LINES[event.type]}</span>
                 <time dateTime={`PT${Math.floor(event.audio_offset_ms / 1000)}S`}>
                   {formatTime(event.audio_offset_ms)}
                 </time>
@@ -88,5 +90,17 @@ export function RouteSoundGraph({
         })}
       </ol>
     </section>
+  );
+}
+
+export function currentChapter(
+  chapters: Chapter[],
+  durationMs: number,
+  timeMs: number,
+): Chapter | null {
+  return (
+    chapters.find((chapter) =>
+      isCurrentChapter(timeMs, chapter.start_ms, chapter.end_ms, durationMs),
+    ) ?? null
   );
 }
