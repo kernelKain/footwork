@@ -4,7 +4,7 @@ Step-by-step record of what actually happened. The locked plan stays in `Docs/HA
 
 **Status:** P1 continues locally. The public Render deploy is the first activity of P2. CodeRabbit GitHub App install is still unconfirmed.  
 **Next step:** P1.3 on `build/experience`.  
-**Last completed step:** P1.1 — `33e8a8c`. P1.2 local health and blueprint work is in the following commit.  
+**Last completed step:** P1.2 local health and blueprint — `a7ac1ab`. Public deploy is P2.0.  
 **Active build time:** 0 of 20 hours recorded. This session was not measured.
 
 Execution notes stay in this file. The diagram and write-up path are under `Docs/`. Each **Notes** section is filled only after that step is finished.
@@ -104,7 +104,7 @@ Build design tokens, the three-screen shell, reusable layout, and typed fixture 
 
 ### P1.2 — Deploy the frontend shell and API health endpoint
 
-**Status:** Partial  
+**Status:** Done locally  
 **Kind:** Release · 50 minutes · AC-07  
 **Commit subject:** Deploy the frontend shell and API health endpoint
 
@@ -112,7 +112,7 @@ Serve the frontend and a FastAPI health endpoint from one Render service. The us
 
 **Done when.** The public HTTPS page and `/health` both work.
 
-**Notes.** `GET /health` returns status, API version `v1`, and schema version `1`, and it does not call a provider. The same FastAPI app serves the built shell for `/`, `/studio`, and `/about`. `deploy/render.yaml` selects Python, plan `1c-2g`, region `singapore`, a 1 GB disk, and `autoDeployTrigger: off`. Secret values stay out of the file. `uv run --directory backend ruff check .` passed. `uv run --directory backend pytest` passed, 9 tests. A local TestClient check of `frontend/dist` returned 200 for `/health`, `/`, `/studio`, `/about`, and the built JavaScript asset. The public URL check moved to P2.0. AC-07 stays open until that deploy. No active time was measured.
+**Notes.** `GET /health` returns status, API version `v1`, and schema version `1`, and it does not call a provider. The same FastAPI app serves the built shell for `/`, `/studio`, and `/about`. `deploy/render.yaml` selects Python, plan `1c-2g`, region `singapore`, a 1 GB disk, and `autoDeployTrigger: off`. Secret values stay out of the file. `uv run --directory backend ruff check .` passed. `uv run --directory backend pytest` passed, 9 tests. A local TestClient check of `frontend/dist` returned 200 for `/health`, `/`, `/studio`, `/about`, and the built JavaScript asset. The public URL check moved to P2.0. AC-07 stays open until that deploy. Commit `a7ac1ab` on `build/experience`. No active time was measured.
 
 #### P1.2a — Keep the API import test collectable
 
