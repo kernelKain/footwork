@@ -1,0 +1,1 @@
+Add high quality light mode as well with dark mode and then update the handoff docs for the new plan after all these frontedn modifcation done here and commit and push all of this branch.
