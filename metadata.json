@@ -1,0 +1,50 @@
+{
+  "cli_version": "0.11.4",
+  "checkpoint_id": "01M4G5R5XNXBYKZATKR6YB7JBX",
+  "strategy": "manual-commit",
+  "branch": "build/experience",
+  "checkpoints_count": 2,
+  "files_touched": [
+    "Docs/FRONTEND_EXPERIENCE.md",
+    "Docs/HANDOFF_1.md",
+    "Docs/HANDOFF_2.md",
+    "frontend/index.html",
+    "frontend/public/brand/apple-touch.svg",
+    "frontend/public/brand/mark-mono.svg",
+    "frontend/public/brand/mark.svg",
+    "frontend/public/brand/og.svg",
+    "frontend/public/brand/trail-wash.svg",
+    "frontend/public/brand/wordmark.svg",
+    "frontend/public/favicon.svg",
+    "frontend/src/app/App.tsx",
+    "frontend/src/app/useRoute.ts",
+    "frontend/src/main.tsx",
+    "frontend/src/styles/layout.css",
+    "frontend/src/styles/system.css",
+    "frontend/src/styles/tokens.css",
+    "frontend/src/ui/Alert.tsx",
+    "frontend/src/ui/Button.tsx",
+    "frontend/src/ui/Disclosure.tsx",
+    "frontend/src/ui/HoldButton.tsx",
+    "frontend/src/ui/IconButton.tsx",
+    "frontend/src/ui/Logo.tsx",
+    "frontend/src/ui/RecordingIndicator.tsx",
+    "frontend/src/ui/RouteMarks.tsx",
+    "frontend/src/ui/Sheet.tsx",
+    "frontend/src/ui/Skeleton.tsx",
+    "frontend/src/ui/StatusChip.tsx",
+    "frontend/src/ui/Surface.tsx",
+    "frontend/src/ui/SystemScreen.tsx",
+    "frontend/src/ui/TimerDisplay.tsx",
+    "frontend/tests/system.spec.ts"
+  ],
+  "sessions": [
+    {
+      "metadata": "/0/metadata.json",
+      "transcript": "/0/full.jsonl",
+      "compact_transcript": "/0/transcript.jsonl",
+      "content_hash": "/0/content_hash.txt",
+      "prompt": ""
+    }
+  ]
+}
