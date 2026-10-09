@@ -1,0 +1,92 @@
+Work in this repository:
+
+/home/kernel-kain/Documents/Github/footwork
+
+Implement only Step 1 of the approved Phase 1 frontend-polishing plan. This step is documentation, information architecture, copy planning, and interface-contract work. Do not redesign or implement frontend components yet.
+
+Before changing anything:
+
+1. Read all repository instructions, including every applicable AGENTS.md.
+2. Inspect the current git status and preserve all existing user changes.
+3. Audit the frontend routes, components, fixtures, state handling, and current Phase 1 documentation.
+4. Read:
+   - Docs/HANDOFF_1.md
+   - Docs/HANDOFF_2.md
+   - Docs/PRODUCT_CONCEPT.md
+5. Do not modify the unrelated .opencode directory.
+
+Update the documentation to establish this product flow:
+
+Understand Footwork → Start walking → Record safely → End walk → Generate → Hear the Soundprint
+
+Define these decisions:
+
+- `/` is the unified landing and recording entry.
+- `/studio` is the generated Soundprint experience.
+- `/about` should eventually redirect to `/#how-it-works`.
+- The global Walk / Soundprint / How it works navigation will be removed.
+- Sponsors and Provenance will not appear as public application sections.
+- Technical provenance remains in internal metadata, developer documentation, and submission evidence.
+- Developer fixture controls must not appear in the public experience.
+- User-facing language must be understandable to non-technical users.
+- Fixture and demo states must always remain honestly labelled.
+
+Document the frontend state model:
+
+- Ready
+- Checking location
+- Permission denied
+- Recording
+- Ending
+- Processing
+- Complete
+- Recoverable error
+- Unsupported browser
+- Offline or interrupted session
+
+For every state, document:
+
+- What the user sees.
+- Available actions.
+- Required data.
+- Phase 1 fixture behavior.
+- Which later phase will provide the real implementation.
+- Accessibility and recovery expectations.
+
+Add a concise design-research appendix explaining how these references will be used:
+
+- SaaSFrame for mobile onboarding, map, progress, and generation states:
+  https://saasframe.io
+- Relume for landing-page information architecture:
+  https://relume.io
+- Godly for visual art direction, hero composition, logo presentation, and social previews:
+  https://godly.design
+- 21st.dev for carefully selected component compositions:
+  https://21st.dev
+- Watermelon UI for theming and accessible component anatomy:
+  https://ui.watermelon.sh/
+- Motion Primitives for purposeful state transitions:
+  https://motion-primitives.com/
+- Haikei for optimized static SVG backgrounds:
+  https://haikei.app/
+- ThreeUI for visual-depth inspiration only. Explicitly reject runtime Three.js, shaders, and WebGL for the core journey:
+  https://threeui.com/browse?sort=recent
+- TasteSkill for the principle of avoiding generic template-like output:
+  https://www.tasteskill.dev/
+
+Update the later-phase documentation:
+
+- Phase 2: real geolocation, Wake Lock, IndexedDB recovery, and monotonic timer adapters.
+- Phase 3: backend processing-stage codes, error codes, retry behavior, and idempotent generation.
+- Phase 4: integration, accessibility, performance, and device regression.
+- Phase 5: sponsor and provenance evidence in README/submission materials rather than the application UI.
+
+Do not invent backend endpoints. Define interfaces and responsibilities without prematurely fixing transport details.
+
+Validate that the updated documents do not contradict one another. Provide a short summary of decisions and unresolved risks.
+
+After validation, create exactly one commit containing only this step’s files:
+
+Rebaseline the frontend experience and visual direction
+
+Do not begin Step 2.
