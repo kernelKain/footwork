@@ -2,9 +2,9 @@
 
 Step-by-step record of what actually happened. The locked plan stays in `Docs/HANDOFF_1.md`. This file is the place to read after a step is finished.
 
-**Status:** P1 continues locally. The public experience contract is `Docs/FRONTEND_EXPERIENCE.md`. The public Render deploy is the first activity of P2. CodeRabbit GitHub App install is still unconfirmed.  
-**Next step:** Frontend polishing step 5 is not started.  
-**Last completed step:** Frontend polishing step 4, in this commit. P1.6 layout remains `4d3e9d1`. Public deploy is P2.0.  
+**Status:** The Phase 1 frontend is verified locally. The public Render deploy is the first activity of P2. CodeRabbit GitHub App install is still unconfirmed.  
+**Next step:** P2.0 — publish the shell and health endpoint, after this branch is pushed.  
+**Last completed step:** Frontend polishing step 5, in this commit. P1.6 layout remains `4d3e9d1`. Public deploy is P2.0.  
 **Active build time:** 0 of 20 hours recorded. This session was not measured.
 
 Execution notes stay in this file. The diagram and write-up path are under `Docs/`. Each **Notes** section is filled only after that step is finished.
@@ -302,6 +302,32 @@ Fixture boundary: tests set `sessionStorage` key `footwork-generation` to `run` 
 
 Verification for this commit: `npm run typecheck`, `npm run lint`, and `npm run format` passed. `npm test` passed, 39 tests. Those tests cover play, pause, seek, replay, event selection, keyboard activation, the 500 ms clock, empty, partial, timeout, error, retry, example, and repeat states, reduced motion, and 360, 390, 430, 768, and 1280 px. Sponsors, Provenance, the generation picker, `synthetic_fixture`, and `mapping_status` are absent from the public page. The route cursor, timeline playhead, and story time still share the audio clock within 500 ms.
 
+### Step 5 — Verify the frontend redesign and rebaseline later phases
+
+**Status:** Done  
+**Kind:** Edit  
+**Commit subject:** Verify the frontend redesign and rebaseline later phases
+
+Check the Phase 1 pages, remove leftover preview controls, and write the Phase 2 seams against the screens that exist.
+
+**Done when.** The existing checks pass, the critical flows have regression tests, and Phase 2 can start from the current landing, recording, generation, and Soundprint interfaces.
+
+**Notes.** This commit does not add a product feature. `.opencode/` stayed untracked. No active time was measured. No real phone was available for this pass.
+
+`npm run typecheck`, `npm run lint`, and `npm run format` passed. `npm test` passed, 45 tests. `npm run build` passed. `uv run --directory backend ruff check .` passed, and `uv run --directory backend pytest` passed, 9 tests, with no backend source changes. The first test run in this step failed two shell tests while a second build was writing `dist` at the same time. A clean rerun passed those tests. They were not product failures.
+
+What changed: `viewport-fit=cover` so the existing safe-area padding can apply on a notched phone. Touch targets use `max(44px, 2.75rem)` and the primary actions use `max(48px, 3rem)`, so they stay at least the physical minimum and grow when text is enlarged. The readiness sheet moves focus inside the dialog and returns it when the sheet closes. `/about` settles to `/#how-it-works` for a direct visit and for in-app navigation. Unused preview components and their styles are gone. Repeated waveform bar keys that collided were given unique keys. The public pages were not redesigned.
+
+Phase 2 starts from these seams:
+
+- Recording: `frontend/src/recording/practicePort.ts`. Replace it with the Geolocation API, the Screen Wake Lock API, and IndexedDB. `checkSupport` reports an unsupported browser before a location request. `explainThenResolve` reports granted, denied, or offline. `wakeLockLabel` says when the screen is held and when it is not. The page must not promise recording after the phone is locked. `recoverDraft` is null until a draft can be saved and restored. The elapsed clock must be monotonic and must not fill missing time.
+- Generation: `frontend/src/studio/generationContract.ts`. Stage ids, in order, are `reading_walk`, `finding_moments`, `shaping_music`, and `recording_piece`. The public lines are Reading your walk, Finding meaningful moments, Turning them into music, and Creating your track. Error codes are `trace_too_short`, `timed_out`, `arrangement_unavailable`, `music_unavailable`, and `generation_limit`. Retry is only for `timed_out`, `arrangement_unavailable`, and `music_unavailable`, and only after the person presses Try again. The 180 second boundary from AC-08 ends in the timeout line. A second ending of the same finished walk must not start another piece. Do not send a percent or a new HTTP path from this contract.
+- Provenance stays on the Soundprint result and in the fixture. It is not a public panel. Sponsor acknowledgements stay in `README.md` and these notes.
+
+Accessibility baseline from this pass: one `h1` on each public view, a `header` and a `main`, visible `:focus-visible` outlines, named controls, text plus color for status, and reduced motion that leaves the generation line visible. Playback time is not a live region. The stage status changes only when the stage changes.
+
+Performance baseline, local only: `vite build` produced `dist/index.html` at 0.91 kB (gzip 0.45 kB), CSS at 11.53 kB (gzip 3.12 kB), and JavaScript at 268.74 kB (gzip 82.09 kB). CSS is about 0.5 kB smaller than the previous build because unused preview styles were removed. The deleted preview modules were already outside the bundle, so JavaScript stayed about 82 kB gzip. An emulated slow mobile profile, about 1.6 Mbps down, 750 kbps up, 150 ms latency, and 4× CPU, showed the landing in 1353 ms and the example in 1113 ms on the local preview server. The document load event was 388 ms and the document transfer was 1212 bytes. Resource body sizes in that run were 0 because the preview assets were already cached, so this is not a cold download of the script and not a Lighthouse score. No real phone was available. SVG brand files are all under 1 KB. The type stack is `system-ui`, so no web font blocks the first paint. The JavaScript dependencies are React and React DOM. There is no Three.js, WebGL, or infinite decorative background animation. The stage entrance and the recording pulse use opacity and transform, and the pulse runs only when the person has not asked for reduced motion.
+
 ---
 
 ## P2 — Real recording and movement engine
@@ -309,7 +335,7 @@ Verification for this commit: `npm run typecheck`, `npm run lint`, and `npm run 
 **Branch:** `build/movement`  
 **Window:** Build hours 7–11 (240 minutes)  
 **Outcome:** Real capture, four detectors, compression, and an exact Route Sketch Hook.  
-**Phase note:** Not started. The public shell deploy was added at the start of this phase on October 9, 2026. P1 continues locally until then. The recording adapter for this phase is geolocation, Screen Wake Lock, IndexedDB recovery, and a monotonic timer, using the public states in `Docs/FRONTEND_EXPERIENCE.md`.
+**Phase note:** Not started. The public shell deploy is the first activity of this phase. The recording and generation seams are the practice port and `frontend/src/studio/generationContract.ts`, described in frontend polishing step 5. Use the public states in `Docs/FRONTEND_EXPERIENCE.md`. Do not restore sponsor, provenance, or fixture-picker sections.
 
 ### P2.0 — Publish the shell and health endpoint
 

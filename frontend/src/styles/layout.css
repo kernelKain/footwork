@@ -1,5 +1,6 @@
 .app-shell {
   min-height: 100vh;
+  min-height: 100svh;
   padding-top: var(--safe-top);
   padding-right: var(--safe-right);
   padding-bottom: var(--safe-bottom);
@@ -28,7 +29,7 @@
 }
 
 .app-header .ui-button {
-  min-height: 48px;
+  min-height: max(48px, 3rem);
 }
 
 .app-main {

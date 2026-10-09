@@ -6,7 +6,17 @@
 
 The public journey for this build is: Understand Footwork, start walking, record safely, end the walk, generate, and hear the Soundprint. Page structure, plain-language copy, and the interface states are in `Docs/FRONTEND_EXPERIENCE.md`. Where this concept is broader than that file or `Docs/HANDOFF_1.md` — extra moods, MapLibre, or a longer track — those implementation documents win.
 
----
+## Current public experience
+
+This is what the application shows now.
+
+- `/` explains Footwork and holds the practice walk. Start walking opens a readiness sheet. The practice does not ask for location, does not hold the screen awake, and does not save a route.
+- Ending the practice opens generation on `/studio`. The wait names four stages and an elapsed time. It does not show a percent. The result is the labeled example.
+- `/studio` is the Soundprint: hero, route, movement-to-music timeline, a short walk story, and optional details. Hear an example opens that same example.
+- `/about` opens How it works on `/`.
+- There is no global Walk / Soundprint / How it works navigation, no Sponsors section, and no Provenance section. Sponsor roles and technical provenance stay in this file, `Docs/HANDOFF_1.md`, and `README.md`.
+
+Mood choice, Pocket Mode, a public share link, and a desktop QR code are later product ideas. They are not controls on these pages.
 
 ## Product Summary
 
@@ -34,18 +44,14 @@ Footwork connects these two worlds by making movement responsible for the musica
 
 ### Before the Walk
 
-The user opens the public Footwork link on their phone and:
+The user opens Footwork on their phone. In the current build they read the landing page, start a labeled practice walk, and can hear the example. A later recording build is planned to:
 
-1. Selects a positive musical mood.
-2. Grants precise-location permission.
-3. Completes a short readiness check.
-4. Reduces screen brightness.
-5. Disables Battery Saver or Low Power Mode.
-6. Keeps the browser tab open.
-7. Sets screen timeout to one hour or Never if automatic Wake Lock is unavailable.
-8. Taps **Start Walk**.
+1. Grant precise-location permission after a plain explanation.
+2. Keep this tab open.
+3. Tell the person to keep the screen awake when the browser cannot hold it.
+4. Tap Start walking.
 
-**Supported MVP moods:**
+**Supported later moods, not chosen in the current build:**
 
 - Warm Cinematic
 - Bright Electronic
@@ -53,7 +59,7 @@ The user opens the public Footwork link on their phone and:
 
 ### During the Walk
 
-Footwork enters **Pocket Mode**:
+The current practice shows Recording, an elapsed clock, a plain signal, and Hold to end walk. It does not track location. A later recording build is planned to enter Pocket Mode:
 
 - The interface becomes almost black.
 - The browser requests a Screen Wake Lock.
@@ -71,7 +77,7 @@ A normal web application cannot guarantee continuous tracking after the phone is
 
 The End Walk button remains readable even at low brightness. To avoid accidental activation, the user holds it for two seconds while a progress ring fills.
 
-After the walk ends, Footwork checks route quality and begins producing the Soundprint.
+The current practice uses that two-second hold, or a second press when motion is reduced. Ending it does not check a real route. It opens the generation wait, then the labeled example. A later build checks route quality before producing a piece from that walk.
 
 ---
 
@@ -300,30 +306,9 @@ These appear as the story behind the composition rather than fitness analytics.
 
 ## Mobile and Desktop Experience
 
-Footwork is mobile-first for recording:
+Footwork is mobile-first. The current recording screen uses large labeled controls, a sticky end action above the device safe area, and one column on a phone. At a wide desktop width the Soundprint can keep the player and route beside the timeline.
 
-- Large controls
-- High contrast
-- One-handed interaction
-- Minimal setup
-- Pocket Mode
-- Responsive layouts
-- No small tracking controls
-
-The complete result also works on the phone through touch, pinch zoom, graph scrubbing, and landscape mode.
-
-After generation, Footwork recommends opening the result on a larger screen:
-
-> Your Soundprint works on this phone. For the best view of the complete animated route and Route–Sound Graph, open the privacy-safe result link on a larger screen.
-
-**Available actions:**
-
-- Explore on this phone
-- Copy result link
-- Share result
-- Show desktop QR code
-
-Desktop presentation places the route and graph side by side with richer labels, hover details, and full-screen exploration.
+Pocket Mode, pinch zoom, a copied result link, sharing, and a desktop QR code are not part of the current pages.
 
 ---
 

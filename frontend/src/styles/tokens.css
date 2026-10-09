@@ -30,7 +30,7 @@
   --shadow-raised: 0 10px 28px rgb(0 0 0 / 0.28);
   --duration-fast: 160ms;
   --ease-standard: cubic-bezier(0.2, 0, 0, 1);
-  --touch: 44px;
+  --touch: max(44px, 2.75rem);
   --safe-top: env(safe-area-inset-top, 0px);
   --safe-right: env(safe-area-inset-right, 0px);
   --safe-bottom: env(safe-area-inset-bottom, 0px);

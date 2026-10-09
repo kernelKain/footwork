@@ -70,7 +70,7 @@
 .journey .ui-button,
 .recording-view .ui-button,
 .recording-view .ui-hold {
-  min-height: 48px;
+  min-height: max(48px, 3rem);
 }
 
 .walk-dock {

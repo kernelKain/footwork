@@ -1363,6 +1363,8 @@ If a required sponsor criterion fails, state the failure. Do not redefine the ga
 
 Never add fake metrics, fake testimonials or unlabeled synthetic outputs.
 
+The Phase 1 frontend that this handoff now starts from is the landing and practice walk on `/`, generation, and the Soundprint on `/studio`. `/about` opens `/#how-it-works`. Sponsor and provenance sections are not in the product. The verification record for that pass is frontend polishing step 5 in `Docs/HANDOFF_2.md`.
+
 ---
 
 ## 27. Execution State — Initialize
@@ -1371,10 +1373,10 @@ Never add fake metrics, fake testimonials or unlabeled synthetic outputs.
 |---|---|
 | Status | **IN PROGRESS** |
 | Current phase | P1 — Complete frontend experience |
-| Last completed step | Frontend polishing step 4 — generation and Soundprint |
-| Next step | Frontend polishing step 5 is not started. |
+| Last completed step | Frontend polishing step 5 — verification and rebaseline |
+| Next step | P2.0 — publish the shell and health endpoint, after this branch is pushed. |
 | Current execution branch | `build/experience` |
-| Last execution commit | `6151607` |
+| Last execution commit | `d7988b4` |
 | Existing baseline commit | `22df0e7` |
 | Last PR | NONE |
 | Live URL | NOT YET DEPLOYED |
@@ -1404,8 +1406,8 @@ Active-work ceiling: 20 hours
 Feature freeze: Build hour 15, at 75%
 Autonomy: A1 — agent edits; user runs commands and controls Git/deployment
 Status: IN PROGRESS
-Last completed: Frontend polishing step 4 — generation and Soundprint
-Next step: Frontend polishing step 5 is not started. The experience contract is Docs/FRONTEND_EXPERIENCE.md.
+Last completed: Frontend polishing step 5 — verification and rebaseline
+Next step: P2.0 — publish the shell and health endpoint, after this branch is pushed. The experience contract is Docs/FRONTEND_EXPERIENCE.md.
 Active phase: P1 — Complete frontend experience
 Branch: build/experience
 Live URL: NOT YET DEPLOYED

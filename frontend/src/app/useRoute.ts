@@ -40,19 +40,27 @@ export function useRoute(): {
 
   const navigate = (event: { preventDefault: () => void; currentTarget: { href: string } }) => {
     event.preventDefault();
-    const next = normalizePath(new URL(event.currentTarget.href).pathname);
-    if (next !== window.location.pathname) {
-      window.history.pushState(null, "", next);
+    const requested = normalizePath(new URL(event.currentTarget.href).pathname);
+    if (requested === "/about") {
+      setPath(settlePath(requested));
+      return;
     }
-    setPath(next);
+    if (requested !== window.location.pathname) {
+      window.history.pushState(null, "", requested);
+    }
+    setPath(requested);
   };
 
   const go = useCallback((pathname: string) => {
-    const next = normalizePath(pathname);
-    if (next !== window.location.pathname) {
-      window.history.pushState(null, "", next);
+    const requested = normalizePath(pathname);
+    if (requested === "/about") {
+      setPath(settlePath(requested));
+      return;
     }
-    setPath(next);
+    if (requested !== window.location.pathname) {
+      window.history.pushState(null, "", requested);
+    }
+    setPath(requested);
   }, []);
 
   return { path, navigate, go };

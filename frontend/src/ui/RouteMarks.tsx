@@ -20,7 +20,7 @@ export function Waveform() {
         <title>Quiet waveform</title>
         {bars.map((height, index) => (
           <rect
-            key={height + index}
+            key={`wave-bar-${index}`}
             x={6 + index * 11}
             y={28 - height}
             width="6"

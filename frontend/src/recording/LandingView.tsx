@@ -58,7 +58,7 @@ export function LandingView({
             <rect className="ui-beat" x="148" y="32" width="14" height="14" rx="2" />
             {[18, 28, 16, 36, 22, 32, 14, 26].map((height, index) => (
               <rect
-                key={height + index}
+                key={`hero-bar-${index}`}
                 x={186 + index * 16}
                 y={108 - height}
                 width="8"
@@ -123,7 +123,7 @@ export function LandingView({
             <rect className="ui-beat" x="132" y="12" width="12" height="12" rx="2" />
             {current.bars.map((height, index) => (
               <rect
-                key={height + index}
+                key={`moment-bar-${index}`}
                 x={156 + index * 10}
                 y={60 - height}
                 width="6"

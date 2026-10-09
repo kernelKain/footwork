@@ -62,7 +62,7 @@ Start another walk returns to `/`.
 
 ### `/about`
 
-Keep the route until the redirect exists, so old links do not break. The eventual behavior is a redirect to `/#how-it-works`. Do not add new public content that exists only on `/about`.
+A visit to `/about`, including a reload, opens `/#how-it-works` on the landing page. In-app navigation to `/about` does the same. How it works is not a separate page.
 
 ## Copy
 
@@ -79,7 +79,7 @@ Buttons and status lines name the action or the situation. Color is never the on
 
 ## State model
 
-The public journey uses these states. Internal preview names in the current shell are not this model.
+The public pages use these states.
 
 | State | Plain name |
 |---|---|

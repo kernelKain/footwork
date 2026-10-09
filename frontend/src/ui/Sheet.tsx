@@ -14,13 +14,23 @@ export function Sheet({
   children: ReactNode;
 }) {
   const ref = useRef<HTMLDialogElement>(null);
+  const opener = useRef<HTMLElement | null>(null);
   const titleId = useId();
 
   useEffect(() => {
     const dialog = ref.current;
     if (!dialog) return;
-    if (open && !dialog.open) dialog.showModal();
-    if (!open && dialog.open) dialog.close();
+    if (open && !dialog.open) {
+      opener.current =
+        document.activeElement instanceof HTMLElement ? document.activeElement : null;
+      dialog.showModal();
+      dialog.querySelector<HTMLElement>("button, a[href], input, select, textarea")?.focus();
+      return;
+    }
+    if (!open && dialog.open) {
+      dialog.close();
+      opener.current?.focus();
+    }
   }, [open]);
 
   return (
