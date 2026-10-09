@@ -315,13 +315,13 @@ No account creation is required.
 
 ### Screens (maximum two public destinations)
 
-`Docs/FRONTEND_EXPERIENCE.md` is the public page contract from October 9, 2026. The table below matches it. The code on `build/experience` still has the older three-link header, `/about` page, preview-state controls, and public sponsor and provenance sections until a later polishing step removes them.
+`Docs/FRONTEND_EXPERIENCE.md` is the public page contract from October 9, 2026. The table below matches it. `/` is the landing and practice recording journey, and `/about` redirects to `/#how-it-works`. `/studio` still shows the older fixture screen, including sponsor and provenance sections and the generation preview control, until a later polishing step removes them.
 
 | Screen | Purpose/content | Actions | States and Hook relationship |
 |---|---|---|---|
 | `/` — Walk | Explain the product, record, and end a walk. How it works is `#how-it-works` on this page. | Start walking; Hear an example; End walk | Ready through recording, ending, and recoverable recording errors. |
 | `/studio` — Soundprint | Route, player, graph, and story. No sponsor or provenance sections. | Play/Pause; Scrub; Start another walk | Processing, complete, and generation errors. Contains the Hook. |
-| `/about` | Redirect to `/#how-it-works` once that redirect is built. | None of its own | Not a third destination. |
+| `/about` | Redirects to `/#how-it-works`. | None of its own | Not a third destination. |
 
 ### Reusable Regions
 
@@ -1369,8 +1369,8 @@ Never add fake metrics, fake testimonials or unlabeled synthetic outputs.
 |---|---|
 | Status | **IN PROGRESS** |
 | Current phase | P1 — Complete frontend experience |
-| Last completed step | Frontend polishing step 2 — brand and mobile design system |
-| Next step | Frontend polishing step 3 is not started. |
+| Last completed step | Frontend polishing step 3 — guided landing and recording journey |
+| Next step | Frontend polishing step 4 is not started. |
 | Current execution branch | `build/experience` |
 | Last execution commit | `4d3e9d1` |
 | Existing baseline commit | `22df0e7` |
@@ -1402,8 +1402,8 @@ Active-work ceiling: 20 hours
 Feature freeze: Build hour 15, at 75%
 Autonomy: A1 — agent edits; user runs commands and controls Git/deployment
 Status: IN PROGRESS
-Last completed: Frontend polishing step 2 — brand and mobile design system
-Next step: Frontend polishing step 3 is not started. The experience contract is Docs/FRONTEND_EXPERIENCE.md.
+Last completed: Frontend polishing step 3 — guided landing and recording journey
+Next step: Frontend polishing step 4 is not started. The experience contract is Docs/FRONTEND_EXPERIENCE.md.
 Active phase: P1 — Complete frontend experience
 Branch: build/experience
 Live URL: NOT YET DEPLOYED

@@ -1,6 +1,14 @@
 type LogoVariant = "mark" | "wordmark" | "mono";
 
-export function Logo({ variant = "mark", size = 32 }: { variant?: LogoVariant; size?: number }) {
+export function Logo({
+  variant = "mark",
+  size = 32,
+  decorative = false,
+}: {
+  variant?: LogoVariant;
+  size?: number;
+  decorative?: boolean;
+}) {
   const mono = variant === "mono";
   const line = mono ? "var(--color-text)" : "var(--color-mint)";
   const beat = mono ? "var(--color-text)" : "var(--color-amber)";
@@ -11,11 +19,12 @@ export function Logo({ variant = "mark", size = 32 }: { variant?: LogoVariant; s
       width={width}
       height={size}
       viewBox={variant === "mark" ? "0 0 32 32" : "0 0 220 32"}
-      role="img"
-      aria-label="Footwork"
-      data-logo={variant}
+      role={decorative ? undefined : "img"}
+      aria-label={decorative ? undefined : "Footwork"}
+      aria-hidden={decorative || undefined}
+      data-logo={decorative ? undefined : variant}
     >
-      <title>Footwork</title>
+      {decorative ? null : <title>Footwork</title>}
       <path
         d="M10 24 V8 H22 H10 V16 H20"
         fill="none"

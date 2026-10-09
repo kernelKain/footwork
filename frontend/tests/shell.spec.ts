@@ -8,25 +8,21 @@ async function expectNoHorizontalOverflow(page: import("@playwright/test").Page)
   expect(overflow).toBe(true);
 }
 
-test("walk screen explains the preview and offers the example", async ({ page }) => {
+test("walk screen explains the practice and offers the example", async ({ page }) => {
   await page.goto("/");
-  await expect(page.getByRole("heading", { name: "Footwork" })).toBeVisible();
-  await expect(page.getByText("No walk is stored on this device.")).toBeVisible();
-  await expect(page.getByRole("link", { name: "Play example" })).toBeVisible();
-  await page.getByRole("link", { name: "Play example" }).click();
+  await expect(page.getByRole("heading", { name: "Turn a walk into music." })).toBeVisible();
+  await expect(page.getByText("A real walk is not saved on this page.")).toBeVisible();
+  await expect(page.getByRole("navigation")).toHaveCount(0);
+  await page.getByRole("link", { name: "Hear an example" }).first().click();
   await expect(page).toHaveURL(/\/studio$/);
   await expect(page.getByRole("status")).toContainText("Synthetic fixture");
   await expect(page.getByRole("status")).toContainText("not a recorded walk");
 });
 
-test("about screen states the mechanism and its limits", async ({ page }) => {
+test("about redirects to how it works", async ({ page }) => {
   await page.goto("/about");
-  await expect(page.getByRole("heading", { name: "How it works" })).toBeVisible();
-  await expect(page.getByText("This preview does not call them.")).toBeVisible();
-  await expect(page.getByRole("link", { name: "Source code" })).toHaveAttribute(
-    "href",
-    "https://github.com/kernelKain/footwork",
-  );
+  await expect(page).toHaveURL(/\/#how-it-works$/);
+  await expect(page.getByRole("heading", { name: "Your walk becomes music" })).toBeVisible();
 });
 
 for (const width of [390, 1280]) {
@@ -49,7 +45,7 @@ for (const width of [390, 1280]) {
     expect(routeBox!.x + routeBox!.width).toBeLessThanOrEqual(width + 1);
     await expect(page.getByRole("listitem").filter({ hasText: "Turn" })).toBeVisible();
     await expect(page.getByRole("listitem").filter({ hasText: "Pause" })).toBeVisible();
-    const example = page.getByRole("link", { name: "Soundprint" });
+    const example = page.getByRole("link", { name: "Start another walk" });
     const box = await example.boundingBox();
     expect(box).not.toBeNull();
     expect(box!.x).toBeGreaterThanOrEqual(0);
@@ -57,15 +53,18 @@ for (const width of [390, 1280]) {
     await expectNoHorizontalOverflow(page);
 
     await page.goto("/");
-    const play = page.getByRole("link", { name: "Play example" });
+    const play = page.getByRole("link", { name: "Hear an example" }).first();
     await expect(play).toBeVisible();
-    const recordingBox = await page.getByRole("heading", { name: "Recording" }).boundingBox();
-    const previewBox = await page
-      .getByRole("button", { name: "Show recording preview states" })
+    const hero = await page.getByRole("heading", { name: "Turn a walk into music." }).boundingBox();
+    const steps = await page
+      .getByRole("heading", { name: "Your walk becomes music" })
       .boundingBox();
-    expect(recordingBox).not.toBeNull();
-    expect(previewBox).not.toBeNull();
-    expect(recordingBox!.y).toBeLessThan(previewBox!.y);
+    expect(hero).not.toBeNull();
+    expect(steps).not.toBeNull();
+    expect(hero!.y).toBeLessThan(steps!.y);
+    await expect(page.getByRole("button", { name: "Show recording preview states" })).toHaveCount(
+      0,
+    );
     const exampleBox = await play.boundingBox();
     expect(exampleBox).not.toBeNull();
     expect(exampleBox!.x).toBeGreaterThanOrEqual(0);
@@ -92,7 +91,7 @@ test("keyboard reaches the example action", async ({ page }) => {
     await page.keyboard.press("Tab");
     const focused = page.locator(":focus");
     const text = await focused.innerText();
-    if (text.includes("Play example")) {
+    if (text.includes("Hear an example")) {
       found = true;
       const outline = await focused.evaluate((element) => getComputedStyle(element).outlineStyle);
       expect(outline).not.toBe("none");

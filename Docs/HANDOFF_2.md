@@ -3,8 +3,8 @@
 Step-by-step record of what actually happened. The locked plan stays in `Docs/HANDOFF_1.md`. This file is the place to read after a step is finished.
 
 **Status:** P1 continues locally. The public experience contract is `Docs/FRONTEND_EXPERIENCE.md`. The public Render deploy is the first activity of P2. CodeRabbit GitHub App install is still unconfirmed.  
-**Next step:** Frontend polishing step 3 is not started.  
-**Last completed step:** Frontend polishing step 2, in this commit. P1.6 layout remains `4d3e9d1`. Public deploy is P2.0.  
+**Next step:** Frontend polishing step 4 is not started.  
+**Last completed step:** Frontend polishing step 3, in this commit. P1.6 layout remains `4d3e9d1`. Public deploy is P2.0.  
 **Active build time:** 0 of 20 hours recorded. This session was not measured.
 
 Execution notes stay in this file. The diagram and write-up path are under `Docs/`. Each **Notes** section is filled only after that step is finished.
@@ -242,6 +242,45 @@ Logo geometry is one continuous route stroke that reads as an F, a start circle,
 Controls in `frontend/src/ui/`: primary, secondary, quiet, icon, and destructive buttons; hold-to-confirm; card and raised panel; status chip; alert; dialog sheet; disclosure; skeleton; recording indicator; timer; route line, waypoint, beat, and waveform. `Logo` exposes mark, wordmark, and mono, each named Footwork. Styles live in `frontend/src/styles/tokens.css` and `frontend/src/styles/system.css`.
 
 `npm run typecheck`, `npm run lint`, and `npm run format` passed. `npm test` passed, 16 tests. The new tests cover keyboard focus, disabled and loading states, reduced-motion confirmation, the 16 px mark, no horizontal overflow at 360 px, and no serious axe violations on the catalog. The existing shell axe run still passes at `/`, `/studio`, and `/about`.
+
+### Step 3 — Build the guided landing and recording journey
+
+**Status:** Done  
+**Kind:** Edit  
+**Commit subject:** Build the guided landing and recording journey
+
+Replace the three-link introduction with one landing page and a labeled practice recording journey.
+
+**Done when.** `/` explains the walk and can start, record, and end a practice walk. Recoverable practice states are reachable without a public picker. `/studio` is not redesigned.
+
+**Notes.** This commit builds the landing and the practice recording journey. No new dependency. `.opencode/` stayed untracked. No active time was measured.
+
+Route flow:
+
+```text
+/  ready landing
+   Start walking
+     unsupported practice -> unsupported browser
+     otherwise readiness sheet
+       Not now -> ready
+       Begin practice walk
+         denied practice -> permission denied
+         offline practice -> offline
+         otherwise checking location
+           Cancel -> ready
+           interrupted practice, or the tab is hidden -> interrupted
+           otherwise recording
+             release the hold early -> recording
+             hold about two seconds, or a second press when motion is reduced -> ending -> finished
+/studio  labeled example, still the older Soundprint screen
+/about   redirects to /#how-it-works
+```
+
+Fixture boundary: the public page has no state picker. Tests set `sessionStorage` key `footwork-practice` to `denied`, `unsupported`, `offline`, or `interrupted` before load. Any other value is the granted practice. The recording port in `frontend/src/recording/practicePort.ts` is the Phase 2 seam. Its methods do not call geolocation, Wake Lock, or IndexedDB. `recoverDraft()` returns null.
+
+Known limits: the timer is a practice clock, not a stored walk. The route line is not the person's path. Ending a practice walk does not generate music. `/studio` still shows the fixture banner, the generation preview control, and the sponsor and provenance sections.
+
+`npm run typecheck`, `npm run lint`, and `npm run format` passed. `npm test` passed, 29 tests, including 360, 390, 430, 768, and 1280 px, keyboard focus, reduced motion, hold completion, early release, permission denial, and the unsupported browser.
 
 ---
 

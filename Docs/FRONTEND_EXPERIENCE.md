@@ -1,6 +1,6 @@
 # Footwork frontend experience
 
-Public information architecture, copy, and interface contract for the polishing work. This document does not change the running screens. A later step implements it.
+Public information architecture, copy, and interface contract for the polishing work. The landing and practice recording journey follow this file. `/studio` is still the older Soundprint screen.
 
 When this file disagrees with an older screen list in `Docs/HANDOFF_1.md` or a broader idea in `Docs/PRODUCT_CONCEPT.md`, this file wins for the public pages. `Docs/HANDOFF_1.md` still wins for the Hook, acceptance criteria, stack, privacy rules, and phase order.
 
@@ -16,7 +16,7 @@ One page introduces the product and holds the walk. A second page is the Soundpr
 |---|---|
 | `/` is the landing and the recording entry | The person understands Footwork and starts, records, and ends a walk here. |
 | `/studio` is the Soundprint | Play, the route, the graph, and the story live here after generation, and for a clearly labeled example. |
-| `/about` redirects to `/#how-it-works` | How it works is a section on `/`, not a third destination. The redirect is not built yet. |
+| `/about` redirects to `/#how-it-works` | How it works is a section on `/`, not a third destination. |
 | No global Walk / Soundprint / How it works navigation | Movement through the product is the flow above, plus Start another walk from the Soundprint. |
 | Sponsors and Provenance are not public sections | The application does not show those headings. |
 | Technical provenance stays internal | Fixture files, developer docs, and submission evidence keep source, mode, model identity, and rights notes. |
@@ -28,14 +28,12 @@ The Hook is unchanged: a sharp turn is meant to change the melody's direction, a
 
 ## What the built shell still does
 
-The code on `build/experience` is behind this contract. It still has:
+`/studio` is behind this contract. It still has:
 
-- Header links named Walk, Soundprint, and How it works.
-- A separate `/about` page.
-- A mode badge and preview-state buttons.
-- Public Sponsors and Provenance sections on `/studio`.
+- A fixture banner and a generation preview control.
+- Public Sponsors and Provenance sections.
 
-Those stay until a later polishing step removes them. This file does not authorize pretending they are already gone.
+Those stay until a later polishing step removes them. `/` no longer shows the three-link header, the mode badge, or a recording state picker. `/about` redirects to `/#how-it-works`.
 
 ## Pages
 
@@ -237,7 +235,7 @@ The result the page already understands remains the Soundprint result contract. 
 
 These references guided the Night Trail Studio direction. They are not layouts to copy. The locked stack stays. No component library, no WebGL, and no new product dependency.
 
-The chosen tokens, logo files, and controls are recorded in `Docs/HANDOFF_2.md` under frontend polishing step 2. Public pages still use the existing screen structure. `/system` is an unlinked catalog for the controls.
+The chosen tokens, logo files, and controls are recorded in `Docs/HANDOFF_2.md` under frontend polishing step 2. The landing and practice recording journey are step 3. `/system` is an unlinked catalog for the controls. `/studio` still uses the older screen.
 
 | Reference | Use |
 |---|---|

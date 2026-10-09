@@ -4,11 +4,13 @@ export function Sheet({
   open,
   title,
   onClose,
+  closeLabel = "Close",
   children,
 }: {
   open: boolean;
   title: string;
   onClose: () => void;
+  closeLabel?: string;
   children: ReactNode;
 }) {
   const ref = useRef<HTMLDialogElement>(null);
@@ -35,7 +37,7 @@ export function Sheet({
       <h2 id={titleId}>{title}</h2>
       {children}
       <button type="button" className="ui-button ui-button-secondary" onClick={onClose}>
-        Close
+        {closeLabel}
       </button>
     </dialog>
   );

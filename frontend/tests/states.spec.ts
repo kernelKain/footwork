@@ -2,22 +2,7 @@ import { expect, test } from "@playwright/test";
 
 test("recording and generation previews stay honest", async ({ page }) => {
   await page.goto("/");
-  await page.getByRole("button", { name: "Show recording preview states" }).click();
-  await page.getByRole("button", { name: "Permission" }).click();
-  const permission = page.getByRole("alert");
-  await expect(permission).toContainText("Location access was denied");
-  await expect(permission).toContainText("browser settings");
-  await expect(permission.getByRole("link", { name: "Play example" })).toBeVisible();
-
-  await page.getByRole("button", { name: "Waiting for position" }).click();
-  await expect(page.getByRole("status")).toContainText("Waiting for a position fix");
-  await expect(page.getByRole("status")).toContainText("not locating you");
-
-  await page.getByRole("button", { name: "Invalid trace" }).click();
-  const invalid = page.getByRole("alert");
-  await expect(invalid).toContainText("too short");
-  await expect(invalid).toContainText("No events were invented");
-  await expect(invalid.getByRole("link", { name: "Play example" })).toBeVisible();
+  await expect(page.getByRole("button", { name: "Show recording preview states" })).toHaveCount(0);
 
   await page.goto("/studio");
   await page.getByRole("button", { name: "Show generation preview states" }).click();

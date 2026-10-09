@@ -92,6 +92,33 @@
   transform-origin: left center;
 }
 
+.ui-hold {
+  touch-action: none;
+}
+
+.ui-hold-ring {
+  width: 28px;
+  height: 28px;
+  flex: none;
+}
+
+.ui-hold-ring-track,
+.ui-hold-ring-progress {
+  fill: none;
+  stroke-width: 3;
+}
+
+.ui-hold-ring-track {
+  stroke: rgb(255 255 255 / 0.35);
+}
+
+.ui-hold-ring-progress {
+  stroke: currentColor;
+  stroke-linecap: round;
+  transform: rotate(-90deg);
+  transform-origin: 22px 22px;
+}
+
 .ui-card,
 .ui-alert,
 .ui-disclosure-panel {

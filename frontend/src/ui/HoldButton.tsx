@@ -4,15 +4,20 @@ function prefersReducedMotion(): boolean {
   return window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 }
 
+const RING_RADIUS = 18;
+const RING_LENGTH = 2 * Math.PI * RING_RADIUS;
+
 export function HoldButton({
   label,
   confirmLabel,
   holdMs = 2000,
+  indicator = "bar",
   onConfirm,
 }: {
   label: string;
   confirmLabel: string;
   holdMs?: number;
+  indicator?: "bar" | "ring";
   onConfirm: () => void;
 }) {
   const [armed, setArmed] = useState(false);
@@ -68,6 +73,7 @@ export function HoldButton({
       onPointerDown={startHold}
       onPointerUp={stop}
       onPointerLeave={stop}
+      onPointerCancel={stop}
       onKeyDown={(event) => {
         if (event.repeat) return;
         if (event.key === " " || event.key === "Enter") startHold();
@@ -77,9 +83,23 @@ export function HoldButton({
       }}
       onClick={confirm}
     >
-      <span className="ui-hold-track" aria-hidden="true">
-        <span className="ui-hold-fill" style={{ transform: `scaleX(${progress})` }} />
-      </span>
+      {indicator === "ring" ? (
+        <svg className="ui-hold-ring" viewBox="0 0 44 44" aria-hidden="true">
+          <circle className="ui-hold-ring-track" cx="22" cy="22" r={RING_RADIUS} />
+          <circle
+            className="ui-hold-ring-progress"
+            cx="22"
+            cy="22"
+            r={RING_RADIUS}
+            strokeDasharray={RING_LENGTH}
+            strokeDashoffset={RING_LENGTH * (1 - progress)}
+          />
+        </svg>
+      ) : (
+        <span className="ui-hold-track" aria-hidden="true">
+          <span className="ui-hold-fill" style={{ transform: `scaleX(${progress})` }} />
+        </span>
+      )}
       {armed ? confirmLabel : label}
     </button>
   );

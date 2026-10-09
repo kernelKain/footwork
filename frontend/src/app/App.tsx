@@ -1,6 +1,5 @@
 import { demoFixture } from "../contracts/demoFixture";
 import { validateDemoFixture } from "../contracts/validate";
-import { AboutScreen } from "./AboutScreen";
 import { useRoute } from "./useRoute";
 import { AppHeader } from "../components/AppHeader";
 import { Notice } from "../components/Notice";
@@ -11,7 +10,6 @@ import { SystemScreen } from "../ui/SystemScreen";
 export function App() {
   const { path, navigate } = useRoute();
   const fixture = validateDemoFixture(demoFixture);
-  const modeLabel = fixture.ok ? "Synthetic fixture" : "Fixture error";
 
   let screen = (
     <section className="stack" aria-labelledby="missing-title">
@@ -25,12 +23,12 @@ export function App() {
   if (path === "/") screen = <WalkScreen onNavigate={navigate} />;
   if (path === "/studio" && fixture.ok)
     screen = <StudioScreen fixture={fixture.value} onNavigate={navigate} />;
-  if (path === "/about") screen = <AboutScreen />;
+  if (path === "/about") screen = <WalkScreen onNavigate={navigate} />;
   if (path === "/system") screen = <SystemScreen />;
 
   return (
     <div className="app-shell">
-      <AppHeader path={path} modeLabel={modeLabel} onNavigate={navigate} />
+      <AppHeader path={path} onNavigate={navigate} />
       <main className="app-main">{fixture.ok ? screen : <Notice errors={fixture.errors} />}</main>
     </div>
   );
