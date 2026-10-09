@@ -1,0 +1,40 @@
+{
+  "cli_version": "0.11.4",
+  "checkpoint_id": "01M4G6MBNC7HHZRFTQSSTTZX0G",
+  "strategy": "manual-commit",
+  "branch": "build/experience",
+  "checkpoints_count": 2,
+  "files_touched": [
+    "Docs/FRONTEND_EXPERIENCE.md",
+    "Docs/HANDOFF_1.md",
+    "Docs/HANDOFF_2.md",
+    "frontend/src/app/AboutScreen.tsx",
+    "frontend/src/app/App.tsx",
+    "frontend/src/app/useRoute.ts",
+    "frontend/src/components/AppHeader.tsx",
+    "frontend/src/main.tsx",
+    "frontend/src/recording/LandingView.tsx",
+    "frontend/src/recording/RecordingView.tsx",
+    "frontend/src/recording/WalkScreen.tsx",
+    "frontend/src/recording/practicePort.ts",
+    "frontend/src/recording/useMonotonicClock.ts",
+    "frontend/src/styles/journey.css",
+    "frontend/src/styles/layout.css",
+    "frontend/src/styles/system.css",
+    "frontend/src/ui/HoldButton.tsx",
+    "frontend/src/ui/Logo.tsx",
+    "frontend/src/ui/Sheet.tsx",
+    "frontend/tests/journey.spec.ts",
+    "frontend/tests/shell.spec.ts",
+    "frontend/tests/states.spec.ts"
+  ],
+  "sessions": [
+    {
+      "metadata": "/0/metadata.json",
+      "transcript": "/0/full.jsonl",
+      "compact_transcript": "/0/transcript.jsonl",
+      "content_hash": "/0/content_hash.txt",
+      "prompt": ""
+    }
+  ]
+}
