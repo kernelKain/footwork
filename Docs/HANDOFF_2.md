@@ -3,8 +3,8 @@
 Step-by-step record of what actually happened. The locked plan stays in `Docs/HANDOFF_1.md`. This file is the place to read after a step is finished.
 
 **Status:** P1 continues locally. The public Render deploy is the first activity of P2. CodeRabbit GitHub App install is still unconfirmed.  
-**Next step:** P1.3 on `build/experience`.  
-**Last completed step:** P1.2 local health and blueprint — `a7ac1ab`. Public deploy is P2.0.  
+**Next step:** P1.4 on `build/experience`.  
+**Last completed step:** P1.3 synchronized playback — `23c247b`. Public deploy is P2.0.  
 **Active build time:** 0 of 20 hours recorded. This session was not measured.
 
 Execution notes stay in this file. The diagram and write-up path are under `Docs/`. Each **Notes** section is filled only after that step is finished.
@@ -88,7 +88,7 @@ Check the ElevenLabs key, model, balance, and usage rights, and confirm Render c
 **Branch:** `build/experience`  
 **Window:** Build hours 2–7 (300 minutes)  
 **Outcome:** A full fixture journey, synchronized player, responsive states, and the first public deployment.  
-**Phase note:** P1.1 is committed as `33e8a8c`. P1.2 serves the built shell and `/health` locally. On October 9, 2026 the user moved the public Render deploy to the start of P2 and kept the rest of P1 local.
+**Phase note:** P1.1 is committed as `33e8a8c`. P1.2 is committed as `a7ac1ab`. P1.3 is committed as `23c247b`. On October 9, 2026 the user moved the public Render deploy to the start of P2.
 
 ### P1.1 — Build the Soundprint interface and fixture contracts
 
@@ -123,15 +123,16 @@ Serve the frontend and a FastAPI health endpoint from one Render service. The us
 
 ### P1.3 — Synchronize route playback and audio scrubbing
 
-**Status:** Not started  
+**Status:** Done  
 **Kind:** Edit · 50 minutes · AC-02, AC-10  
-**Commit subject:** Synchronize route playback and audio scrubbing
+**Commit subject:** Synchronize route playback and audio scrubbing  
+**Commit:** `23c247b`
 
 Add the audio player, SVG route, and scrubbing, driven by one audio clock and deterministic fixture audio.
 
 **Done when.** Anchor checks stay within 500 ms of the audio clock.
 
-**Notes.** Not implemented.
+**Notes.** Committed as `23c247b`. The Soundprint player uses one audio element as the clock and `requestAnimationFrame` to read it. Scrubbing and event buttons seek that clock. The browser generates a deterministic sketch: the tone falls until the corner, rises after it, and stays silent through the hold. The screen says this is not ElevenLabs audio. `npm run typecheck`, `npm run lint`, and `npm run format` passed. `npm test` passed, 10 tests. The scrub and pause-marker checks stayed within 500 ms of the audio clock. A browser click on Turn moved the scrubber to 18000 and showed Now. No active time was measured.
 
 ### P1.4 — Add movement markers and Soundprint explanations
 

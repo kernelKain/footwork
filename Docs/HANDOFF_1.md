@@ -1359,10 +1359,10 @@ Never add fake metrics, fake testimonials or unlabeled synthetic outputs.
 |---|---|
 | Status | **IN PROGRESS** |
 | Current phase | P1 — Complete frontend experience |
-| Last completed step | P1.1 — Build the Soundprint interface and fixture contracts |
-| Next step | **P1.3 — Synchronize route playback and audio scrubbing** |
+| Last completed step | P1.3 — Synchronize route playback and audio scrubbing |
+| Next step | **P1.4 — Add movement markers and Soundprint explanations** |
 | Current execution branch | `build/experience` |
-| Last execution commit | `a7ac1ab` |
+| Last execution commit | `23c247b` |
 | Existing baseline commit | `22df0e7` |
 | Last PR | NONE |
 | Live URL | NOT YET DEPLOYED |
@@ -1392,8 +1392,8 @@ Active-work ceiling: 20 hours
 Feature freeze: Build hour 15, at 75%
 Autonomy: A1 — agent edits; user runs commands and controls Git/deployment
 Status: IN PROGRESS
-Last completed: P1.2 local — a7ac1ab
-Next step: P1.3 — Synchronize route playback and audio scrubbing
+Last completed: P1.3 — 23c247b
+Next step: P1.4 — Add movement markers and Soundprint explanations
 Active phase: P1 — Complete frontend experience
 Branch: build/experience
 Live URL: NOT YET DEPLOYED
