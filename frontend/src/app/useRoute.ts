@@ -4,6 +4,7 @@ const TITLES: Record<string, string> = {
   "/": "Walk · Footwork",
   "/studio": "Soundprint · Footwork",
   "/about": "How it works · Footwork",
+  "/system": "Design system · Footwork",
 };
 
 export function normalizePath(pathname: string): string {

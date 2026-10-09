@@ -1369,8 +1369,8 @@ Never add fake metrics, fake testimonials or unlabeled synthetic outputs.
 |---|---|
 | Status | **IN PROGRESS** |
 | Current phase | P1 — Complete frontend experience |
-| Last completed step | P1.5 — Implement recording and generation interface states |
-| Next step | Frontend polishing step 2 is not started. Step 1 is `Docs/FRONTEND_EXPERIENCE.md`. |
+| Last completed step | Frontend polishing step 2 — brand and mobile design system |
+| Next step | Frontend polishing step 3 is not started. |
 | Current execution branch | `build/experience` |
 | Last execution commit | `4d3e9d1` |
 | Existing baseline commit | `22df0e7` |
@@ -1402,8 +1402,8 @@ Active-work ceiling: 20 hours
 Feature freeze: Build hour 15, at 75%
 Autonomy: A1 — agent edits; user runs commands and controls Git/deployment
 Status: IN PROGRESS
-Last completed: P1.5 — 0540af5
-Next step: Frontend polishing step 2 is not started. The experience contract is Docs/FRONTEND_EXPERIENCE.md.
+Last completed: Frontend polishing step 2 — brand and mobile design system
+Next step: Frontend polishing step 3 is not started. The experience contract is Docs/FRONTEND_EXPERIENCE.md.
 Active phase: P1 — Complete frontend experience
 Branch: build/experience
 Live URL: NOT YET DEPLOYED

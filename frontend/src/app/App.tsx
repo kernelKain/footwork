@@ -6,6 +6,7 @@ import { AppHeader } from "../components/AppHeader";
 import { Notice } from "../components/Notice";
 import { WalkScreen } from "../recording/WalkScreen";
 import { StudioScreen } from "../studio/StudioScreen";
+import { SystemScreen } from "../ui/SystemScreen";
 
 export function App() {
   const { path, navigate } = useRoute();
@@ -25,6 +26,7 @@ export function App() {
   if (path === "/studio" && fixture.ok)
     screen = <StudioScreen fixture={fixture.value} onNavigate={navigate} />;
   if (path === "/about") screen = <AboutScreen />;
+  if (path === "/system") screen = <SystemScreen />;
 
   return (
     <div className="app-shell">

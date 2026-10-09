@@ -1,5 +1,9 @@
 .app-shell {
   min-height: 100vh;
+  padding-top: var(--safe-top);
+  padding-right: var(--safe-right);
+  padding-bottom: var(--safe-bottom);
+  padding-left: var(--safe-left);
 }
 
 .app-header {

@@ -1,0 +1,251 @@
+.ui-catalog {
+  display: grid;
+  gap: var(--space-3);
+  padding-bottom: var(--safe-bottom);
+  background-color: var(--color-bg);
+  background-image: url("/brand/trail-wash.svg");
+  background-repeat: no-repeat;
+  background-position: right bottom;
+  background-size: 100% auto;
+}
+
+.ui-button {
+  min-height: var(--touch);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-1);
+  padding: var(--space-1) var(--space-2);
+  border: var(--border-width) solid transparent;
+  border-radius: var(--radius-1);
+  font: inherit;
+  font-weight: 700;
+  text-align: center;
+  cursor: pointer;
+  transition: transform var(--duration-fast) var(--ease-standard);
+}
+
+.ui-button:active:not(:disabled) {
+  transform: scale(0.98);
+}
+
+.ui-button:disabled {
+  cursor: not-allowed;
+  background: var(--color-surface);
+  color: var(--color-text-muted);
+  border-color: var(--color-line);
+}
+
+.ui-button-primary {
+  background: var(--color-mint);
+  color: var(--color-mint-ink);
+}
+
+.ui-button-secondary {
+  background: transparent;
+  color: var(--color-text);
+  border-color: var(--color-line);
+  font-weight: 600;
+}
+
+.ui-button-quiet {
+  min-height: var(--touch);
+  background: transparent;
+  color: var(--color-text);
+  border-color: transparent;
+  font-weight: 600;
+  text-decoration: underline;
+  text-underline-offset: 4px;
+}
+
+.ui-button-destructive {
+  background: var(--color-coral);
+  color: var(--color-coral-ink);
+}
+
+.ui-icon-button {
+  width: var(--touch);
+  padding: 0;
+  background: var(--color-surface);
+  color: var(--color-text);
+  border-color: var(--color-line);
+}
+
+.ui-hold {
+  position: relative;
+  width: 100%;
+}
+
+.ui-hold-track {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  border-radius: inherit;
+  pointer-events: none;
+}
+
+.ui-hold-fill {
+  display: block;
+  height: 100%;
+  width: 100%;
+  background: rgb(255 255 255 / 0.28);
+  transform-origin: left center;
+}
+
+.ui-card,
+.ui-alert,
+.ui-disclosure-panel {
+  display: grid;
+  gap: var(--space-2);
+  padding: var(--space-2);
+  border: var(--border-width) solid var(--color-line);
+  border-radius: var(--radius-1);
+  background: var(--color-surface);
+}
+
+.ui-alert {
+  border-color: var(--color-warning);
+}
+
+.ui-card-raised {
+  background: var(--color-surface-raised);
+  box-shadow: var(--shadow-raised);
+}
+
+.ui-chip {
+  margin: 0;
+  width: fit-content;
+  max-width: 100%;
+  min-height: var(--touch);
+  display: inline-flex;
+  align-items: center;
+  padding: 0 var(--space-2);
+  border: var(--border-width) solid var(--color-line);
+  border-radius: var(--radius-1);
+  background: var(--color-surface);
+}
+
+.ui-chip-music {
+  border-color: var(--color-amber);
+}
+
+.ui-chip-live {
+  border-color: var(--color-mint);
+}
+
+.ui-sheet {
+  width: min(100% - var(--space-4), 28rem);
+  max-height: 80vh;
+  margin: auto auto var(--safe-bottom);
+  padding: var(--space-3);
+  border: var(--border-width) solid var(--color-line);
+  border-radius: var(--radius-2) var(--radius-2) 0 0;
+  background: var(--color-surface);
+  color: var(--color-text);
+}
+
+.ui-sheet::backdrop {
+  background: rgb(8 10 14 / 0.72);
+}
+
+.ui-disclosure {
+  display: grid;
+  gap: var(--space-2);
+}
+
+.ui-skeleton {
+  height: var(--touch);
+  border-radius: var(--radius-1);
+  background: var(--color-surface-raised);
+}
+
+.ui-recording {
+  display: flex;
+  align-items: center;
+  gap: var(--space-1);
+  min-height: var(--touch);
+  margin: 0;
+  font-weight: 700;
+}
+
+.ui-recording-dot {
+  width: 12px;
+  height: 12px;
+  border-radius: 999px;
+  background: var(--color-mint);
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .ui-recording-dot {
+    animation: ui-pulse 1.4s var(--ease-standard) infinite;
+  }
+}
+
+.ui-timer {
+  margin: 0;
+  min-height: var(--touch);
+  font-size: var(--font-size-4);
+  font-variant-numeric: tabular-nums;
+  font-weight: 700;
+  letter-spacing: 0;
+}
+
+.ui-route,
+.ui-wave {
+  margin: 0;
+  display: grid;
+  gap: var(--space-1);
+}
+
+.ui-route svg,
+.ui-wave svg {
+  display: block;
+  max-width: 100%;
+  height: auto;
+}
+
+.ui-logo {
+  display: block;
+  max-width: 100%;
+}
+
+.ui-route-line {
+  fill: none;
+  stroke: var(--color-mint);
+  stroke-width: 3;
+  stroke-linecap: round;
+}
+
+.ui-waypoint {
+  fill: var(--color-mint);
+}
+
+.ui-beat {
+  fill: var(--color-amber);
+}
+
+.ui-wave rect {
+  fill: var(--color-mint);
+}
+
+.ui-visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+@keyframes ui-pulse {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.35;
+  }
+}

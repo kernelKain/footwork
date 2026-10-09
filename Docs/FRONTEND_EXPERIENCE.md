@@ -235,7 +235,9 @@ The result the page already understands remains the Soundprint result contract. 
 
 ## Design research
 
-These references guide later visual work. They are not licenses to add libraries in this step. The locked stack stays. No component library, no WebGL, and no new product dependency unless a later step says so.
+These references guided the Night Trail Studio direction. They are not layouts to copy. The locked stack stays. No component library, no WebGL, and no new product dependency.
+
+The chosen tokens, logo files, and controls are recorded in `Docs/HANDOFF_2.md` under frontend polishing step 2. Public pages still use the existing screen structure. `/system` is an unlinked catalog for the controls.
 
 | Reference | Use |
 |---|---|

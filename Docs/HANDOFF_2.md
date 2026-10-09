@@ -3,8 +3,8 @@
 Step-by-step record of what actually happened. The locked plan stays in `Docs/HANDOFF_1.md`. This file is the place to read after a step is finished.
 
 **Status:** P1 continues locally. The public experience contract is `Docs/FRONTEND_EXPERIENCE.md`. The public Render deploy is the first activity of P2. CodeRabbit GitHub App install is still unconfirmed.  
-**Next step:** Frontend polishing step 2 is not started.  
-**Last completed step:** Frontend polishing step 1, in this commit. P1.6 layout remains `4d3e9d1`. Public deploy is P2.0.  
+**Next step:** Frontend polishing step 3 is not started.  
+**Last completed step:** Frontend polishing step 2, in this commit. P1.6 layout remains `4d3e9d1`. Public deploy is P2.0.  
 **Active build time:** 0 of 20 hours recorded. This session was not measured.
 
 Execution notes stay in this file. The diagram and write-up path are under `Docs/`. Each **Notes** section is filled only after that step is finished.
@@ -190,6 +190,58 @@ Write the public flow, page contract, plain-language copy, state model, and desi
 **Done when.** `Docs/FRONTEND_EXPERIENCE.md`, `Docs/HANDOFF_1.md`, `Docs/HANDOFF_2.md`, and `Docs/PRODUCT_CONCEPT.md` agree on the public journey, and no frontend component was edited.
 
 **Notes.** This commit adds `Docs/FRONTEND_EXPERIENCE.md` and aligns the handoff and product concept with that contract. No frontend component was edited. `.opencode/` and `.playwright-mcp/` stayed untracked. No active time was measured.
+
+### Step 2 — Create the Footwork brand and mobile design system
+
+**Status:** Done  
+**Kind:** Edit  
+**Commit subject:** Create the Footwork brand and mobile design system
+
+Add the Night Trail Studio brand, design tokens, and reusable controls. Do not redesign `/` or `/studio`.
+
+**Done when.** The logo, tokens, and controls exist, component tests cover focus, disabled, loading, reduced motion, 360 px, contrast, and the small mark, and no new dependency was added.
+
+**Notes.** This commit adds the brand and the control catalog. The public walk and Soundprint screens are not redesigned. They pick up the new ink, mint, and amber through the existing token names. `/system` is not linked from the header. `.opencode/` stayed untracked. No active time was measured.
+
+Direction: Night Trail Studio. Deep ink background, opaque elevated surfaces, mint for the route, amber for musical moments, and coral only for ending a walk or another destructive action. One system sans stack. Timers use tabular numerals. Motion is transform and opacity, and only to show state. `prefers-reduced-motion` shortens transitions and replaces the hold gesture with a second press. The recording pulse is opt-in. The word Recording stays. No WebGL, no looping background, and no new library.
+
+No new dependency. Tokens are CSS custom properties. The logo is hand-drawn SVG. The project has no web app manifest and no image pipeline, so the favicon, 180 px apple-touch icon, and 1200×630 social image are SVG rather than PNG.
+
+| Token | Value |
+|---|---|
+| `--color-bg` | `#0e1520` |
+| `--color-surface` | `#1a2636` |
+| `--color-surface-raised` | `#223246` |
+| `--color-text` | `#f4f1ea` |
+| `--color-text-muted` | `#d5d0c6` |
+| `--color-mint` / `--color-mint-ink` | `#8fd4ae` / `#10281c` |
+| `--color-amber` | `#e2b657` |
+| `--color-coral` / `--color-coral-ink` | `#c4473a` / `#fff8f6` |
+| `--color-line` | `#3a4a60` |
+| `--color-focus` | `#9ad7ff` |
+| `--color-warning` | `#ffb4a8` (the old `--danger` name; not coral) |
+| Type | `system-ui, "Segoe UI", sans-serif`; 0.875 / 1 / 1.25 / 2 rem |
+| Space | 8, 16, 24, 32, 48, 64 px |
+| Radius | 12 px, 16 px |
+| Border | 1 px |
+| Elevation | `0 10px 28px rgb(0 0 0 / 0.28)` on raised surfaces only |
+| Motion | 160 ms, `cubic-bezier(0.2, 0, 0, 1)` |
+| Target | 44 px minimum |
+| Safe area | `env(safe-area-inset-*)` on the shell |
+
+Logo geometry is one continuous route stroke that reads as an F, a start circle, and one square beat. Files:
+
+- `frontend/public/brand/mark.svg`
+- `frontend/public/brand/mark-mono.svg`
+- `frontend/public/brand/wordmark.svg`
+- `frontend/public/favicon.svg`
+- `frontend/public/brand/apple-touch.svg`
+- `frontend/public/brand/og.svg`
+- `frontend/public/brand/trail-wash.svg` (static, catalog only)
+
+Controls in `frontend/src/ui/`: primary, secondary, quiet, icon, and destructive buttons; hold-to-confirm; card and raised panel; status chip; alert; dialog sheet; disclosure; skeleton; recording indicator; timer; route line, waypoint, beat, and waveform. `Logo` exposes mark, wordmark, and mono, each named Footwork. Styles live in `frontend/src/styles/tokens.css` and `frontend/src/styles/system.css`.
+
+`npm run typecheck`, `npm run lint`, and `npm run format` passed. `npm test` passed, 16 tests. The new tests cover keyboard focus, disabled and loading states, reduced-motion confirmation, the 16 px mark, no horizontal overflow at 360 px, and no serious axe violations on the catalog. The existing shell axe run still passes at `/`, `/studio`, and `/about`.
 
 ---
 
