@@ -1,0 +1,36 @@
+{
+  "cli_version": "0.11.4",
+  "checkpoint_id": "01M4FG4DKE16T341JA3KRFXFX5",
+  "strategy": "manual-commit",
+  "branch": "build/experience",
+  "checkpoints_count": 2,
+  "files_touched": [
+    "frontend/src/app/App.tsx",
+    "frontend/src/components/StatePicker.tsx",
+    "frontend/src/recording/WalkScreen.tsx",
+    "frontend/src/studio/RouteSoundGraph.tsx",
+    "frontend/src/studio/SoundprintPlayer.tsx",
+    "frontend/src/studio/StudioScreen.tsx",
+    "frontend/src/styles/layout.css",
+    "frontend/src/styles/screens.css",
+    "frontend/tests/playback.spec.ts",
+    "frontend/tests/shell.spec.ts",
+    "frontend/tests/states.spec.ts"
+  ],
+  "sessions": [
+    {
+      "metadata": "/0/metadata.json",
+      "transcript": "/0/full.jsonl",
+      "compact_transcript": "/0/transcript.jsonl",
+      "content_hash": "/0/content_hash.txt",
+      "prompt": "/0/prompt.txt"
+    }
+  ],
+  "token_usage": {
+    "input_tokens": 327926,
+    "cache_creation_tokens": 0,
+    "cache_read_tokens": 6743552,
+    "output_tokens": 25105,
+    "api_call_count": 1
+  }
+}
