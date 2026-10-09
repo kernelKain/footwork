@@ -1,0 +1,32 @@
+{
+  "cli_version": "0.11.4",
+  "checkpoint_id": "01M4FE0CDRM1N5AAJGRPRE44CY",
+  "strategy": "manual-commit",
+  "branch": "build/experience",
+  "checkpoints_count": 2,
+  "files_touched": [
+    "Docs/HANDOFF_1.md",
+    "Docs/HANDOFF_2.md",
+    "backend/app/main.py",
+    "backend/tests/unit/test_arrange_gate.py",
+    "backend/tests/unit/test_health.py",
+    "deploy/build.sh",
+    "deploy/render.yaml"
+  ],
+  "sessions": [
+    {
+      "metadata": "/0/metadata.json",
+      "transcript": "/0/full.jsonl",
+      "compact_transcript": "/0/transcript.jsonl",
+      "content_hash": "/0/content_hash.txt",
+      "prompt": "/0/prompt.txt"
+    }
+  ],
+  "token_usage": {
+    "input_tokens": 37886,
+    "cache_creation_tokens": 0,
+    "cache_read_tokens": 4731392,
+    "output_tokens": 20114,
+    "api_call_count": 1
+  }
+}
