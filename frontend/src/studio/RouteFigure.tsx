@@ -1,4 +1,5 @@
 import type { MovementEvent, RoutePoint } from "../contracts/types";
+import { pointOnRoute } from "./routePosition";
 
 const EVENT_LABELS: Record<MovementEvent["type"], string> = {
   turn: "Turn",
@@ -20,9 +21,18 @@ function pointAt(points: RoutePoint[], time: number): RoutePoint | null {
   return best;
 }
 
-export function RouteFigure({ points, events }: { points: RoutePoint[]; events: MovementEvent[] }) {
+export function RouteFigure({
+  points,
+  events,
+  timeMs,
+}: {
+  points: RoutePoint[];
+  events: MovementEvent[];
+  timeMs: number;
+}) {
   const poly = points.map((point) => `${point.x * 100},${point.y * 100}`).join(" ");
   const marks = events.filter((event) => event.type === "turn" || event.type === "pause");
+  const cursor = pointOnRoute(points, timeMs);
 
   return (
     <figure className="route-figure">
@@ -57,10 +67,19 @@ export function RouteFigure({ points, events }: { points: RoutePoint[]; events: 
             </circle>
           );
         })}
+        <circle
+          className="route-cursor"
+          cx={cursor.x * 100}
+          cy={cursor.y * 100}
+          r="3.1"
+          data-time-ms={Math.round(timeMs)}
+        >
+          <title>Route position</title>
+        </circle>
       </svg>
       <figcaption>
-        Synthetic route. The line is the path. The circle is a turn and the square is a pause. Both
-        musical mappings are planned, not heard.
+        Synthetic route. The line is the path. The gold circle is a turn and the square is a pause.
+        The outlined circle is the playback position.
       </figcaption>
     </figure>
   );
