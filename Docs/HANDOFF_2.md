@@ -2,9 +2,9 @@
 
 Step-by-step record of what actually happened. The locked plan stays in `Docs/HANDOFF_1.md`. This file is the place to read after a step is finished.
 
-**Status:** The Phase 1 frontend extension, including Daylight, is verified locally and is being committed on `build/experience`. P1.7 was not a separate implementation step. The 290-minute budget decision is still open. CodeRabbit GitHub App install is still unconfirmed.
-**Next step:** After this branch is pushed, decide whether the 20-hour ceiling increases, later work is replaced, or only the remaining Must ship subset is timeboxed. P2.0 stays deferred until that decision.
-**Last completed step:** Frontend polishing step 5, commit `847a294`. P1.6 layout remains `4d3e9d1`.
+**Status:** The Phase 1 frontend extension, including Daylight, is committed as `56b9c06` on `build/experience`. P1.7 was not a separate implementation step. The 290-minute budget decision is still open. CodeRabbit GitHub App install is still unconfirmed.
+**Next step:** Decide whether the 20-hour ceiling increases, later work is replaced, or only the remaining Must ship subset is timeboxed. P2.0 stays deferred until that decision.
+**Last completed step:** Frontend extension and Daylight, commit `56b9c06`. P1.6 layout remains `4d3e9d1`. Polishing step 5 remains `847a294`.
 **Active build time:** 0 of 20 hours recorded. This session was not measured.
 
 Execution notes stay in this file. The diagram and write-up path are under `Docs/`. Each **Notes** section is filled only after that step is finished.
@@ -88,7 +88,7 @@ Check the ElevenLabs key, model, balance, and usage rights, and confirm Render c
 **Branch:** `build/experience`
 **Window:** Build hours 2–7 (300 minutes)
 **Outcome:** A full fixture journey, synchronized player, responsive states, and the first public deployment.
-**Phase note:** P1.1 is committed as `33e8a8c`. P1.2 is committed as `a7ac1ab`. P1.3 is committed as `23c247b`. P1.4 is committed as `466a238`. P1.5 is committed as `0540af5`. P1.6 is committed as `4d3e9d1`. Frontend polishing steps 1–5 are complete through `847a294`. On October 9, 2026 the user requested a second Phase 1 extension covering pause/resume, a new theme, visual analytics, and purposeful motion. The plan is `Docs/PHASE_1_UI_UX_PLAN.md`. The user then asked for the visual-system slice first. P1.8 through P1.13 and the Daylight light theme are included in the frontend extension commit on this branch. P1.7 was not a separate implementation step. The step notes stay Partial until that commit hash is written into this file.
+**Phase note:** P1.1 is committed as `33e8a8c`. P1.2 is committed as `a7ac1ab`. P1.3 is committed as `23c247b`. P1.4 is committed as `466a238`. P1.5 is committed as `0540af5`. P1.6 is committed as `4d3e9d1`. Frontend polishing steps 1–5 are complete through `847a294`. On October 9, 2026 the user requested a second Phase 1 extension covering pause/resume, a new theme, visual analytics, and purposeful motion. The plan is `Docs/PHASE_1_UI_UX_PLAN.md`. The user then asked for the visual-system slice first. P1.8 through P1.13 and the Daylight light theme are committed as `56b9c06`. P1.7 was not a separate implementation step.
 
 ### P1.1 — Build the Soundprint interface and fixture contracts
 
@@ -330,7 +330,7 @@ Performance baseline, local only: `vite build` produced `dist/index.html` at 0.9
 
 ### P1.7–P1.13 — Extend the frontend with pause, visual analytics, and purposeful motion
 
-**Status:** Partial. P1.8 through P1.13 and Daylight are in the frontend extension commit. P1.7 was not a separate implementation step. The hash is written into this file after that commit.
+**Status:** Done for P1.8 through P1.13 and Daylight, commit `56b9c06`. P1.7 was not a separate implementation step.
 **Plan:** `Docs/PHASE_1_UI_UX_PLAN.md`
 **Estimated total:** 290 minutes
 **Budget state:** A decision is required before implementation because the original 20-hour plan allocated its full ceiling.
@@ -338,12 +338,12 @@ Performance baseline, local only: `vite build` produced `dist/index.html` at 0.9
 | Step | Status | Outcome | Proposed commit subject |
 |---|---|---|---|
 | P1.7 | Planned | Lock pause semantics, the Nocturne Pulse direction, result wireframes, and allowed analytics. | `Plan the pause journey and visual Soundprint extension` |
-| P1.8 | Partial | Practice pause, paused restoration, usable-fix resume, active time, and break time are in the working tree. No commit yet. | `Add pause and resume states to the walk journey` |
-| P1.9 | Partial | Typed movement summaries are in the working tree. The recap in P1.11 renders them. No commit yet. | `Add honest movement summaries to the Soundprint contract` |
-| P1.10 | Partial | Nocturne Pulse is applied in the working tree. Contrast is recorded below. No commit yet. | `Apply the Nocturne Pulse visual system` |
-| P1.11 | Partial | The Soundprint page shows glance tiles, a segmented route, a movement ribbon, event cards, composition counts, and a closed quality disclosure. No commit yet. | `Turn the Soundprint result into a visual journey recap` |
-| P1.12 | Partial | One SVG walker is reused on the landing, recording, paused, generation, and playback states. No commit yet. | `Animate the walk to Soundprint transformation` |
-| P1.13 | Partial | Local verification passed on October 9, 2026. No commit yet. | `Verify the upgraded walk and Soundprint experience` |
+| P1.8 | Done | Practice pause, paused restoration, usable-fix resume, active time, and break time. Commit `56b9c06`. | `Add pause and resume states to the walk journey` |
+| P1.9 | Done | Typed movement summaries, rendered by the recap. Commit `56b9c06`. | `Add honest movement summaries to the Soundprint contract` |
+| P1.10 | Done | Nocturne Pulse, with Daylight added in the same commit. Contrast is recorded below. Commit `56b9c06`. | `Apply the Nocturne Pulse visual system` |
+| P1.11 | Done | Glance tiles, segmented route, movement ribbon, event cards, composition counts, and a closed quality disclosure. Commit `56b9c06`. | `Turn the Soundprint result into a visual journey recap` |
+| P1.12 | Done | One SVG walker on landing, recording, paused, generation, and playback. Commit `56b9c06`. | `Animate the walk to Soundprint transformation` |
+| P1.13 | Done | Verification passed on October 9, 2026, then Daylight was added and the suite was run again. Commit `56b9c06`. | `Verify the upgraded walk and Soundprint experience` |
 
 **Notes.** The user first asked for a plan and no implementation. That request and the linked plan changed documentation only. No component, style, fixture, contract, dependency, or test was changed for the plan itself. Manual breaks are planned as gaps between recording segments and are not natural pause events. Visual analytics are limited to values derivable from accepted location samples and detector output; calories, heart rate, steps, elevation, and health advice remain out of scope.
 
@@ -351,10 +351,10 @@ On October 9, 2026 the user then asked for the visual-system slice before the ot
 
 ### P1.8 — Add pause and resume states to the walk journey
 
-**Status:** Partial
+**Status:** Done
 **Kind:** Edit
 **Commit subject:** Add pause and resume states to the walk journey
-**Commit:** Not created. The user has not asked for a commit.
+**Commit:** `56b9c06`
 
 Practice recording can pause, wait through "Finding your location again", and resume on a new segment. A paused practice in sessionStorage is restored after reload. A recording draft is not restored as paused.
 
@@ -366,14 +366,14 @@ The practice route draws each segment as its own cyan path. A break is a separat
 
 `npm run lint` and `npm run format` passed. `npm test` passed, 54 tests, with Playwright pointed at the installed browser cache. The new tests cover pause, resume, focus, an early end, reduced-motion keyboard end, restoration, a recording draft that is not restored, resume failure, cancel, hidden-page behavior, active and break timing, a second pause whose current break is shorter than the total, the missing route connector, and axe on the paused view. `npm run build` passed, and its `tsc -b` step is the typecheck: HTML 0.96 kB (gzip 0.47 kB), CSS 13.17 kB (gzip 3.41 kB), JavaScript 276.87 kB (gzip 84.55 kB).
 
-A browser pass of the preview restored a paused draft. The heading was "Walk paused", Resume walk was focused, active time was 00:05, and the status sentence was "Movement is not being recorded. Your walk is saved on this phone." Resume showed "Finding your location again", then returned to Practice walk with focus on Pause walk. The route had separate segment paths and pause-blue gaps that were not part of those paths. A later pause showed current break 00:00 while elapsed stayed 00:58, so the new break did not absorb earlier breaks. The IDE browser tab was hidden for part of the pass, so animation frames did not advance the clocks there. The second-by-second active and break timing was measured by the Playwright tests. Holding the end control in that browser did not complete the two-second press. Ending from paused is covered by the Playwright hold and reduced-motion keyboard tests. Paused layout was not remeasured at five widths in the browser. The recording view, which now has both dock buttons, passed the existing 360, 390, 430, 768, and 1280 px checks. No commit hash yet. Movement analytics were not added in this step.
+A browser pass of the preview restored a paused draft. The heading was "Walk paused", Resume walk was focused, active time was 00:05, and the status sentence was "Movement is not being recorded. Your walk is saved on this phone." Resume showed "Finding your location again", then returned to Practice walk with focus on Pause walk. The route had separate segment paths and pause-blue gaps that were not part of those paths. A later pause showed current break 00:00 while elapsed stayed 00:58, so the new break did not absorb earlier breaks. The IDE browser tab was hidden for part of the pass, so animation frames did not advance the clocks there. The second-by-second active and break timing was measured by the Playwright tests. Holding the end control in that browser did not complete the two-second press. Ending from paused is covered by the Playwright hold and reduced-motion keyboard tests. Paused layout was not remeasured at five widths in the browser. The recording view, which now has both dock buttons, passed the existing 360, 390, 430, 768, and 1280 px checks. Commit `56b9c06`. Movement analytics were not added in this step.
 
 ### P1.9 — Extend the Soundprint analytics contract and fixture
 
-**Status:** Partial
+**Status:** Done
 **Kind:** Contract/fixture
 **Commit subject:** Add honest movement summaries to the Soundprint contract
-**Commit:** Not created. The user has not asked for a commit.
+**Commit:** `56b9c06`
 
 Every Soundprint result now carries a required `movement_summary`. The page does not render it. `schema_version` stays `"1"`.
 
@@ -389,14 +389,14 @@ Validation rejects a missing summary, a missing required field, a negative or no
 
 `npm run lint` and `npm run format` passed. `npm test` passed, 68 tests, with Playwright pointed at the installed browser cache. The new contract tests cover the three fixtures, an omitted return proximity, a clear summary derived from the shell, a mixed summary with speed withheld, a missing summary, a missing distance, negative and non-finite values, a drifted elapsed time, a distance that does not match the segments, a wrong speed, an overlap, an out-of-order segment list, an event count that does not match, a detected pause inside a manual break, a pace sample inside a break, route points that would cross a gap, a limited summary that publishes a speed, a clear grade on an uncertain gap, a return proximity above 1, a null return proximity, and calories, steps, and connector keys. `uv run pytest tests/unit/test_fixtures.py` from `backend/` passed, 2 tests. That test now walks nested objects for the same forbidden keys. `npm run build` passed, and its `tsc -b` step is the typecheck: HTML 0.96 kB (gzip 0.47 kB), CSS 13.17 kB (gzip 3.41 kB), JavaScript 284.43 kB (gzip 86.81 kB), asset `index-Dd-maerp.js`.
 
-The pause suite also exposed a 1 ms split: rounding active time and break time separately could disagree with rounding their sum. The published elapsed attribute is now the sum of those two rounded values. The visible clocks still use the floored second text. No movement totals were added to the Soundprint screen. No commit hash yet.
+The pause suite also exposed a 1 ms split: rounding active time and break time separately could disagree with rounding their sum. The published elapsed attribute is now the sum of those two rounded values. The visible clocks still use the floored second text. No movement totals were added to the Soundprint screen. Commit `56b9c06`.
 
 ### P1.11 — Turn the Soundprint result into a visual journey recap
 
-**Status:** Partial
+**Status:** Done
 **Kind:** Frontend visualization
 **Commit subject:** Turn the Soundprint result into a visual journey recap
-**Commit:** Not created. The user has not asked for a commit.
+**Commit:** `56b9c06`
 
 The Soundprint page reads `movement_summary` directly. A missing speed or an empty pace series shows "Not enough clear data". The page does not substitute a number.
 
@@ -404,27 +404,27 @@ The Soundprint page reads `movement_summary` directly. A missing speed or an emp
 
 **Notes.** Implemented in the working tree on October 9, 2026. The mobile order is the hero, glance tiles, route fingerprint, movement ribbon, three event cards, composition counts, the short story, and a closed "About this example" disclosure. Desktop keeps that order and widens the glance row to four tiles. The player, walker cursor, ribbon playhead, event cards, and story use `useAudioClock`. Marker seeks stay within 500 ms. The example shows active time 1:00, total time 1:00, distance 96 m, and 3 movement moments. Relative pace and average speed stay withheld because the shell summary has an empty pace series and a null speed. The route is one segment. Manual breaks and uncertain intervals are drawn only when the summary contains them, and a gap is a separate path from the movement line. Composition counts come from `event_counts`. Loops are 0. The disclosure starts closed and says location clarity is limited.
 
-`npm run lint` and `npm run format` passed. `npm test` passed, 77 tests. `npm run build` passed: HTML 0.96 kB (gzip 0.47 kB), CSS 17.03 kB (gzip 4.21 kB), JavaScript 294.87 kB (gzip 89.59 kB), assets `index-C2SsGSJP.css` and `index-WdGtGbb4.js`. Against the Step 5 baseline in this file (HTML 0.91 kB gzip 0.45, CSS 11.53 kB gzip 3.12, JavaScript 268.74 kB gzip 82.09), CSS is 5.50 kB larger raw and 1.09 kB larger gzip, and JavaScript is 26.13 kB larger raw and 7.50 kB larger gzip. The same throttled-mobile test, about 1.6 Mbps down, 750 kbps up, 150 ms latency, and 4× CPU, recorded landing 1555 ms and the example 830 ms. The baseline sample was landing 1353 ms and the example 1113 ms. Document load was 364 ms and the document transfer was 1262 bytes. Encoded resource bytes were 0 because the preview assets were already cached. This is one warm sample, not a cold download and not a Lighthouse score. A browser pass of the preview confirmed the glance values, the withheld pace sentence, a turn card seek to 0:18 with a visible Now label, the story chapter Corner Now, and the closed disclosure opening onto the limited-clarity and withheld-speed sentences. No commit hash yet.
+`npm run lint` and `npm run format` passed. `npm test` passed, 77 tests. `npm run build` passed: HTML 0.96 kB (gzip 0.47 kB), CSS 17.03 kB (gzip 4.21 kB), JavaScript 294.87 kB (gzip 89.59 kB), assets `index-C2SsGSJP.css` and `index-WdGtGbb4.js`. Against the Step 5 baseline in this file (HTML 0.91 kB gzip 0.45, CSS 11.53 kB gzip 3.12, JavaScript 268.74 kB gzip 82.09), CSS is 5.50 kB larger raw and 1.09 kB larger gzip, and JavaScript is 26.13 kB larger raw and 7.50 kB larger gzip. The same throttled-mobile test, about 1.6 Mbps down, 750 kbps up, 150 ms latency, and 4× CPU, recorded landing 1555 ms and the example 830 ms. The baseline sample was landing 1353 ms and the example 1113 ms. Document load was 364 ms and the document transfer was 1262 bytes. Encoded resource bytes were 0 because the preview assets were already cached. This is one warm sample, not a cold download and not a Lighthouse score. A browser pass of the preview confirmed the glance values, the withheld pace sentence, a turn card seek to 0:18 with a visible Now label, the story chapter Corner Now, and the closed disclosure opening onto the limited-clarity and withheld-speed sentences. Commit `56b9c06`.
 
 ### P1.12 — Animate the walk to Soundprint transformation
 
-**Status:** Partial
+**Status:** Done
 **Kind:** Frontend motion
 **Commit subject:** Animate the walk to Soundprint transformation
-**Commit:** Not created. The user has not asked for a commit.
+**Commit:** `56b9c06`
 
 One inline SVG walker is the ready, recording, paused, generation, and playback figure. Result motion follows the audio clock. Route drawing is one CSS pass. Numbers appear at their final values, so the result page does not run a second timer.
 
 **Done when.** Motion explains state and causality, stops when irrelevant, and adds no WebGL or autoplay media.
 
-**Notes.** Implemented with P1.11 on October 9, 2026. No new dependency. The landing figure includes the walker. Recording uses a stride pose. Pausing, paused, and resuming use a still pose. Generation swaps one figure across the four existing stage lines: route points, markers, a waveform, then a cover. The stage sentence stays the status. The figure does not show a percent. Playback places the walker on the route at the shared clock and strides only while audio is playing. `prefers-reduced-motion: reduce` leaves the route fully drawn, the walker still, and the glance numbers visible. Focus, press, and the generation status line remain. The reduced-motion recap test measured `animation-name: none` on the route path and the walker legs. The generation stage test still requires that line's animation duration to be under 1 ms when motion is reduced. No commit hash yet.
+**Notes.** Implemented with P1.11 on October 9, 2026. No new dependency. The landing figure includes the walker. Recording uses a stride pose. Pausing, paused, and resuming use a still pose. Generation swaps one figure across the four existing stage lines: route points, markers, a waveform, then a cover. The stage sentence stays the status. The figure does not show a percent. Playback places the walker on the route at the shared clock and strides only while audio is playing. `prefers-reduced-motion: reduce` leaves the route fully drawn, the walker still, and the glance numbers visible. Focus, press, and the generation status line remain. The reduced-motion recap test measured `animation-name: none` on the route path and the walker legs. The generation stage test still requires that line's animation duration to be under 1 ms when motion is reduced. Commit `56b9c06`.
 
 ### P1.13 — Verify the upgraded walk and Soundprint experience
 
-**Status:** Partial
+**Status:** Done
 **Kind:** Verify
 **Commit subject:** Verify the upgraded walk and Soundprint experience
-**Commit:** Not created. The user has not asked for a commit.
+**Commit:** `56b9c06`
 
 This pass fixes only issues found in the audit. It does not add a feature.
 
@@ -448,14 +448,14 @@ The suite covers the required journeys: pause then resume then end, pause then e
 
 Fixes in this pass: published numbers keep three decimal places, so 0.25 stays 0.25. Looping walker and recording-dot animations stay paused unless the element is on screen and the document is visible. The walk clocks, generation clock, and audio clock do not request another animation frame while the document is hidden. Generation updates its displayed second and stage only when those values change.
 
-Unresolved: no commit hash. The 290-minute budget decision is still open. The slow-mobile numbers are warm-cache samples and move between runs. The full backend suite was not part of this check; only `tests/unit/test_fixtures.py` was run. No commit hash yet.
+Unresolved: the 290-minute budget decision is still open. The slow-mobile numbers are warm-cache samples and move between runs. The full backend suite was not part of this check; only `tests/unit/test_fixtures.py` was run. Commit `56b9c06`.
 
 ### Daylight — Add a light theme beside Nocturne Pulse
 
-**Status:** Partial
+**Status:** Done
 **Kind:** Frontend theme
 **Commit subject:** Add a Daylight theme beside Nocturne Pulse
-**Commit:** Not created. The hash is the frontend extension commit once it is written here.
+**Commit:** `56b9c06`
 
 Daylight is the light theme. Nocturne Pulse stays the dark theme. Both use one token list through `light-dark()`. `color-scheme` follows the device, and `data-theme` stores an explicit choice. A script in `index.html` sets the theme before the page paints. The header button is named Light theme or Dark theme.
 
@@ -463,14 +463,14 @@ Daylight is the light theme. Nocturne Pulse stays the dark theme. Both use one t
 
 **Notes.** Checked on October 9, 2026. Light surfaces are `#F4F1E8`, `#FFFDF8`, and `#E8E2D6`. Ink is `#172033` and muted ink is `#3C4A60`. Signals are deepened: route `#0C6B64`, music `#5536B0`, event `#8A4B00`, pause `#1A4E96`, coral `#B4232A`, with light label ink `#F8F5EE`. Measured contrast, WCAG relative luminance: text on those three surfaces is 14.40:1, 16.00:1, and 12.61:1. Muted text is 7.94:1, 8.83:1, and 6.96:1. Light ink on the five signal fills is 5.84:1, 7.59:1, 6.25:1, 7.49:1, and 6.00:1. Route on the paper background is 5.63:1.
 
-`npm run typecheck`, `npm run lint`, and `npm run format` passed. `npm test` passed, 81 tests in 25.4s, including the Daylight, stored-choice, and dark-device tests. `npm run build` passed: HTML 1.55 kB (gzip 0.73 kB), CSS 19.03 kB (gzip 4.48 kB), JavaScript 297.02 kB (gzip 90.13 kB), assets `index-B0ADRuwh.css` and `index-B5vcvyQq.js`. Against the Step 5 baseline, CSS is 7.50 kB larger raw and 1.36 kB larger gzip, and JavaScript is 28.28 kB larger raw and 8.04 kB larger gzip. Against the P1.13 build (CSS 17.55 kB gzip 4.28, JavaScript 295.96 kB gzip 89.85), Daylight added 1.48 kB of CSS raw (0.20 kB gzip) and 1.06 kB of JavaScript raw (0.28 kB gzip). The throttled-mobile sample in this run was landing 1354 ms and the example 806 ms, document load 367 ms, document 1029 bytes, encoded resource bytes 0. Warm cache, not a Lighthouse score. No new dependency. No commit hash yet.
+`npm run typecheck`, `npm run lint`, and `npm run format` passed. `npm test` passed, 81 tests in 25.4s, including the Daylight, stored-choice, and dark-device tests. `npm run build` passed: HTML 1.55 kB (gzip 0.73 kB), CSS 19.03 kB (gzip 4.48 kB), JavaScript 297.02 kB (gzip 90.13 kB), assets `index-B0ADRuwh.css` and `index-B5vcvyQq.js`. Against the Step 5 baseline, CSS is 7.50 kB larger raw and 1.36 kB larger gzip, and JavaScript is 28.28 kB larger raw and 8.04 kB larger gzip. Against the P1.13 build (CSS 17.55 kB gzip 4.28, JavaScript 295.96 kB gzip 89.85), Daylight added 1.48 kB of CSS raw (0.20 kB gzip) and 1.06 kB of JavaScript raw (0.28 kB gzip). The throttled-mobile sample in this run was landing 1354 ms and the example 806 ms, document load 367 ms, document 1029 bytes, encoded resource bytes 0. Warm cache, not a Lighthouse score. No new dependency. Commit `56b9c06`.
 
 ### P1.10 — Apply the Nocturne Pulse visual system
 
-**Status:** Partial
+**Status:** Done
 **Kind:** Edit
 **Commit subject:** Apply the Nocturne Pulse visual system
-**Commit:** Not created. The user has not asked for a commit.
+**Commit:** `56b9c06`
 
 Replace the green-led palette across the landing, recording, generation, Soundprint, and `/system` screens. Keep the page structure, controls, route clock, and example labels.
 
@@ -500,7 +500,7 @@ Contrast was measured with the WCAG 2.1 relative-luminance formula before these 
 
 The white hold-progress overlay at 28% opacity lightens coral to about `#FF9494`. Dark label ink on that composite is 8.83:1, so the existing progress treatment stays. Filled controls also clear 3:1 against the background: cyan 12.71, violet 7.17, amber 11.09, pause blue 9.24, coral 7.03.
 
-`npm run typecheck`, `npm run lint`, and `npm run format` passed. `npm test` passed, 45 tests, after pointing Playwright at the installed browser cache. Those tests include axe on `/`, `/studio`, `/about`, and `/system`, and no horizontal overflow at 360, 390, 430, 768, and 1280 px. `npm run build` passed: `dist/index.html` 0.96 kB (gzip 0.47 kB), CSS 13.04 kB (gzip 3.39 kB), JavaScript 269.54 kB (gzip 82.25 kB). CSS grew about 1.5 kB from the theme. JavaScript gzip stayed about 82 kB. A browser pass of the preview opened the landing, started a practice walk, showed Recording with the cyan route and the coral end control, opened generation, played the example, and sought the turn. `/about` settled on `/#how-it-works`. Computed colors matched the tokens above, and the same five widths had no horizontal overflow in that browser. No active time was measured. No commit hash yet.
+`npm run typecheck`, `npm run lint`, and `npm run format` passed. `npm test` passed, 45 tests, after pointing Playwright at the installed browser cache. Those tests include axe on `/`, `/studio`, `/about`, and `/system`, and no horizontal overflow at 360, 390, 430, 768, and 1280 px. `npm run build` passed: `dist/index.html` 0.96 kB (gzip 0.47 kB), CSS 13.04 kB (gzip 3.39 kB), JavaScript 269.54 kB (gzip 82.25 kB). CSS grew about 1.5 kB from the theme. JavaScript gzip stayed about 82 kB. A browser pass of the preview opened the landing, started a practice walk, showed Recording with the cyan route and the coral end control, opened generation, played the example, and sought the turn. `/about` settled on `/#how-it-works`. Computed colors matched the tokens above, and the same five widths had no horizontal overflow in that browser. No active time was measured. Commit `56b9c06`.
 
 ---
 

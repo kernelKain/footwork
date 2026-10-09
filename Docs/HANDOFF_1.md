@@ -1237,7 +1237,7 @@ Every row depends on the immediately preceding step unless stated otherwise. Min
 
 #### Phase 1 UI/UX extension — 290 planned minutes
 
-This extension was requested on October 9, 2026 and is documented in `Docs/PHASE_1_UI_UX_PLAN.md`. P1.8 through P1.13 are in the working tree and are not committed. The 290-minute budget decision is still open. P1.7 was not a separate implementation step; its decisions are the plan document. No row is Done until a commit hash exists.
+This extension was requested on October 9, 2026 and is documented in `Docs/PHASE_1_UI_UX_PLAN.md`. P1.8 through P1.13 and Daylight are committed as `56b9c06`. The 290-minute budget decision is still open. P1.7 was not a separate implementation step; its decisions are the plan document.
 
 | ID / min | Category; action and planned area | Verification / done-when / fallback | AC and proposed commit |
 |---|---|---|---|
@@ -1388,10 +1388,10 @@ The Phase 1 frontend that this handoff now starts from is the landing and practi
 |---|---|
 | Status | **IN PROGRESS** |
 | Current phase | P1 — Complete frontend experience |
-| Last completed step | Frontend polishing step 5 — verification and rebaseline |
+| Last completed step | Frontend extension and Daylight — `56b9c06` |
 | Next step | Decide the 290-minute budget, then start P2.0. The frontend extension and Daylight are on `build/experience`. |
 | Current execution branch | `build/experience` |
-| Last execution commit | `847a294` |
+| Last execution commit | `56b9c06` |
 | Existing baseline commit | `22df0e7` |
 | Last PR | NONE |
 | Live URL | NOT YET DEPLOYED |
@@ -1421,7 +1421,7 @@ Active-work ceiling: 20 hours
 Feature freeze: Build hour 15, at 75%
 Autonomy: A1 — agent edits; user runs commands and controls Git/deployment
 Status: IN PROGRESS
-Last completed: Frontend polishing step 5 — verification and rebaseline
+Last completed: Frontend extension and Daylight — 56b9c06
 Next step: Decide the 290-minute budget, then start P2.0. The frontend extension and Daylight are on build/experience. The plan is Docs/PHASE_1_UI_UX_PLAN.md and the measured notes are in Docs/HANDOFF_2.md.
 Active phase: P1 — Complete frontend experience
 Branch: build/experience
