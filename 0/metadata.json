@@ -1,0 +1,63 @@
+{
+  "cli_version": "0.11.4",
+  "checkpoint_id": "01M4JTWY45AG0N9MAP0DHGGF3B",
+  "session_id": "62fe2e5e-de2d-4b58-8df1-c5a99d7f79e1",
+  "strategy": "manual-commit",
+  "created_at": "2026-10-10T11:59:13.851346301Z",
+  "branch": "build/soundprint",
+  "checkpoints_count": 1,
+  "save_step_count": 1,
+  "files_touched": [
+    "Docs/HANDOFF_2.md",
+    "Docs/evidence/music-hosting.md",
+    "backend/app/music/__init__.py",
+    "backend/app/music/render.py",
+    "backend/tests/unit/test_music.py"
+  ],
+  "agent": "Cursor",
+  "model": "grok-4.7-high",
+  "turn_id": "566f7bab8a32",
+  "checkpoint_transcript_start": 71,
+  "transcript_lines_at_start": 71,
+  "compact_transcript_start": 9,
+  "token_usage": {
+    "input_tokens": 91325,
+    "cache_creation_tokens": 0,
+    "cache_read_tokens": 2143744,
+    "output_tokens": 38308,
+    "api_call_count": 1
+  },
+  "session_metrics": {
+    "turn_count": 4,
+    "context_tokens": 250413,
+    "context_window_size": 256000
+  },
+  "initial_attribution": {
+    "calculated_at": "2026-10-10T11:59:13.79811796Z",
+    "agent_lines": 428,
+    "agent_removed": 7,
+    "human_added": 0,
+    "human_modified": 0,
+    "human_removed": 0,
+    "total_committed": 428,
+    "total_lines_changed": 435,
+    "agent_percentage": 100,
+    "metric_version": 2
+  },
+  "prompt_attributions": [
+    {
+      "checkpoint_number": 1,
+      "user_lines_added": 0,
+      "user_lines_removed": 0,
+      "agent_lines_added": 0,
+      "agent_lines_removed": 0
+    },
+    {
+      "checkpoint_number": 2,
+      "user_lines_added": 0,
+      "user_lines_removed": 0,
+      "agent_lines_added": 428,
+      "agent_lines_removed": 7
+    }
+  ]
+}

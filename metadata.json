@@ -1,0 +1,30 @@
+{
+  "cli_version": "0.11.4",
+  "checkpoint_id": "01M4JTWY45AG0N9MAP0DHGGF3B",
+  "strategy": "manual-commit",
+  "branch": "build/soundprint",
+  "checkpoints_count": 1,
+  "files_touched": [
+    "Docs/HANDOFF_2.md",
+    "Docs/evidence/music-hosting.md",
+    "backend/app/music/__init__.py",
+    "backend/app/music/render.py",
+    "backend/tests/unit/test_music.py"
+  ],
+  "sessions": [
+    {
+      "metadata": "/0/metadata.json",
+      "transcript": "/0/full.jsonl",
+      "compact_transcript": "/0/transcript.jsonl",
+      "content_hash": "/0/content_hash.txt",
+      "prompt": "/0/prompt.txt"
+    }
+  ],
+  "token_usage": {
+    "input_tokens": 91325,
+    "cache_creation_tokens": 0,
+    "cache_read_tokens": 2143744,
+    "output_tokens": 38308,
+    "api_call_count": 1
+  }
+}
