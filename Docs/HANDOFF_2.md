@@ -4,7 +4,7 @@ Step-by-step record of what actually happened. The locked plan stays in `Docs/HA
 
 **Status:** Phase 2 route sketches are committed on `build/movement`. The outdoor seed walk is waiting on the user. The user will deploy to Render at the end. Local build and tests continue until then. The 20-hour ceiling is unchanged. CodeRabbit GitHub App install is still unconfirmed.
 **Next step:** P2.6, after the user records one real outdoor walk. P2.0 stays deferred until the user deploys `deploy/render.yaml` and records the public page and `/health`.
-**Last completed step:** P2.5, generate synchronized route sketches from movement events. P2.4 remains `b913a93`.
+**Last completed step:** P2.5, generate synchronized route sketches from movement events, commit `6535866`. P2.4 remains `b913a93`.
 **Active build time:** 0 of 20 hours recorded. This session was not measured.
 
 Execution notes stay in this file. The diagram and write-up path are under `Docs/`. Each **Notes** section is filled only after that step is finished.
@@ -599,7 +599,7 @@ Compress the journey, transform the route for display, and synthesize the determ
 
 **Done when.** The automated turn and pause Hook test passes, the shared map stays in order, and the audio is valid.
 
-**Notes.** Implemented on `build/movement` on October 10, 2026.
+**Notes.** Implemented on `build/movement` on October 10, 2026. Commit `6535866`.
 
 `backend/app/movement/sketch.py` compresses a cleaned trace onto a 60-second timeline. The melody falls until the first turn and rises after it. The pause is silence until the next event, or for 10 seconds. Turn and pause times are chapter boundaries. The shared map keeps source and audio intervals in order, without overlap, from the start of the walk to 60 seconds. Up to eight events open chapters. Every detected event stays in the metadata. Display points are recentered, rotated onto their long axis, and scaled into the unit square. A short stretch is trimmed from each end. The summary says the shape can still be identifying. An unusable trace does not receive invented turn or pause events.
 

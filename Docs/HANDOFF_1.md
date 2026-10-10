@@ -1388,10 +1388,10 @@ The Phase 1 frontend that this handoff now starts from is the landing and practi
 |---|---|
 | Status | **IN PROGRESS** |
 | Current phase | P2 — Real recording and movement engine |
-| Last completed step | P2.5 generate synchronized route sketches from movement events |
+| Last completed step | P2.5 generate synchronized route sketches from movement events, commit `6535866` |
 | Next step | P2.6 after the user records one real outdoor walk. P2.0 stays deferred until the final Render deploy. |
 | Current execution branch | `build/movement` |
-| Last execution commit | `b913a93` |
+| Last execution commit | `6535866` |
 | Existing baseline commit | `22df0e7` |
 | Last PR | Pull request #1 merged to `main` |
 | Live URL | NOT YET DEPLOYED |
@@ -1421,7 +1421,7 @@ Active-work ceiling: 20 hours
 Feature freeze: Build hour 15, at 75%
 Autonomy: A1 — agent edits; user runs commands and controls Git/deployment
 Status: IN PROGRESS
-Last completed: P2.5 generate synchronized route sketches from movement events. P2.4 remains b913a93.
+Last completed: P2.5 generate synchronized route sketches from movement events, commit 6535866. P2.4 remains b913a93.
 Next step: P2.6 after the user records one real outdoor walk. Do not invent that walk. P2.0 stays deferred until the final Render deploy. The user is managing the clock. The 20-hour ceiling is unchanged.
 Active phase: P2 — Real recording and movement engine
 Branch: build/movement
