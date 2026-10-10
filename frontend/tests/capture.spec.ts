@@ -1,6 +1,16 @@
 import { expect, test, type Page } from "@playwright/test";
 import { DRAFT_DB, DRAFT_KEY, DRAFT_STORE } from "../src/recording/draftStore";
 import {
+  beginLive,
+  continueLive,
+  initialLive,
+  markPaused,
+  noteHidden,
+  notePosition,
+  pauseLive,
+  recoverLive,
+} from "../src/recording/liveCapture";
+import {
   acceptSample,
   createMovementDraft,
   isDraftExpired,
@@ -49,6 +59,36 @@ test("samples stay finite, spaced, and capped", () => {
   expect(parseMovementDraft({ ...full, samples: [...full.samples].reverse() })).toBeNull();
   expect(isDraftExpired(T0, T0 + 24 * 60 * 60 * 1000)).toBe(false);
   expect(isDraftExpired(T0, T0 + 24 * 60 * 60 * 1000 + 1)).toBe(true);
+});
+
+test("hiding marks a gap and continuing closes it without inventing positions", () => {
+  const state = notePosition(beginLive(initialLive(), "ok", true), sample(0), T0, "session-1", 0);
+  expect(state.phase).toBe("recording");
+  const hidden = noteHidden(state, 1200, T0 + 5000);
+  expect(hidden.phase).toBe("interrupted");
+  expect(hidden.watching).toBe(false);
+  expect(hidden.baseActiveMs).toBe(1200);
+  expect(hidden.draft?.samples).toHaveLength(1);
+  expect(hidden.draft?.interruptions).toEqual([
+    { startMs: T0 + 5000, endMs: T0 + 5000, reason: "hidden", open: true },
+  ]);
+  expect(noteHidden(hidden, 1200, T0 + 6000)).toBe(hidden);
+  const paused = markPaused(pauseLive(state, 1000, T0 + 2000));
+  expect(noteHidden(paused, 1000, T0 + 3000)).toBe(paused);
+
+  const continued = continueLive(hidden, true);
+  expect(continued.phase).toBe("resuming");
+  const resumed = notePosition(continued, sample(8000), T0 + 8000, "session-1", 1200);
+  expect(resumed.phase).toBe("recording");
+  expect(resumed.draft?.samples).toHaveLength(2);
+  expect(resumed.draft?.interruptions[0]).toMatchObject({
+    open: false,
+    endMs: T0 + 8000,
+    reason: "hidden",
+  });
+  expect(recoverLive(hidden.draft).phase).toBe("interrupted");
+  expect(recoverLive(hidden.draft).watching).toBe(false);
+  expect(continueLive(hidden, false).resumeNote).toContain("offline");
 });
 
 test("start and end stop the watch, and a reload recovers the open draft", async ({ page }) => {
@@ -181,6 +221,62 @@ test("a draft older than a day is not restored", async ({ page }) => {
   expect(await readDraft(page)).toBeNull();
 });
 
+test("hiding and returning marks an interruption and does not promise a locked-phone recording", async ({
+  page,
+}) => {
+  await installResumableWatch(page);
+  await page.goto("/");
+  await page.getByRole("button", { name: "Start walking" }).first().click();
+  await page.getByRole("dialog").getByRole("button", { name: "Use my location" }).click();
+  const recording = page.locator(".recording-view");
+  await expect(recording).toHaveAttribute("data-sample-count", "2");
+  await expect(page.getByText("This screen is being kept on.")).toBeVisible();
+  await expect(
+    page.getByText("Recording stops if the phone locks or this tab is hidden."),
+  ).toBeVisible();
+  await expect(page.getByText("screen off")).toHaveCount(0);
+  await expect.poll(async () => (await readDraft(page))?.samples.length ?? 0).toBe(2);
+
+  await hidePage(page);
+  const hidden = page.getByRole("alert");
+  await expect(hidden).toContainText("The page was hidden");
+  await expect(hidden).toContainText("Missing positions were not filled in");
+  await expect(hidden).toContainText("still saved on this phone");
+  await expect(hidden).toContainText("does not continue after the phone locks");
+  await expect(hidden).not.toContainText("Nothing was stored");
+  await expect.poll(async () => (await readDraft(page))?.interruptions[0]?.open).toBe(true);
+  expect((await readDraft(page))?.samples).toHaveLength(2);
+
+  await page.reload();
+  await expect(page.getByRole("heading", { name: "The page was hidden" })).toBeVisible();
+  expect((await readDraft(page))?.samples).toHaveLength(2);
+
+  await page.getByRole("button", { name: "Continue the walk" }).click();
+  await expect(page.getByRole("heading", { name: "Recording" })).toBeVisible();
+  await expect(page.locator(".recording-view")).toHaveAttribute("data-sample-count", "4");
+  await expect.poll(async () => (await readDraft(page))?.interruptions[0]?.open).toBe(false);
+  const restored = await readDraft(page);
+  expect(restored?.samples).toHaveLength(4);
+  expect(restored?.interruptions[0]?.endMs).toBeGreaterThan(
+    restored?.interruptions[0]?.startMs ?? 0,
+  );
+});
+
+test("a browser without a wake lock says the screen is not held", async ({ page }) => {
+  await installWatch(page);
+  await page.addInitScript(() => {
+    Object.defineProperty(navigator, "wakeLock", { configurable: true, get: () => undefined });
+  });
+  await page.goto("/");
+  await page.getByRole("button", { name: "Start walking" }).first().click();
+  await page.getByRole("dialog").getByRole("button", { name: "Use my location" }).click();
+  await expect(page.locator(".recording-view")).toHaveAttribute("data-sample-count", "2");
+  await expect(page.getByText("Screen awake is not held.")).toBeVisible();
+  await expect(
+    page.getByText("Recording stops if the phone locks or this tab is hidden."),
+  ).toBeVisible();
+});
+
 async function installWatch(page: Page): Promise<void> {
   await page.addInitScript(() => {
     const timers = new Map<number, number>();
@@ -236,6 +332,86 @@ async function installWatch(page: Page): Promise<void> {
       if (timer !== undefined) window.clearInterval(timer);
       timers.delete(id);
     };
+  });
+}
+
+async function installResumableWatch(page: Page): Promise<void> {
+  await page.addInitScript(() => {
+    const timers = new Map<number, number>();
+    let nextId = 1;
+    const stored = Number(window.sessionStorage.getItem("footwork-watch-generation") ?? "0");
+    let generation = Number.isFinite(stored) ? stored : 0;
+    Object.defineProperty(navigator, "wakeLock", {
+      configurable: true,
+      value: {
+        request: async () => {
+          return {
+            release: async () => undefined,
+            addEventListener() {
+              return undefined;
+            },
+            removeEventListener() {
+              return undefined;
+            },
+          };
+        },
+      },
+    });
+    navigator.geolocation.watchPosition = (success) => {
+      const id = nextId;
+      nextId += 1;
+      const origin = 1_700_000_000_000 + generation * 20_000;
+      generation += 1;
+      window.sessionStorage.setItem("footwork-watch-generation", String(generation));
+      const samples = [
+        { latitude: 12.9716, longitude: 77.5946, accuracy: 8, timestamp: origin },
+        { latitude: 12.972, longitude: 77.595, accuracy: 10, timestamp: origin + 1500 },
+      ];
+      let index = 0;
+      const timer = window.setInterval(() => {
+        const next = samples[index];
+        index += 1;
+        if (!next) {
+          window.clearInterval(timer);
+          return;
+        }
+        success({
+          coords: {
+            latitude: next.latitude,
+            longitude: next.longitude,
+            accuracy: next.accuracy,
+            altitude: null,
+            altitudeAccuracy: null,
+            heading: null,
+            speed: null,
+            toJSON() {
+              return this;
+            },
+          },
+          timestamp: next.timestamp,
+          toJSON() {
+            return this;
+          },
+        });
+      }, 20);
+      timers.set(id, timer);
+      return id;
+    };
+    navigator.geolocation.clearWatch = (id) => {
+      const timer = timers.get(id);
+      if (timer !== undefined) window.clearInterval(timer);
+      timers.delete(id);
+    };
+  });
+}
+
+async function hidePage(page: Page): Promise<void> {
+  await page.evaluate(() => {
+    Object.defineProperty(document, "visibilityState", {
+      configurable: true,
+      get: () => "hidden",
+    });
+    document.dispatchEvent(new Event("visibilitychange"));
   });
 }
 

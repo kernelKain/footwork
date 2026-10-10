@@ -1388,8 +1388,8 @@ The Phase 1 frontend that this handoff now starts from is the landing and practi
 |---|---|
 | Status | **IN PROGRESS** |
 | Current phase | P2 — Real recording and movement engine |
-| Last completed step | Frontend extension and Daylight — `56b9c06` |
-| Next step | P2.2. P2.0 remains the user Render deploy. |
+| Last completed step | P2.2 visibility gaps and wake lock |
+| Next step | P2.3. P2.0 stays deferred until the final Render deploy. |
 | Current execution branch | `build/movement` |
 | Last execution commit | `6f16257` |
 | Existing baseline commit | `22df0e7` |
@@ -1421,8 +1421,8 @@ Active-work ceiling: 20 hours
 Feature freeze: Build hour 15, at 75%
 Autonomy: A1 — agent edits; user runs commands and controls Git/deployment
 Status: IN PROGRESS
-Last completed: P2.1 recording draft on build/movement. The frontend extension remains 56b9c06.
-Next step: P2.2. P2.0 remains the user Render deploy. The user is managing the clock. The 20-hour ceiling is unchanged.
+Last completed: P2.2 visibility gaps and wake lock. P2.1 remains e0c6c94.
+Next step: P2.3. P2.0 stays deferred until the final Render deploy. The user is managing the clock. The 20-hour ceiling is unchanged.
 Active phase: P2 — Real recording and movement engine
 Branch: build/movement
 Live URL: NOT YET DEPLOYED

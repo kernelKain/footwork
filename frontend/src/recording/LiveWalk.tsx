@@ -7,12 +7,14 @@ import { createDraftStore } from "./draftStore";
 import {
   beginLive,
   cancelLive,
+  continueLive,
   endLive,
   failSave,
   initialLive,
   markFinished,
   markPaused,
   noteDenied,
+  noteHidden,
   notePosition,
   pauseLive,
   recoverLive,
@@ -36,6 +38,7 @@ export function LiveWalk({ onNavigate }: { onNavigate: Navigate }) {
   const [model, setModel] = useState<LiveModel>(initialLive);
   const [settled, setSettled] = useState(false);
   const [sheetOpen, setSheetOpen] = useState(false);
+  const [wakeHeld, setWakeHeld] = useState(false);
   const modelRef = useRef(model);
   const sessionRef = useRef("");
   const readActiveRef = useRef<() => number>(() => 0);
@@ -109,6 +112,48 @@ export function LiveWalk({ onNavigate }: { onNavigate: Navigate }) {
   }, [model.draft, store]);
 
   useEffect(() => {
+    const onVisibility = () => {
+      if (document.visibilityState !== "hidden") return;
+      const next = noteHidden(modelRef.current, readActiveRef.current(), Date.now());
+      if (next === modelRef.current) return;
+      modelRef.current = next;
+      setModel(next);
+    };
+    document.addEventListener("visibilitychange", onVisibility);
+    return () => document.removeEventListener("visibilitychange", onVisibility);
+  }, []);
+
+  useEffect(() => {
+    if (model.phase !== "recording" || !navigator.wakeLock) {
+      setWakeHeld(false);
+      return;
+    }
+    let cancel = false;
+    let sentinel: WakeLockSentinel | null = null;
+    void navigator.wakeLock
+      .request("screen")
+      .then((next) => {
+        if (cancel) {
+          void next.release();
+          return;
+        }
+        sentinel = next;
+        setWakeHeld(true);
+        next.addEventListener("release", () => {
+          if (!cancel) setWakeHeld(false);
+        });
+      })
+      .catch(() => {
+        if (!cancel) setWakeHeld(false);
+      });
+    return () => {
+      cancel = true;
+      setWakeHeld(false);
+      if (sentinel) void sentinel.release();
+    };
+  }, [model.phase]);
+
+  useEffect(() => {
     if (model.phase !== "pausing") return;
     const timer = window.setTimeout(() => {
       setModel((current) => {
@@ -138,14 +183,17 @@ export function LiveWalk({ onNavigate }: { onNavigate: Navigate }) {
       scenario: "granted",
       checkSupport: () => (navigator.geolocation ? "ok" : "unsupported"),
       explainThenResolve: () => (navigator.onLine ? "granted" : "offline"),
-      wakeLockLabel: () => "Screen awake is not held. The phone may still sleep.",
+      wakeLockLabel: () =>
+        wakeHeld
+          ? "This screen is being kept on. Recording stops if the phone locks or this tab is hidden."
+          : "Screen awake is not held. Recording stops if the phone locks or this tab is hidden.",
       signalLabel: () => `Signal: ${model.signal}`,
       recoverDraft: () => null,
       saveDraft: () => undefined,
       clearDraft: () => undefined,
       reacquireFix: () => "ready",
     }),
-    [model.signal],
+    [model.signal, wakeHeld],
   );
 
   const clocks = {
@@ -203,6 +251,7 @@ export function LiveWalk({ onNavigate }: { onNavigate: Navigate }) {
           }}
           onPause={() => apply(pauseLive(modelRef.current, readActiveRef.current(), Date.now()))}
           onResume={() => apply(resumeLive(modelRef.current, navigator.onLine))}
+          onContinue={() => apply(continueLive(modelRef.current, navigator.onLine))}
           onCancelResume={() => apply(cancelLive(modelRef.current))}
           onEnd={() => apply(endLive(modelRef.current, readActiveRef.current(), Date.now()))}
           onRetry={reset}

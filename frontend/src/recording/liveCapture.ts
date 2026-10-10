@@ -17,7 +17,8 @@ export type LivePhase =
   | "finished"
   | "permission_denied"
   | "unsupported_browser"
-  | "offline";
+  | "offline"
+  | "interrupted";
 
 export type LiveModel = {
   phase: LivePhase;
@@ -51,6 +52,18 @@ export function initialLive(): LiveModel {
 
 export function recoverLive(saved: MovementDraft | null): LiveModel {
   if (!saved || saved.status === "ended") return initialLive();
+  const hidden = saved.interruptions.some((gap) => gap.open && gap.reason === "hidden");
+  if (saved.status === "recording" && hidden) {
+    return {
+      phase: "interrupted",
+      draft: saved,
+      watching: false,
+      signal: "lost",
+      baseActiveMs: saved.activeMs,
+      resumeNote: null,
+      saveError: null,
+    };
+  }
   return {
     phase: saved.status === "paused" ? "paused" : "recording",
     draft: saved,
@@ -101,7 +114,7 @@ export function notePosition(
       phase: "recording",
       signal,
       resumeNote: null,
-      draft: { ...accepted.draft, activeMs, updatedAtMs: nowMs },
+      draft: { ...closeHiddenGaps(accepted.draft, nowMs), activeMs, updatedAtMs: nowMs },
     };
   }
   if (state.phase === "recording" && state.draft) {
@@ -119,13 +132,51 @@ export function notePosition(
   return state;
 }
 
-export function noteDenied(state: LiveModel): LiveModel {
-  if (state.phase === "resuming") {
+export function noteHidden(state: LiveModel, activeMs: number, nowMs: number): LiveModel {
+  if (state.phase === "checking_location") return initialLive();
+  if (state.phase === "resuming" && state.draft) {
+    return { ...state, phase: "interrupted", watching: false };
+  }
+  if (state.phase !== "recording" || !state.draft) return state;
+  return {
+    ...state,
+    phase: "interrupted",
+    watching: false,
+    baseActiveMs: activeMs,
+    draft: {
+      ...state.draft,
+      activeMs,
+      updatedAtMs: nowMs,
+      interruptions: [
+        ...state.draft.interruptions,
+        { startMs: nowMs, endMs: nowMs, reason: "hidden", open: true },
+      ],
+    },
+  };
+}
+
+export function continueLive(state: LiveModel, online: boolean): LiveModel {
+  if (state.phase !== "interrupted" || !state.draft) return state;
+  if (!online) {
     return {
       ...state,
-      phase: "paused",
       watching: false,
-      resumeNote: "This site cannot use your location yet. Your walk is still paused.",
+      resumeNote: "You appear to be offline. Your walk is still on this phone.",
+    };
+  }
+  return { ...state, phase: "resuming", watching: true, resumeNote: null };
+}
+
+export function noteDenied(state: LiveModel): LiveModel {
+  if (state.phase === "resuming") {
+    const hidden = state.draft?.interruptions.some((gap) => gap.open && gap.reason === "hidden");
+    return {
+      ...state,
+      phase: hidden ? "interrupted" : "paused",
+      watching: false,
+      resumeNote: hidden
+        ? "This site cannot use your location yet. Your walk is still on this phone."
+        : "This site cannot use your location yet. Your walk is still paused.",
     };
   }
   if (state.phase !== "checking_location") return state;
@@ -190,4 +241,15 @@ export function cancelLive(state: LiveModel): LiveModel {
 
 export function failSave(state: LiveModel): LiveModel {
   return { ...state, saveError: "This walk could not be saved on this phone." };
+}
+
+function closeHiddenGaps(draft: MovementDraft, nowMs: number): MovementDraft {
+  return {
+    ...draft,
+    interruptions: draft.interruptions.map((gap) =>
+      gap.open && gap.reason === "hidden"
+        ? { ...gap, open: false, endMs: Math.max(gap.startMs, nowMs) }
+        : gap,
+    ),
+  };
 }

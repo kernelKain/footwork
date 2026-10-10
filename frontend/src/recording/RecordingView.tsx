@@ -45,6 +45,7 @@ export function RecordingView({
   onCancelResume,
   onEnd,
   onRetry,
+  onContinue = onRetry,
   onNavigate,
 }: {
   phase: RecordingPhase;
@@ -61,6 +62,7 @@ export function RecordingView({
   onCancelResume: () => void;
   onEnd: () => void;
   onRetry: () => void;
+  onContinue?: () => void;
   onNavigate: Navigate;
 }) {
   const headingRef = useRef<HTMLHeadingElement>(null);
@@ -156,14 +158,25 @@ export function RecordingView({
   }
 
   if (phase === "interrupted") {
+    const live = port.mode === "live";
     return (
       <Recovery
         title="The page was hidden"
         onNavigate={onNavigate}
-        action="Start again"
-        onAction={onRetry}
+        action={live ? "Continue the walk" : "Start again"}
+        onAction={live ? onContinue : onRetry}
       >
-        <p>Missing time was not filled in. Nothing was stored on this phone.</p>
+        <p>
+          {live
+            ? "Missing positions were not filled in. This walk is still saved on this phone."
+            : "Missing time was not filled in. Nothing was stored on this phone."}
+        </p>
+        {live ? (
+          <p>
+            Recording stopped while this tab was hidden. It does not continue after the phone locks.
+          </p>
+        ) : null}
+        {live && resumeNote ? <p role="alert">{resumeNote}</p> : null}
       </Recovery>
     );
   }
@@ -244,7 +257,7 @@ export function RecordingView({
           <p>{port.wakeLockLabel()}</p>
           <p>
             {port.mode === "live"
-              ? "Keep this tab open. This walk is saved on this phone. It is not uploaded."
+              ? "Keep this tab open and the screen on. This walk is saved on this phone. It is not uploaded."
               : "Keep this tab open. This practice does not read or save your location."}
           </p>
         </>

@@ -2,9 +2,9 @@
 
 Step-by-step record of what actually happened. The locked plan stays in `Docs/HANDOFF_1.md`. This file is the place to read after a step is finished.
 
-**Status:** Phase 2 recording is committed on `build/movement`. The user said on October 10, 2026 to keep working and that they will manage the clock. The 20-hour ceiling is unchanged. P2.0, the public Render deploy, is still not started. CodeRabbit GitHub App install is still unconfirmed.
-**Next step:** P2.2. P2.0 stays with the user: deploy `deploy/render.yaml` and record the public page and `/health`.
-**Last completed step:** P2.1, record browser movement and recover local drafts. The frontend extension remains `56b9c06`.
+**Status:** Phase 2 visibility is committed on `build/movement`. The user will deploy to Render at the end. Local build and tests continue until then. The 20-hour ceiling is unchanged. CodeRabbit GitHub App install is still unconfirmed.
+**Next step:** P2.3. P2.0 stays deferred until the user deploys `deploy/render.yaml` and records the public page and `/health`.
+**Last completed step:** P2.2, handle recording interruptions and screen visibility. P2.1 remains `e0c6c94`.
 **Active build time:** 0 of 20 hours recorded. This session was not measured.
 
 Execution notes stay in this file. The diagram and write-up path are under `Docs/`. Each **Notes** section is filled only after that step is finished.
@@ -521,11 +521,11 @@ After `build/experience` is pushed, create the Render Blueprint from `deploy/ren
 
 **Done when.** The public HTTPS page and `/health` both work.
 
-**Notes.** Not started. The user will deploy after pushing this branch. Provider keys stay in the Render dashboard.
+**Notes.** Not started. On October 10, 2026 the user deferred this deploy until the end. Local build and tests continue. Provider keys stay in the Render dashboard.
 
 ### P2.1 — Record browser movement and recover local drafts
 
-**Status:** Partial
+**Status:** Done
 **Kind:** Edit · 40 minutes · AC-01, AC-14
 **Commit subject:** Record browser movement and recover local drafts
 
@@ -533,7 +533,7 @@ Record permissioned browser location, keep samples bounded, and store the draft 
 
 **Done when.** Start and end stop the watch, and a reload recovers the draft. There is no upload interface.
 
-**Notes.** Implemented on `build/movement` on October 10, 2026.
+**Notes.** Implemented on `build/movement` on October 10, 2026. Commit `e0c6c94`.
 
 The public page, with `footwork-practice` unset, asks for location and keeps one draft in IndexedDB database `footwork`, store `drafts`, key `current`. Consent version is `1`. Samples need finite coordinates, accuracy no worse than 50 m, at least one second since the previous kept sample, and the draft stops at 3,000 samples. Start and end call `clearWatch`. Pause also stops the watch and a reload restores that paused draft. An ended draft stays stored and does not resume. A draft older than 24 hours is deleted on read. The page does not show coordinates, a file input, or a generated piece. Wake Lock and hidden-page gaps stay in P2.2. Accuracy jumps and trace quality stay in P2.3.
 
@@ -543,7 +543,7 @@ Practice screens still run when `footwork-practice` is `granted`, `denied`, `uns
 
 ### P2.2 — Handle recording interruptions and screen visibility
 
-**Status:** Not started
+**Status:** Done
 **Kind:** Edit · 40 minutes · AC-01, AC-11
 **Commit subject:** Handle recording interruptions and screen visibility
 
@@ -551,7 +551,11 @@ Record visibility gaps, add a wake lock where the browser allows it, and explain
 
 **Done when.** Hiding and resuming the page marks an interruption, and the interface does not promise screen-off recording.
 
-**Notes.** Not implemented.
+**Notes.** Implemented on `build/movement` on October 10, 2026.
+
+Hiding the page during a live recording stops the watch, freezes active time, and stores an open hidden gap. The page says the missing positions were not filled in and that recording does not continue after the phone locks. Continue asks for a new fix and then closes the gap. A paused walk is left paused. A reload of an open gap returns to that interruption. When the browser allows it, a screen wake lock is held only while recording and is released when the page is hidden, paused, or ended. Draft saves are queued so an earlier write cannot replace a newer one.
+
+`npx tsc -b --pretty false` and `npx eslint` on the recording files passed. `PLAYWRIGHT_BROWSERS_PATH=/home/kernel-kain/.cache/ms-playwright npm test` passed, 89 tests. The test command builds the frontend before it starts. No new dependency. No active time was measured.
 
 ### P2.3 — Validate and clean recorded movement samples
 

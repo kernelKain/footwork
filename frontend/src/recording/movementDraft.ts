@@ -19,6 +19,7 @@ export type RecordingGap = {
   startMs: number;
   endMs: number;
   reason: "hidden" | "manual";
+  open: boolean;
 };
 
 export type MovementStatus = "recording" | "paused" | "ended";
@@ -133,7 +134,8 @@ function isGap(value: unknown): value is RecordingGap {
     isTime(gap.startMs) &&
     isTime(gap.endMs) &&
     gap.endMs >= gap.startMs &&
-    (gap.reason === "hidden" || gap.reason === "manual")
+    (gap.reason === "hidden" || gap.reason === "manual") &&
+    typeof gap.open === "boolean"
   );
 }
 
