@@ -1,5 +1,5 @@
 import AxeBuilder from "@axe-core/playwright";
-import { expect, test } from "@playwright/test";
+import { expect, test } from "./practicePage";
 
 async function expectNoHorizontalOverflow(page: import("@playwright/test").Page): Promise<void> {
   const overflow = await page.evaluate(

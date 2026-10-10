@@ -1,4 +1,4 @@
-import { expect, test } from "@playwright/test";
+import { expect, test } from "./practicePage";
 
 test("recording practice stays labeled and generation has no public picker", async ({ page }) => {
   await page.goto("/");

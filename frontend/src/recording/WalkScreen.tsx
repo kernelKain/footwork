@@ -13,7 +13,13 @@ import {
   withOpenBreakDuration,
   type PracticeDraft,
 } from "./practiceDraft";
-import { createPracticePort, readPracticeScenario, resumeFailureLine } from "./practicePort";
+import { LiveWalk } from "./LiveWalk";
+import {
+  createPracticePort,
+  hasPracticeFixture,
+  readPracticeScenario,
+  resumeFailureLine,
+} from "./practicePort";
 import { useRunningOffset } from "./useMonotonicClock";
 
 type Phase = "ready" | RecordingPhase;
@@ -27,6 +33,12 @@ type WalkScreenProps = {
 };
 
 export function WalkScreen({ onNavigate, onGo }: WalkScreenProps) {
+  const practice = useMemo(() => hasPracticeFixture(), []);
+  if (!practice) return <LiveWalk onNavigate={onNavigate} />;
+  return <PracticeWalk onNavigate={onNavigate} onGo={onGo} />;
+}
+
+function PracticeWalk({ onNavigate, onGo }: WalkScreenProps) {
   const port = useMemo(() => createPracticePort(readPracticeScenario()), []);
   const [draft, setDraft] = useState<PracticeDraft | null>(() => port.recoverDraft());
   const [phase, setPhase] = useState<Phase>(draft ? "paused" : "ready");

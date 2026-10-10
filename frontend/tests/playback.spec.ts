@@ -1,4 +1,4 @@
-import { expect, test } from "@playwright/test";
+import { expect, test } from "./practicePage";
 
 test("scrubbing and marker selection stay within 500 ms of the audio clock", async ({ page }) => {
   await page.goto("/studio");

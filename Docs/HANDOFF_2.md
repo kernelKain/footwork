@@ -2,9 +2,9 @@
 
 Step-by-step record of what actually happened. The locked plan stays in `Docs/HANDOFF_1.md`. This file is the place to read after a step is finished.
 
-**Status:** The Phase 1 frontend extension, including Daylight, is committed as `56b9c06` on `build/experience`. P1.7 was not a separate implementation step. The 290-minute budget decision is still open. CodeRabbit GitHub App install is still unconfirmed.
-**Next step:** Decide whether the 20-hour ceiling increases, later work is replaced, or only the remaining Must ship subset is timeboxed. P2.0 stays deferred until that decision.
-**Last completed step:** Frontend extension and Daylight, commit `56b9c06`. P1.6 layout remains `4d3e9d1`. Polishing step 5 remains `847a294`.
+**Status:** Phase 2 recording is committed on `build/movement`. The user said on October 10, 2026 to keep working and that they will manage the clock. The 20-hour ceiling is unchanged. P2.0, the public Render deploy, is still not started. CodeRabbit GitHub App install is still unconfirmed.
+**Next step:** P2.2. P2.0 stays with the user: deploy `deploy/render.yaml` and record the public page and `/health`.
+**Last completed step:** P2.1, record browser movement and recover local drafts. The frontend extension remains `56b9c06`.
 **Active build time:** 0 of 20 hours recorded. This session was not measured.
 
 Execution notes stay in this file. The diagram and write-up path are under `Docs/`. Each **Notes** section is filled only after that step is finished.
@@ -525,7 +525,7 @@ After `build/experience` is pushed, create the Render Blueprint from `deploy/ren
 
 ### P2.1 — Record browser movement and recover local drafts
 
-**Status:** Not started
+**Status:** Partial
 **Kind:** Edit · 40 minutes · AC-01, AC-14
 **Commit subject:** Record browser movement and recover local drafts
 
@@ -533,7 +533,13 @@ Record permissioned browser location, keep samples bounded, and store the draft 
 
 **Done when.** Start and end stop the watch, and a reload recovers the draft. There is no upload interface.
 
-**Notes.** Not implemented.
+**Notes.** Implemented on `build/movement` on October 10, 2026.
+
+The public page, with `footwork-practice` unset, asks for location and keeps one draft in IndexedDB database `footwork`, store `drafts`, key `current`. Consent version is `1`. Samples need finite coordinates, accuracy no worse than 50 m, at least one second since the previous kept sample, and the draft stops at 3,000 samples. Start and end call `clearWatch`. Pause also stops the watch and a reload restores that paused draft. An ended draft stays stored and does not resume. A draft older than 24 hours is deleted on read. The page does not show coordinates, a file input, or a generated piece. Wake Lock and hidden-page gaps stay in P2.2. Accuracy jumps and trace quality stay in P2.3.
+
+Practice screens still run when `footwork-practice` is `granted`, `denied`, `unsupported`, `offline`, or `interrupted`. Frontend tests set `granted` when the key is empty so the existing practice journey stays covered. The public page does not set the key.
+
+`npx tsc -b --pretty false`, `npm run lint`, and `npm run format` passed. `PLAYWRIGHT_BROWSERS_PATH=/home/kernel-kain/.cache/ms-playwright npm test` passed, 86 tests, including the five capture tests. The test command builds the frontend before it starts. No new dependency. No active time was measured.
 
 ### P2.2 — Handle recording interruptions and screen visibility
 

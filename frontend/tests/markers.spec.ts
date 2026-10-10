@@ -1,4 +1,4 @@
-import { expect, test } from "@playwright/test";
+import { expect, test } from "./practicePage";
 
 test("choosing a marker aligns the route, graph, and story", async ({ page }) => {
   await page.goto("/studio");

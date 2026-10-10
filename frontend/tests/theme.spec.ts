@@ -1,4 +1,4 @@
-import { expect, test } from "@playwright/test";
+import { expect, test } from "./practicePage";
 
 async function background(page: import("@playwright/test").Page) {
   return page.evaluate(() => getComputedStyle(document.body).backgroundColor);
