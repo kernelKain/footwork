@@ -1,0 +1,66 @@
+{
+  "cli_version": "0.11.4",
+  "checkpoint_id": "01M4JN345RERN7NZN8V5KRM8TT",
+  "session_id": "e60568ea-6b42-4525-bcb0-84f2c858f86a",
+  "strategy": "manual-commit",
+  "created_at": "2026-10-10T10:17:45.120510519Z",
+  "branch": "build/movement",
+  "checkpoints_count": 1,
+  "files_touched": [
+    "Docs/HANDOFF_1.md",
+    "Docs/HANDOFF_2.md",
+    "frontend/src/recording/LiveWalk.tsx",
+    "frontend/src/recording/RecordingView.tsx",
+    "frontend/src/recording/draftStore.ts",
+    "frontend/src/recording/liveCapture.ts",
+    "frontend/src/recording/movementDraft.ts",
+    "frontend/tests/capture.spec.ts"
+  ],
+  "agent": "Cursor",
+  "model": "grok-4.7-high",
+  "turn_id": "9a3831009a37",
+  "checkpoint_transcript_start": 62,
+  "transcript_lines_at_start": 62,
+  "compact_transcript_start": 6,
+  "session_metrics": {
+    "turn_count": 3
+  },
+  "initial_attribution": {
+    "calculated_at": "2026-10-10T10:17:45.096975646Z",
+    "agent_lines": 385,
+    "agent_removed": 57,
+    "human_added": 0,
+    "human_modified": 0,
+    "human_removed": 0,
+    "total_committed": 385,
+    "total_lines_changed": 442,
+    "agent_percentage": 100,
+    "metric_version": 2
+  },
+  "prompt_attributions": [
+    {
+      "checkpoint_number": 1,
+      "user_lines_added": 6413,
+      "user_lines_removed": 0,
+      "agent_lines_added": 0,
+      "agent_lines_removed": 0,
+      "user_added_per_file": {
+        ".opencode/plugins/entire.ts": 269,
+        ".playwright-mcp/console-2026-10-09T10-34-22-976Z.log": 3,
+        ".playwright-mcp/console-2026-10-09T10-36-07-596Z.log": 1,
+        ".playwright-mcp/console-2026-10-09T10-37-13-199Z.log": 8,
+        ".playwright-mcp/console-2026-10-09T10-39-28-312Z.log": 1,
+        ".playwright-mcp/page-2026-10-09T10-34-28-789Z.yml": 433,
+        ".playwright-mcp/page-2026-10-09T10-35-10-957Z.yml": 393,
+        ".playwright-mcp/page-2026-10-09T10-36-19-563Z.yml": 1735,
+        ".playwright-mcp/page-2026-10-09T10-36-51-651Z.yml": 936,
+        ".playwright-mcp/page-2026-10-09T10-37-16-484Z.yml": 119,
+        ".playwright-mcp/page-2026-10-09T10-37-38-669Z.yml": 229,
+        ".playwright-mcp/page-2026-10-09T10-37-58-860Z.yml": 141,
+        ".playwright-mcp/page-2026-10-09T10-38-31-911Z.yml": 1525,
+        ".playwright-mcp/page-2026-10-09T10-39-05-719Z.yml": 591,
+        ".playwright-mcp/page-2026-10-09T10-39-31-971Z.yml": 29
+      }
+    }
+  ]
+}
