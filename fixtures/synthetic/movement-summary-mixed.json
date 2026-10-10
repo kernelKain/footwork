@@ -1,0 +1,122 @@
+{
+  "schema_version": "1",
+  "label": "synthetic",
+  "purpose": "Fictional two-segment walk used to check movement totals. The break and signal gap are explicit, and the route samples stop before the gap so no line connects them. This is not a recorded walk.",
+  "manifest": {
+    "schema_version": "1",
+    "source_category": "synthetic",
+    "generation_mode": "synthetic_fixture",
+    "model_identity": null,
+    "asset_hashes": {},
+    "rights_note": "Original synthetic geometry and copy created for Footwork. No recorded trace and no provider audio are included.",
+    "verification": {
+      "mapping_status": "planned",
+      "human_reviewed": false
+    }
+  },
+  "result": {
+    "schema_version": "1",
+    "job_id": "synthetic-two-segment",
+    "mode": "synthetic_fixture",
+    "provenance": {
+      "source_category": "synthetic",
+      "generation_mode": "synthetic_fixture",
+      "model_identity": null,
+      "rights_note": "Original synthetic geometry and copy created for Footwork. No recorded trace and no provider audio are included.",
+      "mapping_status": "planned"
+    },
+    "duration_ms": 48000,
+    "audio_available": false,
+    "audio_format": null,
+    "route": {
+      "points": [
+        { "x": 0.2, "y": 0.8, "t_ms": 0 },
+        { "x": 0.2, "y": 0.3, "t_ms": 8000 },
+        { "x": 0.5, "y": 0.3, "t_ms": 24000 }
+      ]
+    },
+    "events": [
+      {
+        "id": "turn-corner",
+        "type": "turn",
+        "source_offset_ms": 8000,
+        "audio_offset_ms": 8000,
+        "confidence": 1
+      },
+      {
+        "id": "pause-hold",
+        "type": "pause",
+        "source_offset_ms": 40000,
+        "audio_offset_ms": 40000,
+        "confidence": 1
+      },
+      {
+        "id": "pace-after",
+        "type": "pace_change",
+        "source_offset_ms": 44000,
+        "audio_offset_ms": 44000,
+        "confidence": 1
+      }
+    ],
+    "chapters": [
+      { "id": "approach", "start_ms": 0, "end_ms": 16000, "title": "Approach" },
+      { "id": "gap", "start_ms": 16000, "end_ms": 32000, "title": "Gap" },
+      { "id": "continue", "start_ms": 32000, "end_ms": 48000, "title": "Continue" }
+    ],
+    "arrangement": {
+      "mood": "warm_cinematic",
+      "style": ["instrumental"],
+      "event_refs": ["turn-corner", "pause-hold", "pace-after"]
+    },
+    "story": { "cards": [] },
+    "movement_summary": {
+      "active_duration_ms": 40000,
+      "elapsed_duration_ms": 48000,
+      "manual_break_duration_ms": 6000,
+      "distance_m": 60,
+      "average_moving_speed_mps": 1.5,
+      "pace_series": [
+        { "t_ms": 0, "pace": 0.4, "quality": "clear" },
+        { "t_ms": 8000, "pace": 0.7, "quality": "clear" },
+        { "t_ms": 24000, "pace": 0.5, "quality": "clear" },
+        { "t_ms": 32000, "pace": 0.3, "quality": "uncertain" },
+        { "t_ms": 44000, "pace": 0.6, "quality": "clear" }
+      ],
+      "recording_segments": [
+        { "id": "seg-out", "start_ms": 0, "end_ms": 24000, "distance_m": 36 },
+        { "id": "seg-back", "start_ms": 32000, "end_ms": 48000, "distance_m": 24 }
+      ],
+      "break_intervals": [{ "id": "break-seat", "start_ms": 24000, "end_ms": 30000 }],
+      "uncertain_intervals": [
+        { "id": "gap-signal", "start_ms": 30000, "end_ms": 32000, "reason": "signal" }
+      ],
+      "event_counts": { "turn": 1, "pace_change": 1, "pause": 1, "loop": 0 },
+      "return_proximity": 0.25,
+      "quality_grade": "mixed"
+    },
+    "quality": {
+      "usable": false,
+      "summary": "Constructed totals only. The signal gap is uncertain, and this is not a recorded walk."
+    },
+    "warnings": [
+      "Synthetic fixture. Distances are round fictional meters. No location was stored."
+    ],
+    "mapping_verification": [
+      {
+        "event_id": "turn-corner",
+        "status": "planned",
+        "note": "Musical direction change is intended, not measured."
+      },
+      {
+        "event_id": "pause-hold",
+        "status": "planned",
+        "note": "The detected hold is not the manual break."
+      },
+      {
+        "event_id": "pace-after",
+        "status": "planned",
+        "note": "Energy change is intended, not measured."
+      }
+    ]
+  }
+}

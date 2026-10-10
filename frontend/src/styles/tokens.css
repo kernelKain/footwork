@@ -1,0 +1,98 @@
+:root {
+  color-scheme: dark light;
+  --color-bg: light-dark(#f4f1e8, #080c18);
+  --color-surface: light-dark(#fffdf8, #11182a);
+  --color-surface-raised: light-dark(#e8e2d6, #18233a);
+  --color-text: light-dark(#172033, #f7f7f2);
+  --color-text-muted: light-dark(#3c4a60, #b9c2d6);
+  --color-route: light-dark(#0c6b64, #53e6d8);
+  --color-music: light-dark(#5536b0, #a78bfa);
+  --color-event: light-dark(#8a4b00, #ffb45c);
+  --color-pause: light-dark(#1a4e96, #73b7ff);
+  --color-coral: light-dark(#b4232a, #ff6b6b);
+  --color-on-signal: light-dark(#f8f5ee, #0c1220);
+  --color-line: light-dark(#6f675c, #5c6e90);
+  --color-focus: light-dark(#172033, #f7f7f2);
+  --color-warning: light-dark(#8c241c, #ffb4a8);
+  --color-contour: light-dark(#c3b6a4, #23334c);
+  --color-mint: var(--color-route);
+  --color-mint-ink: var(--color-on-signal);
+  --color-amber: var(--color-event);
+  --color-coral-ink: var(--color-on-signal);
+  --font-sans: system-ui, "Segoe UI", sans-serif;
+  --font-size-1: 0.875rem;
+  --font-size-2: 1rem;
+  --font-size-3: 1.25rem;
+  --font-size-4: 2rem;
+  --font-size-display: clamp(2rem, 1.2rem + 2.4vw, 2.75rem);
+  --tracking-display: -0.02em;
+  --space-1: 8px;
+  --space-2: 16px;
+  --space-3: 24px;
+  --space-4: 32px;
+  --space-5: 48px;
+  --space-6: 64px;
+  --radius-1: 12px;
+  --radius-2: 16px;
+  --border-width: 1px;
+  --shadow-raised: 0 12px 32px light-dark(rgb(23 32 51 / 0.12), rgb(0 0 0 / 0.45));
+  --duration-fast: 160ms;
+  --ease-standard: cubic-bezier(0.2, 0, 0, 1);
+  --touch: max(44px, 2.75rem);
+  --safe-top: env(safe-area-inset-top, 0px);
+  --safe-right: env(safe-area-inset-right, 0px);
+  --safe-bottom: env(safe-area-inset-bottom, 0px);
+  --safe-left: env(safe-area-inset-left, 0px);
+  --ink: var(--color-bg);
+  --ink-raised: var(--color-surface);
+  --line: var(--color-line);
+  --text: var(--color-text);
+  --text-muted: var(--color-text-muted);
+  --mint: var(--color-route);
+  --gold: var(--color-event);
+  --focus: var(--color-focus);
+  --danger: var(--color-warning);
+  --font-mono: ui-monospace, "Cascadia Code", "Segoe UI Mono", monospace;
+}
+
+:root[data-theme="light"] {
+  color-scheme: light;
+}
+
+:root[data-theme="dark"] {
+  color-scheme: dark;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  margin: 0;
+  min-height: 100%;
+}
+
+body {
+  font-family: var(--font-sans);
+  font-size: var(--font-size-2);
+  background: var(--color-bg);
+  color: var(--color-text);
+  line-height: 1.5;
+}
+
+:focus-visible {
+  outline: 3px solid var(--color-focus);
+  outline-offset: 3px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}

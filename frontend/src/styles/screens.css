@@ -1,0 +1,176 @@
+.stack {
+  display: grid;
+  gap: var(--space-3);
+}
+
+.route-figure {
+  display: grid;
+  gap: var(--space-2);
+  margin: 0;
+  padding: var(--space-2);
+  border: var(--border-width) solid var(--color-line);
+  border-radius: var(--radius-2);
+  background: var(--color-surface);
+}
+
+.route-figure svg {
+  display: block;
+  width: min(100%, 26rem);
+  height: auto;
+  margin-inline: auto;
+  background: transparent;
+}
+
+.route-path {
+  fill: none;
+  stroke: var(--color-route);
+  stroke-width: 2.2;
+  stroke-linejoin: round;
+  stroke-linecap: round;
+}
+
+.cover-signature {
+  stroke: var(--color-route);
+}
+
+.route-turn {
+  fill: var(--color-event);
+}
+
+.route-pause {
+  fill: none;
+  stroke: var(--color-pause);
+  stroke-width: 0.7;
+}
+
+.route-start {
+  fill: var(--color-route);
+}
+
+.route-end {
+  fill: none;
+  stroke: var(--color-route);
+  stroke-width: 0.7;
+}
+
+.route-pace {
+  fill: var(--color-event);
+}
+
+.route-cursor {
+  fill: var(--color-bg);
+  stroke: var(--color-music);
+  stroke-width: 0.7;
+}
+
+.player-controls {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.scrubber {
+  width: 100%;
+  min-height: var(--touch);
+  accent-color: var(--color-music);
+}
+
+.graph-track {
+  position: relative;
+  height: var(--space-3);
+  border-radius: var(--radius-1);
+  background: var(--color-surface-raised);
+  border: 1px solid var(--line);
+  overflow: hidden;
+}
+
+.graph-playhead {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 2px;
+  background: var(--color-music);
+}
+
+.chapter-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-1);
+}
+
+.chapter-row > span {
+  padding: var(--space-1);
+  background: var(--ink-raised);
+  border: 1px solid var(--line);
+}
+
+.chapter-row > span.is-active,
+.mapping-list button.is-active,
+.story-list li.is-active button {
+  position: relative;
+  border-color: var(--color-event);
+  background: var(--color-surface-raised);
+}
+
+.chapter-row > span.is-active::before,
+.mapping-list button.is-active::before,
+.story-list li.is-active button::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  width: 3px;
+  background: linear-gradient(var(--color-route), var(--color-music), var(--color-event));
+  pointer-events: none;
+}
+
+.mapping-list,
+.story-list {
+  display: grid;
+  gap: var(--space-1);
+}
+
+.mapping-list button,
+.story-list button {
+  width: 100%;
+  min-height: var(--touch);
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: var(--space-1);
+  padding: var(--space-2);
+  border: 1px solid var(--line);
+  background: var(--ink-raised);
+  color: inherit;
+  font: inherit;
+  text-align: left;
+}
+
+.story-list,
+.mapping-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.story-list li {
+  display: block;
+}
+
+.panel ul,
+.notice ol,
+.panel ol {
+  margin: 0;
+  padding-left: var(--space-3);
+}
+
+.mapping-list time,
+.story-list time {
+  font-family: var(--font-mono);
+}
+
+.mono {
+  font-family: var(--font-mono);
+}

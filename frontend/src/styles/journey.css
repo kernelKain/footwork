@@ -1,0 +1,111 @@
+.journey {
+  display: grid;
+  gap: var(--space-4);
+}
+
+.recording-view {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  min-height: calc(100vh - 7rem);
+  min-height: calc(100svh - 7rem);
+}
+
+.journey-hero,
+.journey-copy,
+.journey-close {
+  display: grid;
+  gap: var(--space-3);
+}
+
+.hero-figure,
+.moment-figure,
+.practice-route {
+  margin: 0;
+  display: grid;
+  gap: var(--space-1);
+}
+
+.hero-figure svg,
+.moment-figure svg,
+.practice-route svg {
+  display: block;
+  width: 100%;
+  max-width: 100%;
+  height: auto;
+}
+
+.bento {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 14rem), 1fr));
+  gap: var(--space-2);
+  margin: var(--space-3) 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.bento > li,
+.bento > article {
+  display: grid;
+  gap: var(--space-1);
+  align-content: start;
+  padding: var(--space-2);
+  border: var(--border-width) solid var(--color-line);
+  border-radius: var(--radius-1);
+  background: var(--color-surface);
+}
+
+.moment-controls {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-1);
+  margin-top: var(--space-3);
+}
+
+.moment-controls .ui-button[aria-pressed="true"] {
+  border-color: var(--color-event);
+}
+
+.ui-sheet .ui-button,
+.journey .ui-button,
+.recording-view .ui-button,
+.recording-view .ui-hold {
+  min-height: max(48px, 3rem);
+}
+
+.walk-dock {
+  position: sticky;
+  bottom: 0;
+  z-index: 2;
+  display: grid;
+  gap: var(--space-1);
+  margin-top: auto;
+  padding: var(--space-2) 0 calc(var(--space-2) + var(--safe-bottom));
+  border-top: var(--border-width) solid var(--color-line);
+  background: var(--color-bg);
+}
+
+.practice-route-line {
+  fill: none;
+}
+
+.practice-break {
+  fill: none;
+  stroke: var(--color-pause);
+  stroke-width: 3;
+  stroke-dasharray: 2 4;
+  stroke-linecap: round;
+}
+
+.journey-footer {
+  padding-top: var(--space-2);
+  border-top: var(--border-width) solid var(--color-line);
+  color: var(--color-text-muted);
+}
+
+@media (min-width: 64rem) {
+  .journey-hero {
+    grid-template-columns: minmax(0, 1.1fr) minmax(0, 0.9fr);
+    align-items: center;
+  }
+}

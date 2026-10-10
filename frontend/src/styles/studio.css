@@ -1,0 +1,78 @@
+.studio {
+  display: grid;
+  gap: var(--space-3);
+  min-width: 0;
+}
+
+.studio-layout,
+.studio-stage,
+.studio-story,
+.studio-hero,
+.generation-panel {
+  display: grid;
+  gap: var(--space-2);
+  min-width: 0;
+}
+
+.studio-cover {
+  width: 5.5rem;
+  height: 5.5rem;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-1);
+  background: var(--color-surface-raised);
+  overflow: hidden;
+}
+
+.studio-cover svg {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+.studio-clock {
+  font-variant-numeric: tabular-nums;
+  font-size: var(--font-size-3);
+}
+
+.generation-panel {
+  padding: var(--space-3);
+  background: var(--color-surface);
+  border: 1px solid var(--line);
+  border-left: 3px solid var(--color-music);
+  border-radius: var(--radius-2);
+}
+
+a.ui-button {
+  text-decoration: none;
+}
+
+.studio audio {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+}
+
+@media (min-width: 64rem) {
+  .studio-layout {
+    max-width: 52rem;
+  }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .generation-stage {
+    animation: stage-enter var(--duration-fast) var(--ease-standard);
+  }
+}
+
+@keyframes stage-enter {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}

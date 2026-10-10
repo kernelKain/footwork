@@ -1,0 +1,144 @@
+.app-shell {
+  position: relative;
+  min-height: 100vh;
+  min-height: 100svh;
+  padding-top: var(--safe-top);
+  padding-right: var(--safe-right);
+  padding-bottom: var(--safe-bottom);
+  padding-left: var(--safe-left);
+  background-color: var(--color-bg);
+}
+
+.app-shell::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  background: var(--color-contour);
+  -webkit-mask: url("/brand/contours.svg") center top / min(1200px, 140%) auto no-repeat;
+  mask: url("/brand/contours.svg") center top / min(1200px, 140%) auto no-repeat;
+}
+
+.app-header,
+.app-main {
+  position: relative;
+  z-index: 1;
+}
+
+.app-header {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-2);
+  padding: var(--space-2);
+  border-bottom: 1px solid var(--line);
+  background: var(--color-bg);
+}
+
+.brand {
+  min-height: 48px;
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-1);
+  color: var(--text);
+  font-size: 1.125rem;
+  font-weight: 700;
+  text-decoration: none;
+}
+
+.header-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-1);
+}
+
+.app-header .ui-button {
+  min-height: max(48px, 3rem);
+}
+
+.app-main {
+  width: min(100% - var(--space-4), 56rem);
+  margin: 0 auto;
+  padding: var(--space-3) 0 var(--space-5);
+  display: grid;
+  gap: var(--space-3);
+}
+
+h1,
+h2,
+h3,
+p {
+  margin: 0;
+}
+
+.app-main a:not(.action) {
+  color: var(--text);
+}
+
+h1 {
+  font-size: var(--font-size-display);
+  line-height: 1.15;
+  letter-spacing: var(--tracking-display);
+}
+
+h2 {
+  font-size: 1.25rem;
+  line-height: 1.3;
+  letter-spacing: -0.01em;
+}
+
+figcaption {
+  color: var(--color-text-muted);
+  font-size: var(--font-size-1);
+}
+
+.lede,
+.muted {
+  color: var(--text-muted);
+}
+
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-1);
+}
+
+.action {
+  min-height: var(--touch);
+  display: inline-flex;
+  align-items: center;
+  padding: var(--space-1) var(--space-2);
+  background: var(--color-route);
+  color: var(--color-on-signal);
+  font: inherit;
+  font-weight: 700;
+  text-decoration: none;
+}
+
+.action.secondary {
+  background: transparent;
+  color: var(--text);
+  border: 1px solid var(--line);
+  font-weight: 600;
+}
+
+.panel,
+.notice {
+  display: grid;
+  gap: var(--space-2);
+  padding: var(--space-2);
+  background: var(--ink-raised);
+  border: 1px solid var(--line);
+}
+
+.notice {
+  border-color: var(--danger);
+}
+
+.notice ul {
+  margin: 0;
+  padding-left: var(--space-3);
+}

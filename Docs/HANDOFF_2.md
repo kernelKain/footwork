@@ -2,10 +2,10 @@
 
 Step-by-step record of what actually happened. The locked plan stays in `Docs/HANDOFF_1.md`. This file is the place to read after a step is finished.
 
-**Status:** P0 is recorded. The user stated the Render balance is $50. CodeRabbit GitHub App install is still unconfirmed.  
-**Next step:** P1 on `build/experience`. Do not start until asked.  
-**Last completed step:** P0.4 — proof `acf03ad`, credit confirmation `8c11719`.  
-**Active build time:** 0 of 20 hours recorded.
+**Status:** The Phase 1 frontend extension, including Daylight, is committed as `56b9c06` on `build/experience`. P1.7 was not a separate implementation step. The 290-minute budget decision is still open. CodeRabbit GitHub App install is still unconfirmed.
+**Next step:** Decide whether the 20-hour ceiling increases, later work is replaced, or only the remaining Must ship subset is timeboxed. P2.0 stays deferred until that decision.
+**Last completed step:** Frontend extension and Daylight, commit `56b9c06`. P1.6 layout remains `4d3e9d1`. Polishing step 5 remains `847a294`.
+**Active build time:** 0 of 20 hours recorded. This session was not measured.
 
 Execution notes stay in this file. The diagram and write-up path are under `Docs/`. Each **Notes** section is filled only after that step is finished.
 
@@ -28,15 +28,15 @@ A finished note looks like this:
 
 ## P0 — Stack and access foundation
 
-**Branch:** `build/foundation`  
-**Window:** Build hours 0–2 (120 minutes)  
-**Outcome:** Tools, model access, music API access, and hosting are configured or an explicit fallback is recorded.  
+**Branch:** `build/foundation`
+**Window:** Build hours 0–2 (120 minutes)
+**Outcome:** Tools, model access, music API access, and hosting are configured or an explicit fallback is recorded.
 **Phase note:** Toolchain, Gemma gate, music proof, and hosting choice are recorded on `main`. The user stated the Render balance is $50 on October 9, 2026. The hosting choice is one paid `1c-2g` service. No Footwork service was created. The CodeRabbit GitHub App install is still unconfirmed. The planned `build/foundation` branch was not used.
 
 ### P0.1 — Verify baseline and initialize execution record
 
-**Status:** Done  
-**Kind:** Proof · 30 minutes · AC-14, AC-16  
+**Status:** Done
+**Kind:** Proof · 30 minutes · AC-14, AC-16
 **Commit subject:** Document the implementation contract and repository baseline
 
 Inspect the repository baseline, preserve `Docs/`, and initialize the execution record. The user creates the `build/foundation` branch.
@@ -47,8 +47,8 @@ Inspect the repository baseline, preserve `Docs/`, and initialize the execution 
 
 ### P0.2 — Configure the application toolchain and quality checks
 
-**Status:** Partial  
-**Kind:** Edit · 30 minutes · AC-07, AC-14, AC-18  
+**Status:** Partial
+**Kind:** Edit · 30 minutes · AC-07, AC-14, AC-18
 **Commit subject:** Configure the application toolchain and quality checks
 
 Configure the frontend, API, and Hugging Face environments, plus GitHub Actions, CodeRabbit, Entire, the DevRelay write-up path, and the Excalidraw architecture diagram.
@@ -59,8 +59,8 @@ Configure the frontend, API, and Hugging Face environments, plus GitHub Actions,
 
 ### P0.3 — Add the Gemma access proof and provider configuration
 
-**Status:** Done  
-**Kind:** Proof · 30 minutes · AC-04  
+**Status:** Done
+**Kind:** Proof · 30 minutes · AC-04
 **Commit subject:** Add the Gemma access proof and provider configuration
 
 Add the minimal Hugging Face arrangement endpoint and prove `google/gemma-4-E2B-it`.
@@ -71,8 +71,8 @@ Add the minimal Hugging Face arrangement endpoint and prove `google/gemma-4-E2B-
 
 ### P0.4 — Record music API and hosting access checks
 
-**Status:** Done  
-**Kind:** Proof · 30 minutes · AC-05, AC-07, AC-14  
+**Status:** Done
+**Kind:** Proof · 30 minutes · AC-05, AC-07, AC-14
 **Commit subject:** Record music API and hosting access checks
 
 Check the ElevenLabs key, model, balance, and usage rights, and confirm Render credit covers the chosen service.
@@ -85,96 +85,448 @@ Check the ElevenLabs key, model, balance, and usage rights, and confirm Render c
 
 ## P1 — Complete frontend experience
 
-**Branch:** `build/experience`  
-**Window:** Build hours 2–7 (300 minutes)  
-**Outcome:** A full fixture journey, synchronized player, responsive states, and the first public deployment.  
-**Phase note:** Not started. Depends on P0.
+**Branch:** `build/experience`
+**Window:** Build hours 2–7 (300 minutes)
+**Outcome:** A full fixture journey, synchronized player, responsive states, and the first public deployment.
+**Phase note:** P1.1 is committed as `33e8a8c`. P1.2 is committed as `a7ac1ab`. P1.3 is committed as `23c247b`. P1.4 is committed as `466a238`. P1.5 is committed as `0540af5`. P1.6 is committed as `4d3e9d1`. Frontend polishing steps 1–5 are complete through `847a294`. On October 9, 2026 the user requested a second Phase 1 extension covering pause/resume, a new theme, visual analytics, and purposeful motion. The plan is `Docs/PHASE_1_UI_UX_PLAN.md`. The user then asked for the visual-system slice first. P1.8 through P1.13 and the Daylight light theme are committed as `56b9c06`. P1.7 was not a separate implementation step.
 
 ### P1.1 — Build the Soundprint interface and fixture contracts
 
-**Status:** Not started  
-**Kind:** Edit · 50 minutes · AC-13, AC-18  
+**Status:** Done
+**Kind:** Edit · 50 minutes · AC-13, AC-18
 **Commit subject:** Build the Soundprint interface and fixture contracts
 
 Build design tokens, the three-screen shell, reusable layout, and typed fixture contracts in `frontend/`.
 
 **Done when.** A labeled fixture renders at 390 px and 1280 px, and contract validation passes.
 
-**Notes.** Not implemented.
+**Notes.** Added dark-ink tokens, the Walk, Soundprint, and How it works screens, and a shared result validator. `fixtures/synthetic/soundprint-shell.json` is labeled synthetic, has no location fields, and does not claim live Gemma or ElevenLabs audio. `npm run typecheck`, `npm run lint`, and `npm run format` passed in `frontend/`. `npm test` passed, 8 tests, including 390 px and 1280 px overflow checks and the fixture contract. `uv run pytest tests/unit/test_fixtures.py` passed, 2 tests. Browser check of `http://127.0.0.1:4173` opened the walk, played the example, and opened How it works. The route figure is capped at 26rem so the path stays visible. Commit `33e8a8c` on `build/experience`. Full `uv run pytest` still fails during collection because `backend/tests/unit/test_arrange_gate.py` inserts `hf-space` at the front of `sys.path` before `test_imports.py` loads. That failure is pre-existing and was not changed here. No active time was measured.
 
 ### P1.2 — Deploy the frontend shell and API health endpoint
 
-**Status:** Not started  
-**Kind:** Release · 50 minutes · AC-07  
+**Status:** Done locally
+**Kind:** Release · 50 minutes · AC-07
 **Commit subject:** Deploy the frontend shell and API health endpoint
 
 Serve the frontend and a FastAPI health endpoint from one Render service. The user deploys the skeleton.
 
 **Done when.** The public HTTPS page and `/health` both work.
 
-**Notes.** Not implemented.
+**Notes.** `GET /health` returns status, API version `v1`, and schema version `1`, and it does not call a provider. The same FastAPI app serves the built shell for `/`, `/studio`, and `/about`. `deploy/render.yaml` selects Python, plan `1c-2g`, region `singapore`, a 1 GB disk, and `autoDeployTrigger: off`. Secret values stay out of the file. `uv run --directory backend ruff check .` passed. `uv run --directory backend pytest` passed, 9 tests. A local TestClient check of `frontend/dist` returned 200 for `/health`, `/`, `/studio`, `/about`, and the built JavaScript asset. The public URL check moved to P2.0. AC-07 stays open until that deploy. Commit `a7ac1ab` on `build/experience`. No active time was measured.
+
+#### P1.2a — Keep the API import test collectable
+
+**Status:** Done with P1.2
+**Reason:** The full backend suite could not collect after the Gemma proof test inserted `hf-space` ahead of the API package. CI runs that suite, and this step needs it green before a deploy is treated as ready.
+
+**Notes.** `backend/tests/unit/test_arrange_gate.py` now removes that path immediately after importing `arrange`. The Gemma proof assertions are unchanged. The same 9-test run covers this fix.
 
 ### P1.3 — Synchronize route playback and audio scrubbing
 
-**Status:** Not started  
-**Kind:** Edit · 50 minutes · AC-02, AC-10  
+**Status:** Done
+**Kind:** Edit · 50 minutes · AC-02, AC-10
 **Commit subject:** Synchronize route playback and audio scrubbing
+**Commit:** `23c247b`
 
 Add the audio player, SVG route, and scrubbing, driven by one audio clock and deterministic fixture audio.
 
 **Done when.** Anchor checks stay within 500 ms of the audio clock.
 
-**Notes.** Not implemented.
+**Notes.** Committed as `23c247b`. The Soundprint player uses one audio element as the clock and `requestAnimationFrame` to read it. Scrubbing and event buttons seek that clock. The browser generates a deterministic sketch: the tone falls until the corner, rises after it, and stays silent through the hold. The screen says this is not ElevenLabs audio. `npm run typecheck`, `npm run lint`, and `npm run format` passed. `npm test` passed, 10 tests. The scrub and pause-marker checks stayed within 500 ms of the audio clock. A browser click on Turn moved the scrubber to 18000 and showed Now. No active time was measured.
 
 ### P1.4 — Add movement markers and Soundprint explanations
 
-**Status:** Not started  
-**Kind:** Edit · 50 minutes · AC-10, AC-18  
+**Status:** Done
+**Kind:** Edit · 50 minutes · AC-10, AC-18
 **Commit subject:** Add movement markers and Soundprint explanations
+**Commit:** `466a238`
 
 Add the Route–Sound Graph, Movement Story, and sponsor and provenance labels.
 
 **Done when.** Choosing a marker moves the route, graph, and story together, and planned mappings are labeled as planned.
 
-**Notes.** Not implemented.
+**Notes.** Committed as `466a238`. The graph, story cards, and route share the existing audio clock. Choosing the turn mapping seeks that clock, and the route cursor, graph playhead, and story time stay within 500 ms of one another. Mapping status stays the fixture value `planned`. Sponsor copy says this synthetic fixture did not call Gemma or ElevenLabs, and that Render is the planned host while this screen is local. `npm run typecheck`, `npm run lint`, and `npm run format` passed. `npm test` passed, 11 tests. No active time was measured.
 
 ### P1.5 — Implement recording and generation interface states
 
-**Status:** Not started  
-**Kind:** Edit · 50 minutes · AC-06, AC-11, AC-18  
+**Status:** Done
+**Kind:** Edit · 50 minutes · AC-06, AC-11, AC-18
 **Commit subject:** Implement recording and generation interface states
+**Commit:** `0540af5`
 
 Build the fixture recording and generation flow, including every required visible state.
 
 **Done when.** Permission, loading, partial, invalid, quota, and provider-failure states are present, and none of them pretends a live generation succeeded.
 
-**Notes.** Not implemented.
+**Notes.** Committed as `0540af5`. The walk screen previews permission denial, waiting for a position fix, an invalid trace, and a hidden-page gap. The Soundprint screen previews processing, arranging, and composing, plus partial, quota, and provider failure. Those views hide the synthetic result. Provider failure uses the locked sentences for an unavailable arrangement service and unavailable Studio generation, and it says this preview did not produce a Studio Track. Returning to the synthetic fixture shows that example again, still labeled synthetic. `npm run typecheck`, `npm run lint`, and `npm run format` passed. `npm test` passed, 12 tests. No active time was measured.
 
 ### P1.6 — Refine the mobile Soundprint experience
 
-**Status:** Not started  
-**Kind:** Verify · 50 minutes · AC-12, AC-13  
+**Status:** Partial
+**Kind:** Verify · 50 minutes · AC-12, AC-13
 **Commit subject:** Refine the mobile Soundprint experience
+**Commit:** `4d3e9d1`
 
 The user reviews the full fixture experience. Revise hierarchy and mobile layout from that review.
 
 **Done when.** The fixture journey is accepted and usable at 390 px and 1280 px.
 
-**Notes.** Not implemented.
+**Notes.** Committed as `4d3e9d1`. The Soundprint now leads with the synthetic label, Play, and the route. Generation preview states sit behind a disclosure after the route, graph, story, and provenance. The separate movement-event list is gone because the graph already seeks those markers. The walk screen shows the empty recording before its preview-state disclosure. A selected preview state says Showing, not only a gold border. The narrow header places the mode badge beside the name. `npm run typecheck`, `npm run lint`, and `npm run format` passed. `npm test` passed, 12 tests, including route-before-states order and no horizontal overflow at 390 px and 1280 px. The user then approved a frontend-polishing plan instead of closing this step by acceptance. The public contract that replaces this shell is `Docs/FRONTEND_EXPERIENCE.md`. No active time was measured.
+
+---
+
+## Frontend polishing
+
+The user approved this plan on October 9, 2026, on `build/experience`. It does not replace the Hook, the stack, or the phase order. Step 1 is documentation only.
+
+### Step 1 — Rebaseline the frontend experience and visual direction
+
+**Status:** Done
+**Kind:** Edit · documentation
+**Commit subject:** Rebaseline the frontend experience and visual direction
+
+Write the public flow, page contract, plain-language copy, state model, and design-research notes. Do not change components.
+
+**Done when.** `Docs/FRONTEND_EXPERIENCE.md`, `Docs/HANDOFF_1.md`, `Docs/HANDOFF_2.md`, and `Docs/PRODUCT_CONCEPT.md` agree on the public journey, and no frontend component was edited.
+
+**Notes.** This commit adds `Docs/FRONTEND_EXPERIENCE.md` and aligns the handoff and product concept with that contract. No frontend component was edited. `.opencode/` and `.playwright-mcp/` stayed untracked. No active time was measured.
+
+### Step 2 — Create the Footwork brand and mobile design system
+
+**Status:** Done
+**Kind:** Edit
+**Commit subject:** Create the Footwork brand and mobile design system
+
+Add the Night Trail Studio brand, design tokens, and reusable controls. Do not redesign `/` or `/studio`.
+
+**Done when.** The logo, tokens, and controls exist, component tests cover focus, disabled, loading, reduced motion, 360 px, contrast, and the small mark, and no new dependency was added.
+
+**Notes.** This commit adds the brand and the control catalog. The public walk and Soundprint screens are not redesigned. They pick up the new ink, mint, and amber through the existing token names. `/system` is not linked from the header. `.opencode/` stayed untracked. No active time was measured.
+
+Direction: Night Trail Studio. Deep ink background, opaque elevated surfaces, mint for the route, amber for musical moments, and coral only for ending a walk or another destructive action. One system sans stack. Timers use tabular numerals. Motion is transform and opacity, and only to show state. `prefers-reduced-motion` shortens transitions and replaces the hold gesture with a second press. The recording pulse is opt-in. The word Recording stays. No WebGL, no looping background, and no new library.
+
+No new dependency. Tokens are CSS custom properties. The logo is hand-drawn SVG. The project has no web app manifest and no image pipeline, so the favicon, 180 px apple-touch icon, and 1200×630 social image are SVG rather than PNG.
+
+| Token | Value |
+|---|---|
+| `--color-bg` | `#0e1520` |
+| `--color-surface` | `#1a2636` |
+| `--color-surface-raised` | `#223246` |
+| `--color-text` | `#f4f1ea` |
+| `--color-text-muted` | `#d5d0c6` |
+| `--color-mint` / `--color-mint-ink` | `#8fd4ae` / `#10281c` |
+| `--color-amber` | `#e2b657` |
+| `--color-coral` / `--color-coral-ink` | `#c4473a` / `#fff8f6` |
+| `--color-line` | `#3a4a60` |
+| `--color-focus` | `#9ad7ff` |
+| `--color-warning` | `#ffb4a8` (the old `--danger` name; not coral) |
+| Type | `system-ui, "Segoe UI", sans-serif`; 0.875 / 1 / 1.25 / 2 rem |
+| Space | 8, 16, 24, 32, 48, 64 px |
+| Radius | 12 px, 16 px |
+| Border | 1 px |
+| Elevation | `0 10px 28px rgb(0 0 0 / 0.28)` on raised surfaces only |
+| Motion | 160 ms, `cubic-bezier(0.2, 0, 0, 1)` |
+| Target | 44 px minimum |
+| Safe area | `env(safe-area-inset-*)` on the shell |
+
+Logo geometry is one continuous route stroke that reads as an F, a start circle, and one square beat. Files:
+
+- `frontend/public/brand/mark.svg`
+- `frontend/public/brand/mark-mono.svg`
+- `frontend/public/brand/wordmark.svg`
+- `frontend/public/favicon.svg`
+- `frontend/public/brand/apple-touch.svg`
+- `frontend/public/brand/og.svg`
+- `frontend/public/brand/trail-wash.svg` (static, catalog only)
+
+Controls in `frontend/src/ui/`: primary, secondary, quiet, icon, and destructive buttons; hold-to-confirm; card and raised panel; status chip; alert; dialog sheet; disclosure; skeleton; recording indicator; timer; route line, waypoint, beat, and waveform. `Logo` exposes mark, wordmark, and mono, each named Footwork. Styles live in `frontend/src/styles/tokens.css` and `frontend/src/styles/system.css`.
+
+`npm run typecheck`, `npm run lint`, and `npm run format` passed. `npm test` passed, 16 tests. The new tests cover keyboard focus, disabled and loading states, reduced-motion confirmation, the 16 px mark, no horizontal overflow at 360 px, and no serious axe violations on the catalog. The existing shell axe run still passes at `/`, `/studio`, and `/about`.
+
+### Step 3 — Build the guided landing and recording journey
+
+**Status:** Done
+**Kind:** Edit
+**Commit subject:** Build the guided landing and recording journey
+
+Replace the three-link introduction with one landing page and a labeled practice recording journey.
+
+**Done when.** `/` explains the walk and can start, record, and end a practice walk. Recoverable practice states are reachable without a public picker. `/studio` is not redesigned.
+
+**Notes.** This commit builds the landing and the practice recording journey. No new dependency. `.opencode/` stayed untracked. No active time was measured.
+
+Route flow:
+
+```text
+/  ready landing
+   Start walking
+     unsupported practice -> unsupported browser
+     otherwise readiness sheet
+       Not now -> ready
+       Begin practice walk
+         denied practice -> permission denied
+         offline practice -> offline
+         otherwise checking location
+           Cancel -> ready
+           interrupted practice, or the tab is hidden -> interrupted
+           otherwise recording
+             release the hold early -> recording
+             hold about two seconds, or a second press when motion is reduced -> ending -> finished
+/studio  labeled example, still the older Soundprint screen
+/about   redirects to /#how-it-works
+```
+
+Fixture boundary: the public page has no state picker. Tests set `sessionStorage` key `footwork-practice` to `denied`, `unsupported`, `offline`, or `interrupted` before load. Any other value is the granted practice. The recording port in `frontend/src/recording/practicePort.ts` is the Phase 2 seam. Its methods do not call geolocation, Wake Lock, or IndexedDB. `recoverDraft()` returns null.
+
+Known limits: the timer is a practice clock, not a stored walk. The route line is not the person's path. Ending a practice walk does not generate music. `/studio` still shows the fixture banner, the generation preview control, and the sponsor and provenance sections.
+
+`npm run typecheck`, `npm run lint`, and `npm run format` passed. `npm test` passed, 29 tests, including 360, 390, 430, 768, and 1280 px, keyboard focus, reduced motion, hold completion, early release, permission denial, and the unsupported browser.
+
+### Step 4 — Redesign the generation and Soundprint experience
+
+**Status:** Done
+**Kind:** Edit
+**Commit subject:** Redesign the generation and Soundprint experience
+
+Show a clear wait after a walk ends, then a Soundprint with a hero, a route, a movement-to-music timeline, a short story, and optional details.
+
+**Done when.** Ending a practice walk opens generation. The result no longer shows sponsors, provenance, or fixture controls. Audio and route stay within 500 ms.
+
+**Notes.** This commit replaces the older Soundprint screen. No new dependency. `.opencode/` stayed untracked. No active time was measured.
+
+Ending a practice walk waits briefly, then opens `/studio`. The practice stages are Reading your walk, Finding meaningful moments, Turning them into music, and Creating your track. Their ids (`reading_walk`, `finding_moments`, `shaping_music`, `recording_piece`) are not the labels. The page shows the active line and the elapsed time. It does not show a percent. The 180 second boundary from AC-08 uses the same check: past that, or when the attempt is `timed_out`, the page says the piece took too long and offers Try again. Phase 1 practice finishes the four lines on a short timer and does not call a model. The result is still the example.
+
+The result order is the hero (title, summary, cover, Play, Pause, Replay, scrub, and Example walk), the route, the timeline, the walk story, and a closed About this example disclosure. Generated from your walk is reserved for a later result whose mode is not an example. Provenance stays on the result object and in the fixture. It is not a public panel.
+
+Fixture boundary: tests set `sessionStorage` key `footwork-generation` to `run` or an error code before load. `footwork-generation-complete` keeps a second practice ending from starting another piece. There is no public picker.
+
+Verification for this commit: `npm run typecheck`, `npm run lint`, and `npm run format` passed. `npm test` passed, 39 tests. Those tests cover play, pause, seek, replay, event selection, keyboard activation, the 500 ms clock, empty, partial, timeout, error, retry, example, and repeat states, reduced motion, and 360, 390, 430, 768, and 1280 px. Sponsors, Provenance, the generation picker, `synthetic_fixture`, and `mapping_status` are absent from the public page. The route cursor, timeline playhead, and story time still share the audio clock within 500 ms.
+
+### Step 5 — Verify the frontend redesign and rebaseline later phases
+
+**Status:** Done
+**Kind:** Edit
+**Commit subject:** Verify the frontend redesign and rebaseline later phases
+
+Check the Phase 1 pages, remove leftover preview controls, and write the Phase 2 seams against the screens that exist.
+
+**Done when.** The existing checks pass, the critical flows have regression tests, and Phase 2 can start from the current landing, recording, generation, and Soundprint interfaces.
+
+**Notes.** This commit does not add a product feature. `.opencode/` stayed untracked. No active time was measured. No real phone was available for this pass.
+
+`npm run typecheck`, `npm run lint`, and `npm run format` passed. `npm test` passed, 45 tests. `npm run build` passed. `uv run --directory backend ruff check .` passed, and `uv run --directory backend pytest` passed, 9 tests, with no backend source changes. The first test run in this step failed two shell tests while a second build was writing `dist` at the same time. A clean rerun passed those tests. They were not product failures.
+
+What changed: `viewport-fit=cover` so the existing safe-area padding can apply on a notched phone. Touch targets use `max(44px, 2.75rem)` and the primary actions use `max(48px, 3rem)`, so they stay at least the physical minimum and grow when text is enlarged. The readiness sheet moves focus inside the dialog and returns it when the sheet closes. `/about` settles to `/#how-it-works` for a direct visit and for in-app navigation. Unused preview components and their styles are gone. Repeated waveform bar keys that collided were given unique keys. The public pages were not redesigned.
+
+Phase 2 starts from these seams:
+
+- Recording: `frontend/src/recording/practicePort.ts`. Replace it with the Geolocation API, the Screen Wake Lock API, and IndexedDB. `checkSupport` reports an unsupported browser before a location request. `explainThenResolve` reports granted, denied, or offline. `wakeLockLabel` says when the screen is held and when it is not. The page must not promise recording after the phone is locked. `recoverDraft` is null until a draft can be saved and restored. The elapsed clock must be monotonic and must not fill missing time.
+- Generation: `frontend/src/studio/generationContract.ts`. Stage ids, in order, are `reading_walk`, `finding_moments`, `shaping_music`, and `recording_piece`. The public lines are Reading your walk, Finding meaningful moments, Turning them into music, and Creating your track. Error codes are `trace_too_short`, `timed_out`, `arrangement_unavailable`, `music_unavailable`, and `generation_limit`. Retry is only for `timed_out`, `arrangement_unavailable`, and `music_unavailable`, and only after the person presses Try again. The 180 second boundary from AC-08 ends in the timeout line. A second ending of the same finished walk must not start another piece. Do not send a percent or a new HTTP path from this contract.
+- Provenance stays on the Soundprint result and in the fixture. It is not a public panel. Sponsor acknowledgements stay in `README.md` and these notes.
+
+Accessibility baseline from this pass: one `h1` on each public view, a `header` and a `main`, visible `:focus-visible` outlines, named controls, text plus color for status, and reduced motion that leaves the generation line visible. Playback time is not a live region. The stage status changes only when the stage changes.
+
+Performance baseline, local only: `vite build` produced `dist/index.html` at 0.91 kB (gzip 0.45 kB), CSS at 11.53 kB (gzip 3.12 kB), and JavaScript at 268.74 kB (gzip 82.09 kB). CSS is about 0.5 kB smaller than the previous build because unused preview styles were removed. The deleted preview modules were already outside the bundle, so JavaScript stayed about 82 kB gzip. An emulated slow mobile profile, about 1.6 Mbps down, 750 kbps up, 150 ms latency, and 4× CPU, showed the landing in 1353 ms and the example in 1113 ms on the local preview server. The document load event was 388 ms and the document transfer was 1212 bytes. Resource body sizes in that run were 0 because the preview assets were already cached, so this is not a cold download of the script and not a Lighthouse score. No real phone was available. SVG brand files are all under 1 KB. The type stack is `system-ui`, so no web font blocks the first paint. The JavaScript dependencies are React and React DOM. There is no Three.js, WebGL, or infinite decorative background animation. The stage entrance and the recording pulse use opacity and transform, and the pulse runs only when the person has not asked for reduced motion.
+
+### P1.7–P1.13 — Extend the frontend with pause, visual analytics, and purposeful motion
+
+**Status:** Done for P1.8 through P1.13 and Daylight, commit `56b9c06`. P1.7 was not a separate implementation step.
+**Plan:** `Docs/PHASE_1_UI_UX_PLAN.md`
+**Estimated total:** 290 minutes
+**Budget state:** A decision is required before implementation because the original 20-hour plan allocated its full ceiling.
+
+| Step | Status | Outcome | Proposed commit subject |
+|---|---|---|---|
+| P1.7 | Planned | Lock pause semantics, the Nocturne Pulse direction, result wireframes, and allowed analytics. | `Plan the pause journey and visual Soundprint extension` |
+| P1.8 | Done | Practice pause, paused restoration, usable-fix resume, active time, and break time. Commit `56b9c06`. | `Add pause and resume states to the walk journey` |
+| P1.9 | Done | Typed movement summaries, rendered by the recap. Commit `56b9c06`. | `Add honest movement summaries to the Soundprint contract` |
+| P1.10 | Done | Nocturne Pulse, with Daylight added in the same commit. Contrast is recorded below. Commit `56b9c06`. | `Apply the Nocturne Pulse visual system` |
+| P1.11 | Done | Glance tiles, segmented route, movement ribbon, event cards, composition counts, and a closed quality disclosure. Commit `56b9c06`. | `Turn the Soundprint result into a visual journey recap` |
+| P1.12 | Done | One SVG walker on landing, recording, paused, generation, and playback. Commit `56b9c06`. | `Animate the walk to Soundprint transformation` |
+| P1.13 | Done | Verification passed on October 9, 2026, then Daylight was added and the suite was run again. Commit `56b9c06`. | `Verify the upgraded walk and Soundprint experience` |
+
+**Notes.** The user first asked for a plan and no implementation. That request and the linked plan changed documentation only. No component, style, fixture, contract, dependency, or test was changed for the plan itself. Manual breaks are planned as gaps between recording segments and are not natural pause events. Visual analytics are limited to values derivable from accepted location samples and detector output; calories, heart rate, steps, elevation, and health advice remain out of scope.
+
+On October 9, 2026 the user then asked for the visual-system slice before the other extension steps. That work is recorded under P1.10 below. The pause journey was implemented afterward and is recorded under P1.8. The movement summary contract was implemented after that and is recorded under P1.9. The visual recap and walker were implemented after that and are recorded under P1.11 and P1.12. The verification pass is recorded under P1.13.
+
+### P1.8 — Add pause and resume states to the walk journey
+
+**Status:** Done
+**Kind:** Edit
+**Commit subject:** Add pause and resume states to the walk journey
+**Commit:** `56b9c06`
+
+Practice recording can pause, wait through "Finding your location again", and resume on a new segment. A paused practice in sessionStorage is restored after reload. A recording draft is not restored as paused.
+
+**Done when.** The practice journey pauses, survives a reload fixture, resumes without drawing across the break, and remains keyboard- and screen-reader-usable.
+
+**Notes.** Implemented in the working tree on October 9, 2026. The practice port does not call geolocation, Wake Lock, or IndexedDB. A paused draft is kept in sessionStorage under `footwork-practice-draft` as segment durations and break intervals, not coordinates. Active time is the sum of recording segments. Elapsed time adds every manual break. The visible current break is only the open interval. A manual break does not add distance, route points, or musical pause events. Hiding the page during recording still shows the interrupted state and stores nothing. Hiding while paused leaves the paused walk in place.
+
+The practice route draws each segment as its own cyan path. A break is a separate pause-blue dotted path titled "Break. Not movement." That decorative route shows at most three segments. There is no walker motif yet, so the motion that stops while paused is the recording pulse and the growing practice route.
+
+`npm run lint` and `npm run format` passed. `npm test` passed, 54 tests, with Playwright pointed at the installed browser cache. The new tests cover pause, resume, focus, an early end, reduced-motion keyboard end, restoration, a recording draft that is not restored, resume failure, cancel, hidden-page behavior, active and break timing, a second pause whose current break is shorter than the total, the missing route connector, and axe on the paused view. `npm run build` passed, and its `tsc -b` step is the typecheck: HTML 0.96 kB (gzip 0.47 kB), CSS 13.17 kB (gzip 3.41 kB), JavaScript 276.87 kB (gzip 84.55 kB).
+
+A browser pass of the preview restored a paused draft. The heading was "Walk paused", Resume walk was focused, active time was 00:05, and the status sentence was "Movement is not being recorded. Your walk is saved on this phone." Resume showed "Finding your location again", then returned to Practice walk with focus on Pause walk. The route had separate segment paths and pause-blue gaps that were not part of those paths. A later pause showed current break 00:00 while elapsed stayed 00:58, so the new break did not absorb earlier breaks. The IDE browser tab was hidden for part of the pass, so animation frames did not advance the clocks there. The second-by-second active and break timing was measured by the Playwright tests. Holding the end control in that browser did not complete the two-second press. Ending from paused is covered by the Playwright hold and reduced-motion keyboard tests. Paused layout was not remeasured at five widths in the browser. The recording view, which now has both dock buttons, passed the existing 360, 390, 430, 768, and 1280 px checks. Commit `56b9c06`. Movement analytics were not added in this step.
+
+### P1.9 — Extend the Soundprint analytics contract and fixture
+
+**Status:** Done
+**Kind:** Contract/fixture
+**Commit subject:** Add honest movement summaries to the Soundprint contract
+**Commit:** `56b9c06`
+
+Every Soundprint result now carries a required `movement_summary`. The page does not render it. `schema_version` stays `"1"`.
+
+**Done when.** Every proposed visual has typed data, and missing or low-quality data produces an explicit unavailable state.
+
+**Notes.** Implemented in the working tree on October 9, 2026. The named fields match `Docs/PHASE_1_UI_UX_PLAN.md` section 7. Nested shapes were not named in that plan, so they are recorded here.
+
+`recording_segments` items are `{ id, start_ms, end_ms, distance_m }`. `break_intervals` items are `{ id, start_ms, end_ms }`. `uncertain_intervals` items add `reason`, which is `visibility` or `signal`. `pace_series` items are `{ t_ms, pace, quality }`, where `pace` is a relative value from 0 to 1 and `quality` is `clear` or `uncertain`. `event_counts` is `{ turn, pause, pace_change, loop }`. The `pause` count is detected pause events. It is not the manual-break count. `return_proximity` may be omitted. A present value is a finite number from 0 to 1. `quality_grade` is `clear`, `mixed`, or `limited`. `quality.usable` stays a separate flag.
+
+Validation rejects a missing summary, a missing required field, a negative or non-finite value, an overlap, an out-of-order list, and a total that does not match its parts. There is no silent zero. Active time is the sum of segment durations. Manual-break time is the sum of break durations. Distance is the sum of segment distances. Elapsed time runs from the first interval start to the final end and equals active time plus manual breaks plus uncertain intervals. A hole that is none of those three fails. Touching endpoints are allowed. A route point, pace sample, or event time must fall inside a recording segment. Consecutive route points must not cross a manual break or an uncertain interval. Clear quality requires active time, no uncertain intervals, at least one clear pace sample, and a speed equal to accepted distance divided by active seconds, within 0.001 and at most 12 m/s. Mixed quality requires an uncertain interval or an uncertain pace sample, and its speed may be null or that same computed value. Limited quality requires a null speed. Its pace samples, if any, must be marked uncertain. Calories, steps, heart rate, cadence, elevation, health advice, population comparisons, and route connector fields are forbidden and are checked through nested objects.
+
+`fixtures/synthetic/soundprint-shell.json` stays the page example: one 60 second segment, 96 fictional meters, empty pace, null speed, limited grade, and no return proximity. Its route points and event times are unchanged, so the existing polyline does not cross a gap. `fixtures/synthetic/movement-summary-mixed.json` has two segments, a 6 second manual break, a 2 second signal gap, 60 meters, speed 1.5, and return proximity 0.25. Its route samples stop before the gap. `fixtures/synthetic/movement-summary-limited.json` has uncertain pace samples, a null speed, and no return proximity. Provenance and the four result modes are unchanged.
+
+`npm run lint` and `npm run format` passed. `npm test` passed, 68 tests, with Playwright pointed at the installed browser cache. The new contract tests cover the three fixtures, an omitted return proximity, a clear summary derived from the shell, a mixed summary with speed withheld, a missing summary, a missing distance, negative and non-finite values, a drifted elapsed time, a distance that does not match the segments, a wrong speed, an overlap, an out-of-order segment list, an event count that does not match, a detected pause inside a manual break, a pace sample inside a break, route points that would cross a gap, a limited summary that publishes a speed, a clear grade on an uncertain gap, a return proximity above 1, a null return proximity, and calories, steps, and connector keys. `uv run pytest tests/unit/test_fixtures.py` from `backend/` passed, 2 tests. That test now walks nested objects for the same forbidden keys. `npm run build` passed, and its `tsc -b` step is the typecheck: HTML 0.96 kB (gzip 0.47 kB), CSS 13.17 kB (gzip 3.41 kB), JavaScript 284.43 kB (gzip 86.81 kB), asset `index-Dd-maerp.js`.
+
+The pause suite also exposed a 1 ms split: rounding active time and break time separately could disagree with rounding their sum. The published elapsed attribute is now the sum of those two rounded values. The visible clocks still use the floored second text. No movement totals were added to the Soundprint screen. Commit `56b9c06`.
+
+### P1.11 — Turn the Soundprint result into a visual journey recap
+
+**Status:** Done
+**Kind:** Frontend visualization
+**Commit subject:** Turn the Soundprint result into a visual journey recap
+**Commit:** `56b9c06`
+
+The Soundprint page reads `movement_summary` directly. A missing speed or an empty pace series shows "Not enough clear data". The page does not substitute a number.
+
+**Done when.** A user can understand the journey and its musical influence primarily from visuals, with accessible text alternatives and no invented metrics.
+
+**Notes.** Implemented in the working tree on October 9, 2026. The mobile order is the hero, glance tiles, route fingerprint, movement ribbon, three event cards, composition counts, the short story, and a closed "About this example" disclosure. Desktop keeps that order and widens the glance row to four tiles. The player, walker cursor, ribbon playhead, event cards, and story use `useAudioClock`. Marker seeks stay within 500 ms. The example shows active time 1:00, total time 1:00, distance 96 m, and 3 movement moments. Relative pace and average speed stay withheld because the shell summary has an empty pace series and a null speed. The route is one segment. Manual breaks and uncertain intervals are drawn only when the summary contains them, and a gap is a separate path from the movement line. Composition counts come from `event_counts`. Loops are 0. The disclosure starts closed and says location clarity is limited.
+
+`npm run lint` and `npm run format` passed. `npm test` passed, 77 tests. `npm run build` passed: HTML 0.96 kB (gzip 0.47 kB), CSS 17.03 kB (gzip 4.21 kB), JavaScript 294.87 kB (gzip 89.59 kB), assets `index-C2SsGSJP.css` and `index-WdGtGbb4.js`. Against the Step 5 baseline in this file (HTML 0.91 kB gzip 0.45, CSS 11.53 kB gzip 3.12, JavaScript 268.74 kB gzip 82.09), CSS is 5.50 kB larger raw and 1.09 kB larger gzip, and JavaScript is 26.13 kB larger raw and 7.50 kB larger gzip. The same throttled-mobile test, about 1.6 Mbps down, 750 kbps up, 150 ms latency, and 4× CPU, recorded landing 1555 ms and the example 830 ms. The baseline sample was landing 1353 ms and the example 1113 ms. Document load was 364 ms and the document transfer was 1262 bytes. Encoded resource bytes were 0 because the preview assets were already cached. This is one warm sample, not a cold download and not a Lighthouse score. A browser pass of the preview confirmed the glance values, the withheld pace sentence, a turn card seek to 0:18 with a visible Now label, the story chapter Corner Now, and the closed disclosure opening onto the limited-clarity and withheld-speed sentences. Commit `56b9c06`.
+
+### P1.12 — Animate the walk to Soundprint transformation
+
+**Status:** Done
+**Kind:** Frontend motion
+**Commit subject:** Animate the walk to Soundprint transformation
+**Commit:** `56b9c06`
+
+One inline SVG walker is the ready, recording, paused, generation, and playback figure. Result motion follows the audio clock. Route drawing is one CSS pass. Numbers appear at their final values, so the result page does not run a second timer.
+
+**Done when.** Motion explains state and causality, stops when irrelevant, and adds no WebGL or autoplay media.
+
+**Notes.** Implemented with P1.11 on October 9, 2026. No new dependency. The landing figure includes the walker. Recording uses a stride pose. Pausing, paused, and resuming use a still pose. Generation swaps one figure across the four existing stage lines: route points, markers, a waveform, then a cover. The stage sentence stays the status. The figure does not show a percent. Playback places the walker on the route at the shared clock and strides only while audio is playing. `prefers-reduced-motion: reduce` leaves the route fully drawn, the walker still, and the glance numbers visible. Focus, press, and the generation status line remain. The reduced-motion recap test measured `animation-name: none` on the route path and the walker legs. The generation stage test still requires that line's animation duration to be under 1 ms when motion is reduced. Commit `56b9c06`.
+
+### P1.13 — Verify the upgraded walk and Soundprint experience
+
+**Status:** Done
+**Kind:** Verify
+**Commit subject:** Verify the upgraded walk and Soundprint experience
+**Commit:** `56b9c06`
+
+This pass fixes only issues found in the audit. It does not add a feature.
+
+**Done when.** The required journeys, manual-break rules, analytics honesty, 500 ms synchronization, accessibility checks, widths, and performance notes have measured evidence. A step stays Partial until its commit hash exists.
+
+**Notes.** Checked on October 9, 2026 from the working tree. Commands, all from the repository unless noted:
+
+- `frontend`: `npm run typecheck` passed.
+- `frontend`: `npm run lint` passed.
+- `frontend`: `npm run format` passed.
+- `frontend`: `PLAYWRIGHT_BROWSERS_PATH=/home/kernel-kain/.cache/ms-playwright npm test` passed, 78 tests in 30.0s.
+- `frontend`: `npm run build` passed. HTML 0.96 kB (gzip 0.47 kB), CSS 17.55 kB (gzip 4.28 kB), JavaScript 295.96 kB (gzip 89.85 kB), assets `index-TWHbuoFw.css` and `index-DZG9-8kj.js`.
+- `backend`: `uv run pytest tests/unit/test_fixtures.py` passed, 2 tests.
+- `git diff --check` passed with no output.
+
+Against the Step 5 baseline in this file (HTML 0.91 kB gzip 0.45, CSS 11.53 kB gzip 3.12, JavaScript 268.74 kB gzip 82.09), CSS is 6.02 kB larger raw and 1.16 kB larger gzip, and JavaScript is 27.22 kB larger raw and 7.76 kB larger gzip. Against the P1.11 build recorded above (CSS 17.03 kB gzip 4.21, JavaScript 294.87 kB gzip 89.59), this pass added 0.52 kB of CSS raw (0.07 kB gzip) and 1.09 kB of JavaScript raw (0.26 kB gzip).
+
+The same throttled-mobile test, about 1.6 Mbps down, 750 kbps up, 150 ms latency, and 4× CPU, recorded landing 1456 ms and the example 1221 ms. Document load was 415 ms and the document transfer was 1262 bytes. Encoded resource bytes were 0 because the preview assets were already cached. The Step 5 sample was landing 1353 ms and the example 1113 ms. The P1.11 sample was landing 1555 ms and the example 830 ms. These are single warm samples, not a cold download and not a Lighthouse score.
+
+The suite covers the required journeys: pause then resume then end, pause then end, paused restore after reload, permission denied, unsupported browser, offline and interrupted, short or unclear trace, generation timeout, arrangement unavailable, music unavailable, and the example result. Manual breaks stay out of distance, active time, detected pause events, and route connectors. Glance values come from the validated summary. A null speed and an empty pace series show an unavailable sentence. The page does not show calories, steps, heart rate, or elevation. Marker and card seeks stay within 500 ms of the route cursor, ribbon, and story. Keyboard coverage, dialog focus, axe serious and critical checks, 200% text at 360 px, and reduced-motion still states passed. Layout checks passed at 360, 390, 430, 768, and 1280 px.
+
+Fixes in this pass: published numbers keep three decimal places, so 0.25 stays 0.25. Looping walker and recording-dot animations stay paused unless the element is on screen and the document is visible. The walk clocks, generation clock, and audio clock do not request another animation frame while the document is hidden. Generation updates its displayed second and stage only when those values change.
+
+Unresolved: the 290-minute budget decision is still open. The slow-mobile numbers are warm-cache samples and move between runs. The full backend suite was not part of this check; only `tests/unit/test_fixtures.py` was run. Commit `56b9c06`.
+
+### Daylight — Add a light theme beside Nocturne Pulse
+
+**Status:** Done
+**Kind:** Frontend theme
+**Commit subject:** Add a Daylight theme beside Nocturne Pulse
+**Commit:** `56b9c06`
+
+Daylight is the light theme. Nocturne Pulse stays the dark theme. Both use one token list through `light-dark()`. `color-scheme` follows the device, and `data-theme` stores an explicit choice. A script in `index.html` sets the theme before the page paints. The header button is named Light theme or Dark theme.
+
+**Done when.** A light device shows Daylight, a dark device shows Nocturne Pulse, and a stored choice wins after reload. Text and signal fills stay above 4.5:1.
+
+**Notes.** Checked on October 9, 2026. Light surfaces are `#F4F1E8`, `#FFFDF8`, and `#E8E2D6`. Ink is `#172033` and muted ink is `#3C4A60`. Signals are deepened: route `#0C6B64`, music `#5536B0`, event `#8A4B00`, pause `#1A4E96`, coral `#B4232A`, with light label ink `#F8F5EE`. Measured contrast, WCAG relative luminance: text on those three surfaces is 14.40:1, 16.00:1, and 12.61:1. Muted text is 7.94:1, 8.83:1, and 6.96:1. Light ink on the five signal fills is 5.84:1, 7.59:1, 6.25:1, 7.49:1, and 6.00:1. Route on the paper background is 5.63:1.
+
+`npm run typecheck`, `npm run lint`, and `npm run format` passed. `npm test` passed, 81 tests in 25.4s, including the Daylight, stored-choice, and dark-device tests. `npm run build` passed: HTML 1.55 kB (gzip 0.73 kB), CSS 19.03 kB (gzip 4.48 kB), JavaScript 297.02 kB (gzip 90.13 kB), assets `index-B0ADRuwh.css` and `index-B5vcvyQq.js`. Against the Step 5 baseline, CSS is 7.50 kB larger raw and 1.36 kB larger gzip, and JavaScript is 28.28 kB larger raw and 8.04 kB larger gzip. Against the P1.13 build (CSS 17.55 kB gzip 4.28, JavaScript 295.96 kB gzip 89.85), Daylight added 1.48 kB of CSS raw (0.20 kB gzip) and 1.06 kB of JavaScript raw (0.28 kB gzip). The throttled-mobile sample in this run was landing 1354 ms and the example 806 ms, document load 367 ms, document 1029 bytes, encoded resource bytes 0. Warm cache, not a Lighthouse score. No new dependency. Commit `56b9c06`.
+
+### P1.10 — Apply the Nocturne Pulse visual system
+
+**Status:** Done
+**Kind:** Edit
+**Commit subject:** Apply the Nocturne Pulse visual system
+**Commit:** `56b9c06`
+
+Replace the green-led palette across the landing, recording, generation, Soundprint, and `/system` screens. Keep the page structure, controls, route clock, and example labels.
+
+**Done when.** The theme is coherent at the target widths and critical status does not depend on a gradient or color alone.
+
+**Notes.** Implemented in the working tree. No new dependency. The old mint route color is retired. `--color-mint` and `--mint` now alias the route cyan so a leftover reference cannot stay green. `frontend/public/brand/trail-wash.svg` is replaced by one static contour file, `frontend/public/brand/contours.svg`, 773 bytes. It is a solid stroke, not a translucent wash. The signature cyan → violet → amber gradient is only on the landing hero route, the Soundprint cover, and a 3 px bar on the active chapter or moment. Buttons stay solid. Coral is only the end and destructive actions. At the time of this slice, walk pause was not a control yet; the pause blue is used for the route pause mark, the dashed pause moment, and the catalog chip. P1.8 later uses that same blue for the practice break gap. Playback Pause stays violet because it is a music control.
+
+Contrast was measured with the WCAG 2.1 relative-luminance formula before these values were locked. The hardest text ground is the raised surface `#18233A`.
+
+| Token | Final value | Contrast decision |
+|---|---|---|
+| `--color-bg` | `#080C18` | Candidate kept. |
+| `--color-surface` | `#11182A` | Candidate kept. |
+| `--color-surface-raised` | `#18233A` | Candidate kept. |
+| `--color-text` | `#F7F7F2` | 18.16:1 on the background, 16.45:1 on the surface, 14.58:1 on the raised surface. |
+| `--color-text-muted` | `#B9C2D6` | Candidate kept. 10.92:1, 9.89:1, and 8.77:1 on those same three grounds. |
+| `--color-route` | `#53E6D8` | Candidate kept. 10.20:1 on the raised surface and 12.71:1 against the background. |
+| `--color-music` | `#A78BFA` | Candidate kept. 5.76:1 on the raised surface, the lowest text signal, still above 4.5:1. |
+| `--color-event` | `#FFB45C` | Candidate kept. 8.90:1 on the raised surface. |
+| `--color-pause` | `#73B7FF` | Candidate kept. 7.42:1 on the raised surface. |
+| `--color-coral` | `#FF6B6B` | Candidate kept for the control fill. Light text on this fill is 2.58:1, so it is not used for labels. |
+| `--color-on-signal` | `#0C1220` | Added. Label ink on the bright fills: 12.18:1 on cyan, 6.87:1 on violet, 10.63:1 on amber, 8.86:1 on pause blue, and 6.74:1 on coral. |
+| `--color-line` | `#5C6E90` | Adjusted. 3.80:1 on the background, 3.44:1 on the surface, and 3.05:1 on the raised surface, so a border can identify a control. |
+| `--color-focus` | `#F7F7F2` | 18.16:1 on the background. The same light ring is about 1.4:1 on cyan and about 2.5:1 on violet and coral, so the 3 px outline is offset 3 px onto the field. |
+| `--color-warning` | `#FFB4A8` | Kept for alert borders. It is not the end-walk color. 10.39:1 on the surface. |
+| `--color-contour` | `#23334C` | Decorative only, 1.53:1 against the background. Text on that stroke is still 11.85:1 and muted text is 7.12:1. Violet on it is 4.68:1 and coral is 4.59:1. |
+
+The white hold-progress overlay at 28% opacity lightens coral to about `#FF9494`. Dark label ink on that composite is 8.83:1, so the existing progress treatment stays. Filled controls also clear 3:1 against the background: cyan 12.71, violet 7.17, amber 11.09, pause blue 9.24, coral 7.03.
+
+`npm run typecheck`, `npm run lint`, and `npm run format` passed. `npm test` passed, 45 tests, after pointing Playwright at the installed browser cache. Those tests include axe on `/`, `/studio`, `/about`, and `/system`, and no horizontal overflow at 360, 390, 430, 768, and 1280 px. `npm run build` passed: `dist/index.html` 0.96 kB (gzip 0.47 kB), CSS 13.04 kB (gzip 3.39 kB), JavaScript 269.54 kB (gzip 82.25 kB). CSS grew about 1.5 kB from the theme. JavaScript gzip stayed about 82 kB. A browser pass of the preview opened the landing, started a practice walk, showed Recording with the cyan route and the coral end control, opened generation, played the example, and sought the turn. `/about` settled on `/#how-it-works`. Computed colors matched the tokens above, and the same five widths had no horizontal overflow in that browser. No active time was measured. Commit `56b9c06`.
 
 ---
 
 ## P2 — Real recording and movement engine
 
-**Branch:** `build/movement`  
-**Window:** Build hours 7–11 (240 minutes)  
-**Outcome:** Real capture, four detectors, compression, and an exact Route Sketch Hook.  
-**Phase note:** Not started. Depends on P1.
+**Branch:** `build/movement`
+**Window:** Build hours 7–11 (240 minutes)
+**Outcome:** Real capture, four detectors, compression, and an exact Route Sketch Hook.
+**Phase note:** Not started. P2.0 follows the Phase 1 extension or an explicit decision to reduce it. The recording and generation seams are the practice port and `frontend/src/studio/generationContract.ts`, described in frontend polishing step 5 and extended by `Docs/PHASE_1_UI_UX_PLAN.md`. Use the public states in `Docs/FRONTEND_EXPERIENCE.md`. Do not restore sponsor, provenance, or fixture-picker sections.
+
+### P2.0 — Publish the shell and health endpoint
+
+**Status:** Not started
+**Kind:** Release · user-directed · AC-07
+**Commit subject:** Record the public shell and health endpoint
+
+After `build/experience` is pushed, create the Render Blueprint from `deploy/render.yaml`, deploy it manually, and record the public page and `/health`.
+
+**Done when.** The public HTTPS page and `/health` both work.
+
+**Notes.** Not started. The user will deploy after pushing this branch. Provider keys stay in the Render dashboard.
 
 ### P2.1 — Record browser movement and recover local drafts
 
-**Status:** Not started  
-**Kind:** Edit · 40 minutes · AC-01, AC-14  
+**Status:** Not started
+**Kind:** Edit · 40 minutes · AC-01, AC-14
 **Commit subject:** Record browser movement and recover local drafts
 
 Record permissioned browser location, keep samples bounded, and store the draft in IndexedDB.
@@ -185,8 +537,8 @@ Record permissioned browser location, keep samples bounded, and store the draft 
 
 ### P2.2 — Handle recording interruptions and screen visibility
 
-**Status:** Not started  
-**Kind:** Edit · 40 minutes · AC-01, AC-11  
+**Status:** Not started
+**Kind:** Edit · 40 minutes · AC-01, AC-11
 **Commit subject:** Handle recording interruptions and screen visibility
 
 Record visibility gaps, add a wake lock where the browser allows it, and explain how to keep the page visible.
@@ -197,8 +549,8 @@ Record visibility gaps, add a wake lock where the browser allows it, and explain
 
 ### P2.3 — Validate and clean recorded movement samples
 
-**Status:** Not started  
-**Kind:** Edit · 40 minutes · AC-09, AC-14  
+**Status:** Not started
+**Kind:** Edit · 40 minutes · AC-09, AC-14
 **Commit subject:** Validate and clean recorded movement samples
 
 Validate, clean, and project samples in Python, and score route quality.
@@ -209,8 +561,8 @@ Validate, clean, and project samples in Python, and score route quality.
 
 ### P2.4 — Detect turns, pace changes, pauses, and loops
 
-**Status:** Not started  
-**Kind:** Edit · 40 minutes · AC-09  
+**Status:** Not started
+**Kind:** Edit · 40 minutes · AC-09
 **Commit subject:** Detect turns pace changes pauses and loops
 
 Implement the four detectors with positive and negative fixtures.
@@ -221,8 +573,8 @@ Implement the four detectors with positive and negative fixtures.
 
 ### P2.5 — Generate synchronized route sketches from movement events
 
-**Status:** Not started  
-**Kind:** Edit · 40 minutes · AC-02, AC-10, AC-14, AC-17  
+**Status:** Not started
+**Kind:** Edit · 40 minutes · AC-02, AC-10, AC-14, AC-17
 **Commit subject:** Generate synchronized route sketches from movement events
 
 Compress the journey, transform the route for display, and synthesize the deterministic Route Sketch.
@@ -233,8 +585,8 @@ Compress the journey, transform the route for display, and synthesize the determ
 
 ### P2.6 — Validate the movement pipeline with a real outdoor walk
 
-**Status:** Not started  
-**Kind:** Verify · 40 minutes · AC-01, AC-09, AC-14  
+**Status:** Not started
+**Kind:** Verify · 40 minutes · AC-01, AC-09, AC-14
 **Commit subject:** Validate the movement pipeline with a real outdoor walk
 
 The user records the outdoor seed walk. Inspect the derived events and save only the approved sanitized fixture.
@@ -247,15 +599,15 @@ The user records the outdoor seed walk. Inspect the derived events and save only
 
 ## P3 — Sponsor-backed Soundprint
 
-**Branch:** `build/soundprint`  
-**Window:** Build hours 11–15 (240 minutes)  
-**Outcome:** Live Gemma and Eleven Music adapters, job controls, and one reviewed Studio result. Feature freeze is at the end of this phase.  
-**Phase note:** Not started. Depends on P2.
+**Branch:** `build/soundprint`
+**Window:** Build hours 11–15 (240 minutes)
+**Outcome:** Live Gemma and Eleven Music adapters, job controls, and one reviewed Studio result. Feature freeze is at the end of this phase.
+**Phase note:** Not started. Depends on P2. Generation uses the stage codes and error codes in `Docs/FRONTEND_EXPERIENCE.md`. Retry is explicit, and the same finished walk does not start a second piece. Transport paths are not fixed.
 
 ### P3.1 — Add protected generation jobs and durable usage limits
 
-**Status:** Not started  
-**Kind:** Edit · 40 minutes · AC-08, AC-14, AC-15  
+**Status:** Not started
+**Kind:** Edit · 40 minutes · AC-08, AC-14, AC-15
 **Commit subject:** Add protected generation jobs and durable usage limits
 
 Add job endpoints, per-job capability checks, the quota ledger, and idempotency.
@@ -266,8 +618,8 @@ Add job endpoints, per-job capability checks, the quota ledger, and idempotency.
 
 ### P3.2 — Integrate Gemma arrangement generation and validation
 
-**Status:** Not started  
-**Kind:** Edit · 40 minutes · AC-04, AC-06  
+**Status:** Not started
+**Kind:** Edit · 40 minutes · AC-04, AC-06
 **Commit subject:** Integrate Gemma arrangement generation and validation
 
 Call Gemma with an anonymous event timeline and validate the arrangement. Allow at most one repair.
@@ -278,8 +630,8 @@ Call Gemma with an anonymous event timeline and validate the arrangement. Allow 
 
 ### P3.3 — Render validated arrangements with Eleven Music
 
-**Status:** Not started  
-**Kind:** Edit · 40 minutes · AC-05, AC-17  
+**Status:** Not started
+**Kind:** Edit · 40 minutes · AC-05, AC-17
 **Commit subject:** Render validated arrangements with Eleven Music
 
 Compile timed Music v2.5 chunks, call the Eleven Music API, and check the returned audio.
@@ -290,8 +642,8 @@ Compile timed Music v2.5 chunks, call the Eleven Music API, and check the return
 
 ### P3.4 — Connect recorded walks to live Soundprint generation
 
-**Status:** Not started  
-**Kind:** Edit · 40 minutes · AC-01, AC-06, AC-08, AC-18  
+**Status:** Not started
+**Kind:** Edit · 40 minutes · AC-01, AC-06, AC-08, AC-18
 **Commit subject:** Connect recorded walks to live Soundprint generation
 
 Replace fixture generation with the live job flow without rebuilding the accepted interface.
@@ -302,8 +654,8 @@ Replace fixture generation with the live job flow without rebuilding the accepte
 
 ### P3.5 — Verify and cache the real walk demonstration track
 
-**Status:** Not started  
-**Kind:** Verify · 40 minutes · AC-03, AC-05, AC-17  
+**Status:** Not started
+**Kind:** Verify · 40 minutes · AC-03, AC-05, AC-17
 **Commit subject:** Verify and cache the real walk demonstration track
 
 Listen to the seed Studio track, timestamp three movement mappings, and store the cached example.
@@ -314,8 +666,8 @@ Listen to the seed Studio track, timestamp three movement mappings, and store th
 
 ### P3.6 — Verify provider fallbacks and freeze the feature set
 
-**Status:** Not started  
-**Kind:** Verify · 40 minutes · AC-06, AC-08, AC-11, AC-15, AC-18  
+**Status:** Not started
+**Kind:** Verify · 40 minutes · AC-06, AC-08, AC-11, AC-15, AC-18
 **Commit subject:** Verify provider fallbacks and freeze the feature set
 
 Check provider failure, deadline, quota, and fixture parity. Freeze features at build hour 15.
@@ -328,15 +680,15 @@ Check provider failure, deadline, quota, and fixture parity. Freeze features at 
 
 ## P4 — Release verification
 
-**Branch:** `build/release`  
-**Window:** Build hours 15–17 (120 minutes)  
-**Outcome:** Privacy, accessibility, responsive, and failure checks, then the final deployed release.  
-**Phase note:** Not started. Depends on P3. Fixes only. No new features.
+**Branch:** `build/release`
+**Window:** Build hours 15–17 (120 minutes)
+**Outcome:** Privacy, accessibility, responsive, and failure checks, then the final deployed release.
+**Phase note:** Not started. Depends on P3. Fixes only. No new features. Checks include integration, accessibility, performance, and device regression for the rebaselined journey.
 
 ### P4.1 — Harden location privacy and generation access controls
 
-**Status:** Not started  
-**Kind:** Verify · 30 minutes · AC-14, AC-15  
+**Status:** Not started
+**Kind:** Verify · 30 minutes · AC-14, AC-15
 **Commit subject:** Harden location privacy and generation access controls
 
 Audit secrets, payloads, authorization, logs, and retention.
@@ -347,8 +699,8 @@ Audit secrets, payloads, authorization, logs, and retention.
 
 ### P4.2 — Fix accessibility and responsive layout issues
 
-**Status:** Not started  
-**Kind:** Verify · 30 minutes · AC-12, AC-13  
+**Status:** Not started
+**Kind:** Verify · 30 minutes · AC-12, AC-13
 **Commit subject:** Fix accessibility and responsive layout issues
 
 Check keyboard use, contrast, reduced motion, and the 390 px and 1280 px layouts.
@@ -359,8 +711,8 @@ Check keyboard use, contrast, reduced motion, and the 390 px and 1280 px layouts
 
 ### P4.3 — Verify the release journey and synchronization contracts
 
-**Status:** Not started  
-**Kind:** Verify · 30 minutes · AC-02, AC-10, AC-11, AC-18  
+**Status:** Not started
+**Kind:** Verify · 30 minutes · AC-02, AC-10, AC-11, AC-18
 **Commit subject:** Verify the release journey and synchronization contracts
 
 Run the contract tests, the browser journey, and the targeted failure cases.
@@ -371,8 +723,8 @@ Run the contract tests, the browser journey, and the targeted failure cases.
 
 ### P4.4 — Prepare the verified public release and rollback record
 
-**Status:** Not started  
-**Kind:** Release · 30 minutes · AC-07, AC-08, AC-14  
+**Status:** Not started
+**Kind:** Release · 30 minutes · AC-07, AC-08, AC-14
 **Commit subject:** Prepare the verified public release and rollback record
 
 The user deploys the reviewed release. Record the smoke check, the rollback commit, and cleanup settings.
@@ -385,17 +737,17 @@ The user deploys the reviewed release. Record the smoke check, the rollback comm
 
 ## P5 — Demo and submission
 
-**Branch:** `build/submission`  
-**Window:** Build hours 17–20 (150 minutes, plus a 30-minute emergency buffer)  
-**Outcome:** Demo video, DEV article, README, links, and the final evidence record.  
-**Phase note:** Not started. Depends on P4.
+**Branch:** `build/submission`
+**Window:** Build hours 17–20 (150 minutes, plus a 30-minute emergency buffer)
+**Outcome:** Demo video, DEV article, README, links, and the final evidence record.
+**Phase note:** Not started. Depends on P4. Sponsor roles and technical provenance belong in the README and submission evidence, not in the application UI.
 
 The 30-minute buffer is not a step. If emergency work happens, add it under the step it belongs to, with its own commit and note.
 
 ### P5.1 — Document the architecture, demo, and AI-assisted development
 
-**Status:** Not started  
-**Kind:** Edit · 45 minutes · AC-16  
+**Status:** Not started
+**Kind:** Edit · 45 minutes · AC-16
 **Commit subject:** Document the architecture demo and AI-assisted development
 
 Write the README, architecture notes, and rights notes. Draft the DEV article through DevRelay, and export the Excalidraw diagram.
@@ -406,8 +758,8 @@ Write the README, architecture notes, and rights notes. Draft the DEV article th
 
 ### P5.2 — Add the demonstration assets and judge runbook
 
-**Status:** Not started  
-**Kind:** Release · 45 minutes · AC-03, AC-16  
+**Status:** Not started
+**Kind:** Release · 45 minutes · AC-03, AC-16
 **Commit subject:** Add the demonstration assets and judge runbook
 
 The user records the 60-second demo. Prepare the runbook and screenshot references.
@@ -418,8 +770,8 @@ The user records the 60-second demo. Prepare the runbook and screenshot referenc
 
 ### P5.3 — Record the completed challenge submission
 
-**Status:** Not started  
-**Kind:** Release · 45 minutes · AC-16  
+**Status:** Not started
+**Kind:** Release · 45 minutes · AC-16
 **Commit subject:** Record the completed challenge submission
 
 Review tags, template, and links. The user publishes the DEV submission and records the URL.
@@ -430,8 +782,8 @@ Review tags, template, and links. The user publishes the DEV submission and reco
 
 ### P5.4 — Record final verification and release status
 
-**Status:** Not started  
-**Kind:** Verify · 15 minutes · all acceptance criteria  
+**Status:** Not started
+**Kind:** Verify · 15 minutes · all acceptance criteria
 **Commit subject:** Record final verification and release status
 
 Update the final handoff, acceptance evidence, release reference, and remaining limitations.

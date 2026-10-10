@@ -9,7 +9,7 @@
 - **Feature freeze:** Build hour 15, at 75% of the budget.
 - **Stack:** React/TypeScript/Vite → Python/FastAPI on Render → Gemma on free Hugging Face ZeroGPU → Eleven Music.
 - **Development toolchain (Phase 0):** CodeRabbit for code review, Entire for agent-session sharing, DevRelay for DEV write-ups, GitHub Actions for automated checks, Excalidraw for architecture diagrams. These are not part of the running application.
-- **Plan:** Six phases, 30 separately committed steps, one branch per phase.
+- **Plan:** Six phases, 30 original separately committed steps plus the Phase 1 UI/UX extension, one branch per phase. P1.8 through P1.13 and Daylight are on `build/experience`. The 290-minute budget decision is still open.
 - **Largest risk:** Free Gemma availability and whether generated Studio audio makes the intended movement mappings perceptible.
 
 ---
@@ -137,9 +137,9 @@ Use these labels throughout execution:
 - An abstract route with synchronized cursor and markers.
 - A **Route–Sound Graph** showing intended musical mappings.
 - A short **Movement Story**.
-- Explicit provenance and generation mode.
+- A plain label for what the person is hearing: their walk, an example, or a simpler version. Technical provenance stays in metadata and submission evidence, not in a public section.
 
-**Sponsor roles:**
+**Sponsor roles** are real product responsibilities. They are documented in the README and submission evidence, not as sections of the application:
 
 - Gemma: open-weight arrangement director.
 - ElevenLabs: Studio Track production.
@@ -241,7 +241,7 @@ These are not scheduled work.
 | Paid Gemma deployment | User constraint. |
 | Redis, Celery, Kubernetes or a second backend language | No workload requirement. |
 | Production-grade privacy guarantees | Cannot establish them within this build. |
-| Analytics and LangSmith | Extra dependency, data handling and integration scope. |
+| Product telemetry analytics and LangSmith | Extra dependency, data handling and integration scope. This does not exclude the local, privacy-safe movement summary planned for the Soundprint result. |
 
 ---
 
@@ -270,23 +270,25 @@ These are not scheduled work.
 - **FR-08:** Generate and inspect Eleven Music audio.
 - **FR-09:** Produce deterministic audio for the same user trace.
 - **FR-10:** Play and scrub all result views together.
-- **FR-11:** Show factual Movement Story and provenance.
+- **FR-11:** Show a factual Movement Story. Keep technical provenance in metadata and submission evidence, not as a public section.
 - **FR-12:** Replay fixtures through the same result interface.
 - **FR-13:** Enforce payload, concurrency, quota and idempotency limits.
 - **FR-14:** Deploy and document a checkable demonstration.
 
 ### Required Visible States
 
-| State | Expected display |
-|---|---|
-| Initial | Product explanation, recording action and example. |
-| Loading | Waiting for position or generation stage. |
-| Empty | No recorded walk; no fabricated statistics. |
-| Success | Valid result with explicit mode. |
-| Partial | Valid trace but insufficient event variety, or Sketch instead of Studio. |
-| Recoverable error | Permission, network or playback problem with next action. |
-| Dependency unavailable | Provider disabled/unavailable; Sketch and cached example offered. |
-| Invalid input | Inadequate or inconsistent movement; explain what was missing. |
+The public names and copy are in `Docs/FRONTEND_EXPERIENCE.md`. This table is the acceptance vocabulary. It maps onto those names rather than adding a second public interface.
+
+| State | Expected display | Public name |
+|---|---|---|
+| Initial | Product explanation, recording action and example. | Ready |
+| Loading | Waiting for position or generation stage. | Checking location, or Processing |
+| Empty | No recorded walk; no fabricated statistics. | Ready, before a walk starts |
+| Success | Valid result with explicit mode. | Complete, with a plain label |
+| Partial | Valid trace but insufficient event variety, or Sketch instead of Studio. | Complete, labeled as a simpler version |
+| Recoverable error | Permission, network or playback problem with next action. | Permission denied, or Recoverable error |
+| Dependency unavailable | Provider disabled/unavailable; Sketch and cached example offered. | Recoverable error, with the example kept separate |
+| Invalid input | Inadequate or inconsistent movement; explain what was missing. | Recoverable error for a short or unclear walk |
 
 No account creation is required.
 
@@ -311,25 +313,29 @@ No account creation is required.
 | Reduced motion | Static route plus active marker and text; no animated travel required |
 | Controls | Intentionally styled, visible focus, labeled icons and usable touch targets |
 
-### Screens (maximum three)
+### Screens (maximum two public destinations)
+
+`Docs/FRONTEND_EXPERIENCE.md` is the public page contract from October 9, 2026. The table below matches it. `/` is the landing and practice recording journey, and `/about` redirects to `/#how-it-works`. `/studio` is the generation screen and the Soundprint. It has no sponsor section, provenance section, or generation preview control.
 
 | Screen | Purpose/content | Actions | States and Hook relationship |
 |---|---|---|---|
-| `/` — Walk | Explain, record and end a walk; duration and quality indicators | Start/End; Play example; Clear draft | Initial, permission, recording, interruption, invalid trace. Establishes real movement input. |
-| `/studio` — Soundprint | Route, player, graph, story and provenance | Play/Pause; Scrub; Start another walk | Generation, Studio, Sketch, partial and errors. Contains the Hook. |
-| `/about` — How it works | Concise mechanism, privacy limitations, sponsor roles and source link | Back to walk | Makes causality and limitations understandable. |
+| `/` — Walk | Explain the product, record, and end a walk. How it works is `#how-it-works` on this page. | Start walking; Hear an example; End walk | Ready through recording, ending, and recoverable recording errors. |
+| `/studio` — Soundprint | Hero, route, movement-to-music timeline, short story, and optional details. No sponsor or provenance sections. | Play, Pause, Replay, scrub, choose a moment, Start another walk | Processing, complete, and generation errors. Contains the Hook. |
+| `/about` | Redirects to `/#how-it-works`. | None of its own | Not a third destination. |
 
 ### Reusable Regions
 
-- App header and generation-mode badge.
-- Recording status panel.
-- Route canvas built with SVG.
+- Recording status, in words as well as color.
+- Soundprint hero, with the honest example or generated label.
+- Route canvas built with SVG, including start, end, and event markers.
 - Shared player and scrubber.
-- Route–Sound Graph.
-- Movement Story cards.
-- Generation-state panel.
-- Recovery/action notice.
-- Sponsor and provenance details.
+- Movement-to-music timeline.
+- Short walk story.
+- Optional details in a disclosure. Provenance stays in the result data and is not a public region.
+- Recovery notice with a next action.
+- How it works, on `/`.
+
+Developer fixture controls, a global Walk / Soundprint / How it works navigation bar, and public Sponsor or Provenance sections are not part of this region list. Technical provenance stays in fixtures, developer docs, and submission evidence.
 
 ### Quality Floor
 
@@ -841,7 +847,7 @@ Tests are added with the behavior they protect.
 | Provider integration | User-triggered smoke runs | Exact Gemma identity, valid arrangement, genuine Eleven audio and sanitized receipts. | P0, P3 / 04, 05 |
 | Job controls | pytest | Duplicate request, conflicting body, quota exhaustion, restart and unknown provider outcome. | P3 / 15 |
 | Browser journey | Playwright | Fixture journey, recording permission states, generation, playback and scrubbing. | P1–P3 / 01, 10, 11 |
-| Fixture parity | Playwright + contract validation | Identical result renderer across Studio, Sketch and fixture modes; visible provenance. | P3 / 06, 18 |
+| Fixture parity | Playwright + contract validation | Identical result renderer across Studio, Sketch and fixture modes; the plain mode label is visible. Technical provenance stays in the result data. | P3 / 06, 18 |
 | Accessibility | axe-core plus manual keyboard | Core controls, focus, names, contrast and reduced-motion information. | P4 / 12 |
 | Responsive | Playwright screenshots / manual | 390 px and 1280 px, no overflow, usable actions. | P1, P4 / 13 |
 | Privacy/security | Focused artifact/log review | No secrets/raw coordinates in provider payloads, repository or public assets; unauthorized artifact requests denied. | P4 / 14 |
@@ -1132,6 +1138,7 @@ A reduced release cannot silently pass failed sponsor or Studio acceptance crite
 | D-15 | A1 authority | Explicit user choice. | User explicitly changes autonomy. |
 | D-16 | Freeze at hour 15 | Protect final verification and writing. | Approval required; default is scope reduction. |
 | D-17 | Phase 0 development toolchain: CodeRabbit, Entire, DevRelay, GitHub Actions, Excalidraw | User request on October 8, 2026. Review, session sharing, write-ups, automated checks, and architecture diagrams. These are not product APIs. | User removes a tool. |
+| D-18 | Extend Phase 1 with pause/resume, Nocturne Pulse, visual journey analytics, and state-driven motion | Explicit user request on October 9, 2026. Keep the work in Phase 1 and plan it as separately verifiable steps. Manual breaks remain distinct from detected movement pauses. | Implementation starts only after the unchanged 20-hour ceiling is reconciled with the additional 290-minute estimate. |
 
 ---
 
@@ -1178,7 +1185,7 @@ Every phase uses A1. Dependencies are sequential. The user creates the next bran
 | Phase / branch | Window | Outcome and done-when | Risks / criteria | Overrun response |
 |---|---|---|---|---|
 | **P0 — Stack and access foundation** `build/foundation` | 0–2 h | All selected tools configured, including CodeRabbit, Entire, DevRelay, GitHub Actions, and Excalidraw; model/API/hosting access proved or fallback explicitly recorded. | R01–03; prerequisites for AC04, 05, 07 | Stop speculative provider debugging at gate; use documented branch. Toolchain setup stays inside this window. |
-| **P1 — Complete frontend experience** `build/experience` | 2–7 h | Full fixture journey, synchronized player, responsive states and first public deployment. | R07, 10; AC07, 10, 13, 18 | Cut decorative motion; preserve full journey. |
+| **P1 — Complete frontend experience** `build/experience` | Original 2–7 h; extension +290 min pending budget decision | Full fixture journey, pause/resume contract, Nocturne Pulse theme, visual movement recap, synchronized player, responsive states and first public deployment. | R07, 10; AC07, 10, 12, 13, 18 | Preserve pause semantics and visual result comprehension; cut background variants and extra decorative effects first. |
 | **P2 — Real recording and movement engine** `build/movement` | 7–11 h | Real capture, four detectors, compression and exact Sketch Hook pass. | R05, 06; AC01, 02, 09 | Tune against one real trace; no additional event types. |
 | **P3 — Sponsor-backed Soundprint** `build/soundprint` | 11–15 h | Live provider adapters, quota/job controls, genuine prepared Studio result and verified provenance. | R02, 04, 08; AC03–06, 08, 15, 17, 18 | Use documented fallback; record failed criteria; freeze at hour 15. |
 | **P4 — Release verification** `build/release` | 15–17 h | Privacy, accessibility, responsive and failure checks; final deployed release. | R08, 09; AC11–14 | Fix required failures only. |
@@ -1228,10 +1235,29 @@ Every row depends on the immediately preceding step unless stated otherwise. Min
 | **P1.5 — 50** | EDIT: fixture recording/generation flow and every required state. | State matrix covers permission, loading, partial, invalid, quota and provider failure. No fake live success. | AC06, 11, 18 — `Implement recording and generation interface states` |
 | **P1.6 — 50** | VERIFY: user reviews full experience; agent makes targeted hierarchy/mobile revisions. | Complete fixture experience accepted; 390/1280 layouts usable. Cut decoration if behind. | AC12, 13 — `Refine the mobile Soundprint experience` |
 
-### P2 — 240 minutes
+#### Phase 1 UI/UX extension — 290 planned minutes
+
+This extension was requested on October 9, 2026 and is documented in `Docs/PHASE_1_UI_UX_PLAN.md`. P1.8 through P1.13 and Daylight are committed as `56b9c06`. The 290-minute budget decision is still open. P1.7 was not a separate implementation step; its decisions are the plan document.
 
 | ID / min | Category; action and planned area | Verification / done-when / fallback | AC and proposed commit |
 |---|---|---|---|
+| **P1.7 — 30** | EDIT: lock pause semantics, Nocturne Pulse art direction, result wireframes, and permitted analytics. | One target flow, one theme, and one source definition for every displayed value. | AC11–14, 18 — `Plan the pause journey and visual Soundprint extension` |
+| **P1.8 — 45** | EDIT: practice pause, paused restoration, active/break clocks, safe end, and usable-fix resume. | A paused fixture restores and resumes into a new segment without invented movement. | AC11–14, 18 — `Add pause and resume states to the walk journey` |
+| **P1.9 — 40** | EDIT: typed movement summary, segments, gaps, pace buckets, event counts, quality state, and fixture validation. | Each result visual has valid data and a tested unavailable state. | AC09, 14, 18 — `Add honest movement summaries to the Soundprint contract` |
+| **P1.10 — 45** | EDIT: apply the midnight/cyan/violet/amber/coral theme without changing the two-destination structure. | Semantic color and text states pass contrast and remain coherent at target widths. | AC12, 13 — `Apply the Nocturne Pulse visual system` |
+| **P1.11 — 55** | EDIT: visual stats, segmented route, movement ribbon, event distribution, and richer synchronized cards. | The result is understandable visually, accessible in text, and stays within 500 ms of the audio clock. | AC10, 12, 13, 18 — `Turn the Soundprint result into a visual journey recap` |
+| **P1.12 — 40** | EDIT: one SVG walker motif and route-to-Soundprint transformation across ready, recording, paused, generation, and playback. | Motion communicates state, stops when irrelevant, and has static reduced-motion equivalents. | AC10, 12, 13 — `Animate the walk to Soundprint transformation` |
+| **P1.13 — 35** | VERIFY: regression, accessibility, responsive, restoration, synchronization, motion, and performance checks. | Required tests pass at 360–1280 px and the Step 5 performance delta is recorded. | AC10–14, 18 — `Verify the upgraded walk and Soundprint experience` |
+
+### P2 — 240 minutes
+
+On October 9, 2026 the user moved the public Render deploy to the start of this phase. P1 continues locally. P2.0 runs after `build/experience` is pushed and before P2.1.
+
+The public recording states are the names in `Docs/FRONTEND_EXPERIENCE.md`. This phase supplies the real recording adapter: geolocation, Screen Wake Lock, IndexedDB draft recovery, and a monotonic timer. It does not add a public route or an HTTP API for the phone.
+
+| ID / min | Category; action and planned area | Verification / done-when / fallback | AC and proposed commit |
+|---|---|---|---|
+| **P2.0 — user** | RELEASE: create the Render Blueprint from `deploy/render.yaml` on the pushed branch, deploy it manually, and record the public URL. | Public HTTPS page and `/health` both work. No new spend beyond the locked `1c-2g` service. | AC07 — `Record the public shell and health endpoint` |
 | **P2.1 — 40** | EDIT: real browser geolocation, permission handling, bounded samples and IndexedDB draft. | Start/end stops watch correctly; reload recovers draft. No upload UI. | AC01, 14 — `Record browser movement and recover local drafts` |
 | **P2.2 — 40** | EDIT: visibility gaps, optional wake lock, recording guidance and clear action. | Hidden/resumed page marks interruption; no screen-off promise. | AC01, 11 — `Handle recording interruptions and screen visibility` |
 | **P2.3 — 40** | EDIT: Python sample validation, cleaning, projection and quality gates; unit fixtures. | Noise/jumps/invalid timestamps rejected; low-quality trace explained. | AC09, 14 — `Validate and clean recorded movement samples` |
@@ -1240,6 +1266,8 @@ Every row depends on the immediately preceding step unless stated otherwise. Min
 | **P2.6 — 40** | VERIFY: user records outdoor seed walk; inspect derived events and save approved sanitized fixture. | Genuine recording has useful event evidence; raw trace excluded from Git. Repeat capture rather than invent events. | AC01, 09, 14 — `Validate the movement pipeline with a real outdoor walk` |
 
 ### P3 — 240 minutes
+
+The interface consumes the processing stage codes and error codes in `Docs/FRONTEND_EXPERIENCE.md`. Retry is an explicit user action. Submitting the same finished walk again is idempotent. This plan does not fix URL paths or payload shapes for that work.
 
 | ID / min | Category; action and planned area | Verification / done-when / fallback | AC and proposed commit |
 |---|---|---|---|
@@ -1252,6 +1280,8 @@ Every row depends on the immediately preceding step unless stated otherwise. Min
 
 ### P4 — 120 minutes
 
+Release checks cover the rebaselined journey: integration, accessibility, performance, and device regression at 390 px and 1280 px. Fixes only.
+
 | ID / min | Category; action and planned area | Verification / done-when / fallback | AC and proposed commit |
 |---|---|---|---|
 | **P4.1 — 30** | VERIFY: secret, payload, authorization, log and retention audit. | No coordinate/secret leakage; cross-job access denied; caps persist. | AC14, 15 — `Harden location privacy and generation access controls` |
@@ -1263,7 +1293,7 @@ Every row depends on the immediately preceding step unless stated otherwise. Min
 
 | ID / min | Category; action and planned area | Verification / done-when / fallback | AC and proposed commit |
 |---|---|---|---|
-| **P5.1 — 45** | EDIT: README, architecture, DevRelay submission draft, AI disclosure and asset-rights notes. Export the Excalidraw architecture diagram for the article. | Mechanism, evidence, limitations and setup are accurate; links resolve. The DEV draft is unpublished until the user reviews it. | AC16 — `Document the architecture demo and AI-assisted development` |
+| **P5.1 — 45** | EDIT: README, architecture, DevRelay submission draft, AI disclosure and asset-rights notes. Export the Excalidraw architecture diagram for the article. Sponsor roles and technical provenance go in the README and submission evidence, not in the application UI. | Mechanism, evidence, limitations and setup are accurate; links resolve. The DEV draft is unpublished until the user reviews it. | AC16 — `Document the architecture demo and AI-assisted development` |
 | **P5.2 — 45** | RELEASE: user records 60-second demo; agent prepares runbook and screenshot references. | Hook appears in first ten seconds; backup video exists; no false live claim. | AC03, 16 — `Add the demonstration assets and judge runbook` |
 | **P5.3 — 45** | RELEASE: final template/tag/link review; user publishes submission and records URL. | Submission checklist complete before deadline. Prioritize links and explanation over polish. | AC16 — `Record the completed challenge submission` |
 | **P5.4 — 15** | VERIFY: update final handoff, acceptance evidence, release reference and remaining limitations. | Final state matches repository/deployment; user commits real verification record. | All — `Record final verification and release status` |
@@ -1348,18 +1378,20 @@ If a required sponsor criterion fails, state the failure. Do not redefine the ga
 
 Never add fake metrics, fake testimonials or unlabeled synthetic outputs.
 
+The Phase 1 frontend that this handoff now starts from is the landing and practice walk on `/`, generation, and the Soundprint on `/studio`. `/about` opens `/#how-it-works`. Sponsor and provenance sections are not in the product. The verification record for that pass is frontend polishing step 5 in `Docs/HANDOFF_2.md`.
+
 ---
 
 ## 27. Execution State — Initialize
 
-| Field | Initial state |
+| Field | Current state |
 |---|---|
-| Status | **NOT STARTED** |
-| Current phase | P0 — Stack and access foundation |
-| Last completed step | NONE |
-| Next step | **P0.1 — Verify baseline and initialize execution record** |
-| Current execution branch | NOT CREATED |
-| Last execution commit | NONE |
+| Status | **IN PROGRESS** |
+| Current phase | P1 — Complete frontend experience |
+| Last completed step | Frontend extension and Daylight — `56b9c06` |
+| Next step | Decide the 290-minute budget, then start P2.0. The frontend extension and Daylight are on `build/experience`. |
+| Current execution branch | `build/experience` |
+| Last execution commit | `56b9c06` |
 | Existing baseline commit | `22df0e7` |
 | Last PR | NONE |
 | Live URL | NOT YET DEPLOYED |
@@ -1367,7 +1399,7 @@ Never add fake metrics, fake testimonials or unlabeled synthetic outputs.
 | Active build time used | 0 hours recorded |
 | Active build time remaining | 20 hours maximum |
 | New build spend recorded | $0 |
-| Known blockers | HF Space has no app file yet; Eleven access/balance/usage proof; Render credit coverage; actual Studio Hook validation |
+| Known blockers | The Phase 1 extension adds about 290 minutes without a budget change; public Render URL is deferred to P2.0; Gemma arrangement is still unproved; CodeRabbit GitHub App install is unconfirmed |
 
 Update this section after every completed step or meaningful interruption.
 
@@ -1388,11 +1420,11 @@ Working dates: October 9–10, 2026 only
 Active-work ceiling: 20 hours
 Feature freeze: Build hour 15, at 75%
 Autonomy: A1 — agent edits; user runs commands and controls Git/deployment
-Status: NOT STARTED
-Last completed: NONE
-Next step: P0.1 — Verify baseline and initialize execution record
-Active phase: P0 — Stack and access foundation
-Branch: NOT CREATED
+Status: IN PROGRESS
+Last completed: Frontend extension and Daylight — 56b9c06
+Next step: Decide the 290-minute budget, then start P2.0. The frontend extension and Daylight are on build/experience. The plan is Docs/PHASE_1_UI_UX_PLAN.md and the measured notes are in Docs/HANDOFF_2.md.
+Active phase: P1 — Complete frontend experience
+Branch: build/experience
 Live URL: NOT YET DEPLOYED
 Locked Hook: A sharp route turn changes melodic direction; a pause becomes an audible musical break.
 Primary fallback: Deterministic Route Sketch for the current trace, plus a separately labeled cached genuine Studio example.

@@ -1,0 +1,54 @@
+import { useEffect, useId, useRef, type ReactNode } from "react";
+
+export function Sheet({
+  open,
+  title,
+  onClose,
+  closeLabel = "Close",
+  children,
+}: {
+  open: boolean;
+  title: string;
+  onClose: () => void;
+  closeLabel?: string;
+  children: ReactNode;
+}) {
+  const ref = useRef<HTMLDialogElement>(null);
+  const opener = useRef<HTMLElement | null>(null);
+  const titleId = useId();
+
+  useEffect(() => {
+    const dialog = ref.current;
+    if (!dialog) return;
+    if (open && !dialog.open) {
+      opener.current =
+        document.activeElement instanceof HTMLElement ? document.activeElement : null;
+      dialog.showModal();
+      dialog.querySelector<HTMLElement>("button, a[href], input, select, textarea")?.focus();
+      return;
+    }
+    if (!open && dialog.open) {
+      dialog.close();
+      opener.current?.focus();
+    }
+  }, [open]);
+
+  return (
+    <dialog
+      ref={ref}
+      className="ui-sheet"
+      aria-labelledby={titleId}
+      onClose={onClose}
+      onCancel={(event) => {
+        event.preventDefault();
+        onClose();
+      }}
+    >
+      <h2 id={titleId}>{title}</h2>
+      {children}
+      <button type="button" className="ui-button ui-button-secondary" onClick={onClose}>
+        {closeLabel}
+      </button>
+    </dialog>
+  );
+}

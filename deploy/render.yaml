@@ -1,0 +1,43 @@
+services:
+  - type: web
+    name: footwork
+    runtime: python
+    region: singapore
+    plan: 1c-2g
+    autoDeployTrigger: off
+    buildCommand: bash deploy/build.sh
+    startCommand: backend/.venv/bin/uvicorn app.main:app --app-dir backend --host 0.0.0.0 --port $PORT --workers 1
+    healthCheckPath: /health
+    disk:
+      name: footwork-data
+      mountPath: /var/footwork
+      sizeGB: 1
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.12.12
+      - key: APP_ENV
+        value: production
+      - key: GENERATION_ENABLED
+        value: "false"
+      - key: ARTIFACT_DIR
+        value: /var/footwork/artifacts
+      - key: LEDGER_PATH
+        value: /var/footwork/quota.json
+      - key: MAX_GEMMA_ATTEMPTS_PER_DAY
+        value: "4"
+      - key: MAX_GEMMA_GPU_SECONDS_PER_DAY
+        value: "240"
+      - key: PUBLIC_BASE_URL
+        sync: false
+      - key: HF_SPACE_URL
+        sync: false
+      - key: HF_TOKEN
+        sync: false
+      - key: GEMMA_MODEL_ID
+        sync: false
+      - key: GEMMA_MODEL_REVISION
+        sync: false
+      - key: ELEVENLABS_API_KEY
+        sync: false
+      - key: ELEVEN_MUSIC_MODEL
+        sync: false
