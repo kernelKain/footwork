@@ -24,3 +24,19 @@ Recorded October 9, 2026. One short Eleven Music generation succeeded. No Render
 | New spend | No new purchase and no new Render service. One minimum-length music request used the existing key. |
 
 Studio generation is possible with this key. A Route Sketch remains the fallback when a later Studio request fails. This 3-second file is an access proof, not the 45–60 second demonstration track.
+
+## Timed arrangement render
+
+Recorded October 10, 2026. One 60-second composition-plan render succeeded on the first attempt. No second request was made.
+
+| Check | Result |
+|---|---|
+| Model | `music_v2_5`, sent explicitly. |
+| Request | Four chunks totaling 60000 ms. Section labels only. Negative styles exclude vocals, lyrics, and speech. No prompt and no `force_instrumental`. |
+| Request SHA-256 | `5100159eda409713310806b37b8199cbf25cbc3929a06bf56456407b08c84e19` |
+| Response | HTTP 200, `audio/mpeg`, 960515 bytes. |
+| Provider song id | `6JZhKLyXn9BrPEPAnUQC` |
+| Decoded duration | 60.029375 seconds, measured with `ffprobe`. |
+| Local file | `artifacts/eleven-arrangement.mp3`, ignored by git. |
+| Retry | Not attempted. A timeout or lost response stays a single attempt. |
+| Balance | Still not visible with this key. |

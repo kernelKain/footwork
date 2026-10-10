@@ -118,8 +118,7 @@ test("start and end stop the watch, and a reload recovers the open draft", async
   await page.emulateMedia({ reducedMotion: "reduce" });
   await page.getByRole("button", { name: "Hold to end walk" }).click();
   await page.getByRole("button", { name: "Confirm end walk" }).click();
-  await expect(page.getByRole("heading", { name: "Walk saved" })).toBeVisible();
-  await expect(page.getByText("A piece is not being made yet.")).toBeVisible();
+  await expect(page).toHaveURL(/\/studio$/);
   await expect.poll(async () => (await readDraft(page))?.status).toBe("ended");
   const cleared = await page.evaluate(
     () => (window as unknown as { __footworkCleared?: number }).__footworkCleared ?? 0,
@@ -127,6 +126,7 @@ test("start and end stop the watch, and a reload recovers the open draft", async
   expect(cleared).toBeGreaterThan(0);
   await expect(page.locator('input[type="file"]')).toHaveCount(0);
 
+  await page.goto("/");
   await page.reload();
   await expect(page.getByRole("button", { name: "Start walking" }).first()).toBeVisible();
   const ended = await readDraft(page);

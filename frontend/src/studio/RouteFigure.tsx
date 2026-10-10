@@ -17,6 +17,7 @@ export function RouteFigure({
   timeMs,
   playing,
   onSeek,
+  title = "Example route",
 }: {
   points: RoutePoint[];
   events: MovementEvent[];
@@ -24,6 +25,7 @@ export function RouteFigure({
   timeMs: number;
   playing: boolean;
   onSeek: (timeMs: number) => void;
+  title?: string;
 }) {
   const stageRef = useOnstage<HTMLElement>();
   const spans = drawnSpans(points, summary);
@@ -40,7 +42,7 @@ export function RouteFigure({
         role="img"
         aria-labelledby="route-title route-desc"
       >
-        <title id="route-title">Example route</title>
+        <title id="route-title">{title}</title>
         <desc id="route-desc">
           A privacy-safe route with separate recording segments. Manual breaks and uncertain
           intervals stay disconnected. It is not a map of a real place.

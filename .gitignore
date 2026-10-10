@@ -16,4 +16,5 @@ backend/.venv/
 hf-space/.venv/
 artifacts/
 recordings/
+var/
 *.wav

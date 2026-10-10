@@ -2,9 +2,9 @@
 
 Step-by-step record of what actually happened. The locked plan stays in `Docs/HANDOFF_1.md`. This file is the place to read after a step is finished.
 
-**Status:** Phase 2 route sketches are committed on `build/movement`. The outdoor seed walk is waiting on the user. The user will deploy to Render at the end. Local build and tests continue until then. The 20-hour ceiling is unchanged. CodeRabbit GitHub App install is still unconfirmed.
-**Next step:** P2.6, after the user records one real outdoor walk. P2.0 stays deferred until the user deploys `deploy/render.yaml` and records the public page and `/health`.
-**Last completed step:** P2.5, generate synchronized route sketches from movement events, commit `6535866`. P2.4 remains `b913a93`.
+**Status:** The feature set is frozen on `build/soundprint`. Later phases are fixes and release checks. The user will record the outdoor walk, review the seed Studio track, and deploy to Render after the rest of the build. The 20-hour ceiling is unchanged. CodeRabbit GitHub App install is still unconfirmed.
+**Next step:** P4.1. P2.0, P2.6, and P3.5 are pending until that later pass.
+**Last completed step:** P3.6, verify provider fallbacks and freeze the feature set, on `build/soundprint`. P3.6 is `27ed855`. P3.5 is `98081fb`. P3.4 is `0f44b87`. P3.3 is `ab02558`. P3.2 is `d23b469`. P3.1 remains `4e9e844`.
 **Active build time:** 0 of 20 hours recorded. This session was not measured.
 
 Execution notes stay in this file. The diagram and write-up path are under `Docs/`. Each **Notes** section is filled only after that step is finished.
@@ -13,7 +13,7 @@ Execution notes stay in this file. The diagram and write-up path are under `Docs
 
 After a step is implemented, edit only that step and its phase summary:
 
-1. Set the step status to **Done**, **Blocked**, or **Partial**.
+1. Set the step status to **Done**, **Blocked**, **Pending**, or **Partial**. Pending means the user will do that step after the rest of the build.
 2. Replace **Notes** with what changed, what was verified, the commit hash, and anything left open.
 3. Update the phase summary once every step in that phase has a finished note.
 4. Update the status lines at the top of this file.
@@ -509,11 +509,11 @@ The white hold-progress overlay at 28% opacity lightens coral to about `#FF9494`
 **Branch:** `build/movement`
 **Window:** Build hours 7–11 (240 minutes)
 **Outcome:** Real capture, four detectors, compression, and an exact Route Sketch Hook.
-**Phase note:** P2.1 through P2.5 are committed. P2.6 is waiting on one real outdoor walk. No events will be invented to fill that walk. P2.0 stays deferred until the final Render deploy. The recording and generation seams are the practice port and `frontend/src/studio/generationContract.ts`. Use the public states in `Docs/FRONTEND_EXPERIENCE.md`. Do not restore sponsor, provenance, or fixture-picker sections.
+**Phase note:** P2.1 through P2.5 are committed. P2.6 and P2.0 are pending. The user will record the outdoor walk and deploy to Render after the rest of the build. No events will be invented to fill that walk. The recording and generation seams are the practice port and `frontend/src/studio/generationContract.ts`. Use the public states in `Docs/FRONTEND_EXPERIENCE.md`. Do not restore sponsor, provenance, or fixture-picker sections.
 
 ### P2.0 — Publish the shell and health endpoint
 
-**Status:** Not started
+**Status:** Pending
 **Kind:** Release · user-directed · AC-07
 **Commit subject:** Record the public shell and health endpoint
 
@@ -521,7 +521,7 @@ After `build/experience` is pushed, create the Render Blueprint from `deploy/ren
 
 **Done when.** The public HTTPS page and `/health` both work.
 
-**Notes.** Not started. On October 10, 2026 the user deferred this deploy until the end. Local build and tests continue. Provider keys stay in the Render dashboard.
+**Notes.** Pending on October 10, 2026. The user will deploy `deploy/render.yaml` and record the public page and `/health` after the rest of the build. Local build and tests continue. Provider keys stay in the Render dashboard.
 
 ### P2.1 — Record browser movement and recover local drafts
 
@@ -607,7 +607,7 @@ Compress the journey, transform the route for display, and synthesize the determ
 
 ### P2.6 — Validate the movement pipeline with a real outdoor walk
 
-**Status:** Blocked on the user
+**Status:** Pending
 **Kind:** Verify · 40 minutes · AC-01, AC-09, AC-14
 **Commit subject:** Validate the movement pipeline with a real outdoor walk
 
@@ -615,7 +615,7 @@ The user records the outdoor seed walk. Inspect the derived events and save only
 
 **Done when.** The real recording shows useful events, and the raw trace stays out of Git.
 
-**Notes.** Not started. On October 10, 2026 this step is waiting for one real outdoor walk from the user. A synthetic trace will not be saved as that walk. The raw coordinates stay out of Git.
+**Notes.** Pending on October 10, 2026. The user will record one real outdoor walk after the rest of the build. A synthetic trace will not be saved as that walk. The raw coordinates stay out of Git.
 
 ---
 
@@ -624,11 +624,11 @@ The user records the outdoor seed walk. Inspect the derived events and save only
 **Branch:** `build/soundprint`
 **Window:** Build hours 11–15 (240 minutes)
 **Outcome:** Live Gemma and Eleven Music adapters, job controls, and one reviewed Studio result. Feature freeze is at the end of this phase.
-**Phase note:** Not started. Depends on P2. Generation uses the stage codes and error codes in `Docs/FRONTEND_EXPERIENCE.md`. Retry is explicit, and the same finished walk does not start a second piece. Transport paths are not fixed.
+**Phase note:** P3.1 is commit `4e9e844`. P3.2 is commit `d23b469`. P3.3 is commit `ab02558`. P3.4 is commit `0f44b87`. P3.5 is commit `98081fb` and is pending: the user will review the seed Studio track after the rest of the build, so AC-03 is not claimed. A finished walk returns Route Sketch while the Gemma Space is unproved. AC-04 stays blocked. P2.6 and P2.0 are pending. P3.6 is commit `27ed855` and records the feature freeze. Generation uses the stage codes and error codes in `Docs/FRONTEND_EXPERIENCE.md`. Retry is explicit. The same idempotency key and body do not start a second piece. Transport paths now follow the locked `/api/v1` contract.
 
 ### P3.1 — Add protected generation jobs and durable usage limits
 
-**Status:** Not started
+**Status:** Done
 **Kind:** Edit · 40 minutes · AC-08, AC-14, AC-15
 **Commit subject:** Add protected generation jobs and durable usage limits
 
@@ -636,11 +636,17 @@ Add job endpoints, per-job capability checks, the quota ledger, and idempotency.
 
 **Done when.** Duplicate, restart, and quota tests pass, and budget is reserved before a provider is called.
 
-**Notes.** Not implemented.
+**Notes.** Implemented on `build/soundprint` on October 10, 2026. Commit `4e9e844`.
+
+`POST /api/v1/soundprints` accepts a finished walk, `X-Idempotency-Key`, and a 256-bit `X-Job-Key`. The server stores only hashes of the key, the capability, and the raw body. The same key and body return the same job. A changed body returns 409. One job can be active. Status, audio, and deletion require `Authorization: Bearer` with that capability. The ledger is an atomic JSON file under `var/jobs/`, which is gitignored. Before the dispatch hook runs, the ledger reserves one Gemma attempt, 60 GPU seconds, and one Eleven attempt, inside the daily caps of four attempts, 240 GPU seconds, and six Eleven attempts. The default hook does not call Gemma or Eleven. An exception from the hook is recorded as an unknown outcome and the reservation stays. A new process marks an active job interrupted and keeps the reserved counts. Deleting a job does not refund the reservation. Coordinates, capabilities, and idempotency keys are not written to the ledger. `GET /api/v1/capabilities` reports generation as open or capped and both providers as unavailable. It does not report balances.
+
+A repeated finished walk is the same attempt only when the client reuses the idempotency key. After an interruption, a new key is a new reserved attempt, which matches the restart rule that retry is an explicit budgeted action. No per-client cooldown duration is locked, and there is no account, so the single active job is the concurrency control. Audio range requests are not implemented; an authorized artifact is returned in full.
+
+`uv run --directory backend ruff check app tests/unit/test_jobs.py` passed. `uv run --directory backend ruff format --check` passed for the job files. `uv run --directory backend pytest` passed, 44 tests. No new dependency. No active time was measured. AC-15 is covered by the duplicate, conflict, quota, restart, and unknown-outcome tests. AC-14 is covered by capability checks and the ledger redaction checks. AC-08 is not measured yet; this step stores elapsed time and does not run a timed provider.
 
 ### P3.2 — Integrate Gemma arrangement generation and validation
 
-**Status:** Not started
+**Status:** Done
 **Kind:** Edit · 40 minutes · AC-04, AC-06
 **Commit subject:** Integrate Gemma arrangement generation and validation
 
@@ -648,11 +654,15 @@ Call Gemma with an anonymous event timeline and validate the arrangement. Allow 
 
 **Done when.** A valid plan is produced, and invalid output becomes an honest Route Sketch.
 
-**Notes.** Not implemented.
+**Notes.** Implemented on `build/soundprint` on October 10, 2026. Commit `d23b469`.
+
+`backend/app/arrange/gemma.py` builds an anonymous timeline from event id, type, and audio offset. It strips location fields before any call. A reply is accepted only when the mood is `warm_cinematic`, the style list is one to six words from the closed instrumental vocabulary and includes `instrumental`, and every event reference matches the timeline. A fenced JSON object is parsed locally. Schema-invalid output may be submitted once, with field codes only, when another Gemma attempt, 60 GPU seconds, and 90 seconds of deadline remain, and only after an optional reservation succeeds. A transport exception is not repeated. Failure returns `arrangement_unavailable` and `route_sketch` with no invented plan. `pace_change` ids that contain an underscore are renamed into the shared hyphen pattern. `SpaceArrangeClient` can call `/arrange`, and it was not used. The Space recorded in `Docs/evidence/gemma-access.md` is still `NO_APP_FILE`, so this step does not claim a live checkpoint result.
+
+`uv run --directory backend ruff check app/arrange tests/unit/test_arrange.py` passed. `uv run --directory backend ruff format --check` passed for those files. `uv run --directory backend pytest` passed, 52 tests. No new dependency. No active time was measured. AC-06 is covered by the invalid-plan and transport tests. AC-04 remains blocked until a named Gemma call returns a validated arrangement.
 
 ### P3.3 — Render validated arrangements with Eleven Music
 
-**Status:** Not started
+**Status:** Done
 **Kind:** Edit · 40 minutes · AC-05, AC-17
 **Commit subject:** Render validated arrangements with Eleven Music
 
@@ -660,11 +670,17 @@ Compile timed Music v2.5 chunks, call the Eleven Music API, and check the return
 
 **Done when.** A genuine audio receipt exists, and an ambiguous network failure is not retried automatically.
 
-**Notes.** Not implemented.
+**Notes.** Implemented on `build/soundprint` on October 10, 2026. Commit `ab02558`.
+
+`backend/app/music/render.py` compiles a validated arrangement into Music v2.5 chunks that total 60 seconds. Each chunk is at least 3 seconds. A turn at 12 seconds and a pause at 30 seconds become chunk boundaries, and the pause is a 10-second hold. Chunk text is a section label only. Vocals, lyrics, and speech are negative styles. The request sends `model_id` `music_v2_5` and a composition plan. It does not send a prompt or `force_instrumental`. The client is httpx. A timeout, a lost connection, an HTTP error, or audio outside 44.5–60.5 seconds is recorded once and is not sent again.
+
+One live compose returned HTTP 200 `audio/mpeg` on the first attempt. The request SHA-256 is `5100159eda409713310806b37b8199cbf25cbc3929a06bf56456407b08c84e19`. The provider song id is `6JZhKLyXn9BrPEPAnUQC`. The file is 960515 bytes and `ffprobe` measured 60.029375 seconds. It is stored at `artifacts/eleven-arrangement.mp3`, which git ignores. The API key is not recorded. Evidence is in `Docs/evidence/music-hosting.md`.
+
+`uv run --directory backend ruff check app/music tests/unit/test_music.py` passed. `uv run --directory backend ruff format --check` passed for those files. `uv run --directory backend pytest` passed, 57 tests. No new dependency. No active time was measured. AC-05 is covered by the receipt. AC-17 duration and decode checks passed. Headphone listening remains for P3.5. This renderer is not called by job submission yet.
 
 ### P3.4 — Connect recorded walks to live Soundprint generation
 
-**Status:** Not started
+**Status:** Done
 **Kind:** Edit · 40 minutes · AC-01, AC-06, AC-08, AC-18
 **Commit subject:** Connect recorded walks to live Soundprint generation
 
@@ -672,11 +688,17 @@ Replace fixture generation with the live job flow without rebuilding the accepte
 
 **Done when.** A real recording reaches Studio or Route Sketch, and the mode and stages match what happened.
 
-**Notes.** Not implemented.
+**Notes.** Implemented on `build/soundprint` on October 10, 2026. Commit `0f44b87`.
+
+A finished walk is submitted to the existing job endpoint. The reservation still happens first. The walk trace stays in memory for that call and is not written to the ledger. The job then detects moments, builds the Route Sketch, and asks for an arrangement. The arrangement space is still unproved, so that call fails closed and does not contact the Space. The result mode is `route_sketch`, the stage is `shaping_music`, and the audio is the sketch wav. A validated plan is the only path that asks Eleven for audio. A failed or lost music response is not sent again, and the mode stays `route_sketch` at stage `recording_piece`. A checked music file would be `studio_live`. The result uses the same soundprint contract as the example. Coordinates are not stored in the ledger.
+
+The live walk screen submits when the walk finishes and opens the existing studio screen. That screen polls the job and shows the server stage, then the result. Example and practice walks still use the example. Public capabilities still report both providers unavailable.
+
+A corner-shaped recording submitted through the API returned `route_sketch` with one turn and no music call. `frontend/tests/fixtures/route-sketch-result.json` is that result, and `validateSoundprintResult` accepted it. A lost music response stayed a sketch after one render call. `uv run --directory backend pytest` passed, 60 tests. Frontend typecheck, ESLint, and Prettier passed for the touched files. The Playwright browser binary was not installed in this environment, so the studio page was not clicked through here. AC-06 is covered by the lost-render test. AC-18 is covered by the shared-contract check. AC-08 was not timed on a phone network. AC-01 remains blocked until the outdoor seed walk. No new dependency. No active time was measured. No second music request was made.
 
 ### P3.5 — Verify and cache the real walk demonstration track
 
-**Status:** Not started
+**Status:** Pending
 **Kind:** Verify · 40 minutes · AC-03, AC-05, AC-17
 **Commit subject:** Verify and cache the real walk demonstration track
 
@@ -684,11 +706,13 @@ Listen to the seed Studio track, timestamp three movement mappings, and store th
 
 **Done when.** The turn, the pause, and a third mapping are perceptible. If they are not, AC-03 is recorded as failed. Stay inside the attempt cap.
 
-**Notes.** Not implemented.
+**Notes.** Pending on October 10, 2026. Commit `98081fb`. The user will listen to the seed Studio track after the rest of the build. No listening review was recorded and no cached example was stored.
+
+P2.6 still has no outdoor walk. The live job path returns `route_sketch` because the Gemma Space is unproved, so a submitted walk does not become `studio_live`. The file `artifacts/eleven-arrangement.mp3` is the October 10 arrangement proof: 60.029375 seconds, song id `6JZhKLyXn9BrPEPAnUQC`. It was not made from a seed walk, and it has not been heard for the turn, the pause, and a third mapping. AC-03 needs that hearing. A waveform or duration check would not replace it. No music request was made for this step. The daily attempt cap is unchanged. AC-03 is not marked passed and is not marked failed.
 
 ### P3.6 — Verify provider fallbacks and freeze the feature set
 
-**Status:** Not started
+**Status:** Done
 **Kind:** Verify · 40 minutes · AC-06, AC-08, AC-11, AC-15, AC-18
 **Commit subject:** Verify provider fallbacks and freeze the feature set
 
@@ -696,7 +720,13 @@ Check provider failure, deadline, quota, and fixture parity. Freeze features at 
 
 **Done when.** The same trace can fall back to Route Sketch, the cached example stays separately labeled, and the freeze is recorded.
 
-**Notes.** Not implemented.
+**Notes.** Verified on `build/soundprint` on October 10, 2026. Commit `27ed855`.
+
+The same corner walk falls back to `route_sketch` when the arrangement call fails and when a validated plan's music response is lost. Neither result uses `cached_example` or `synthetic_fixture`, and neither is marked `human_reviewed_studio`. The bundled example stays `synthetic_fixture` and is labeled Example walk. `cached_example` uses that same label. `route_sketch` and `studio_live` stay labeled Generated from your walk. No separate cached Studio file was stored, because the seed track review is still pending.
+
+The client still ends a live attempt at 180 seconds. The public failure sentences and the retry set are locked in `frontend/tests/freeze.spec.ts`. A quota limit is not retryable. A repeated request still reserves once, and a restart still keeps that reservation, in the existing job tests. Cached playback was not timed on a phone network, so the five-second network part of AC-08 is not claimed. `uv run --directory backend pytest` passed, 61 tests. The three freeze checks passed. No new dependency. No active time was measured. No music request was made.
+
+Feature freeze is recorded at the end of this phase. Elapsed build time is still unmeasured, so this is the phase boundary the plan places at hour 15, not a measured clock. Later phases are fixes and release checks. New user-facing features stop here. The outdoor walk, the seed Studio review, and the Render deploy are pending until after the rest of the build. The Gemma Space stays unproved.
 
 ---
 
