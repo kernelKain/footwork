@@ -2,9 +2,9 @@
 
 Step-by-step record of what actually happened. The locked plan stays in `Docs/HANDOFF_1.md`. This file is the place to read after a step is finished.
 
-**Status:** Phase 3 connects a finished walk to Route Sketch or Studio on `build/soundprint`. The outdoor seed walk is still waiting on the user. The user will deploy to Render at the end. Local build and tests continue until then. The 20-hour ceiling is unchanged. CodeRabbit GitHub App install is still unconfirmed.
-**Next step:** P3.5. P2.6 stays blocked until the user records one real outdoor walk. P2.0 stays deferred until the user deploys `deploy/render.yaml` and records the public page and `/health`.
-**Last completed step:** P3.4, connect recorded walks to live Soundprint generation, on `build/soundprint`. P3.3 is `ab02558`. P3.2 is `d23b469`. P3.1 remains `4e9e844`.
+**Status:** P3.5 is blocked on `build/soundprint`. There is no seed Studio track to review. The outdoor seed walk is still waiting on the user. The user will deploy to Render at the end. Local build and tests continue until then. The 20-hour ceiling is unchanged. CodeRabbit GitHub App install is still unconfirmed.
+**Next step:** P3.5 stays blocked until a seed Studio track from a real walk can be heard. P2.6 stays blocked until the user records one real outdoor walk. P2.0 stays deferred until the user deploys `deploy/render.yaml` and records the public page and `/health`.
+**Last completed step:** P3.4, connect recorded walks to live Soundprint generation, on `build/soundprint`. P3.4 is `0f44b87`. P3.3 is `ab02558`. P3.2 is `d23b469`. P3.1 remains `4e9e844`.
 **Active build time:** 0 of 20 hours recorded. This session was not measured.
 
 Execution notes stay in this file. The diagram and write-up path are under `Docs/`. Each **Notes** section is filled only after that step is finished.
@@ -624,7 +624,7 @@ The user records the outdoor seed walk. Inspect the derived events and save only
 **Branch:** `build/soundprint`
 **Window:** Build hours 11–15 (240 minutes)
 **Outcome:** Live Gemma and Eleven Music adapters, job controls, and one reviewed Studio result. Feature freeze is at the end of this phase.
-**Phase note:** P3.1 is commit `4e9e844`. P3.2 is commit `d23b469`. P3.3 is commit `ab02558`. P3.4 sends a finished walk through the job and returns Route Sketch while the Gemma Space is unproved. AC-04 stays blocked. P2.6 is still blocked on the outdoor walk. Generation uses the stage codes and error codes in `Docs/FRONTEND_EXPERIENCE.md`. Retry is explicit. The same idempotency key and body do not start a second piece. Transport paths now follow the locked `/api/v1` contract.
+**Phase note:** P3.1 is commit `4e9e844`. P3.2 is commit `d23b469`. P3.3 is commit `ab02558`. P3.4 is commit `0f44b87`. A finished walk returns Route Sketch while the Gemma Space is unproved. P3.5 has no seed Studio track to review, so AC-03 is not claimed. AC-04 stays blocked. P2.6 is still blocked on the outdoor walk. Generation uses the stage codes and error codes in `Docs/FRONTEND_EXPERIENCE.md`. Retry is explicit. The same idempotency key and body do not start a second piece. Transport paths now follow the locked `/api/v1` contract.
 
 ### P3.1 — Add protected generation jobs and durable usage limits
 
@@ -688,7 +688,7 @@ Replace fixture generation with the live job flow without rebuilding the accepte
 
 **Done when.** A real recording reaches Studio or Route Sketch, and the mode and stages match what happened.
 
-**Notes.** Implemented on `build/soundprint` on October 10, 2026.
+**Notes.** Implemented on `build/soundprint` on October 10, 2026. Commit `0f44b87`.
 
 A finished walk is submitted to the existing job endpoint. The reservation still happens first. The walk trace stays in memory for that call and is not written to the ledger. The job then detects moments, builds the Route Sketch, and asks for an arrangement. The arrangement space is still unproved, so that call fails closed and does not contact the Space. The result mode is `route_sketch`, the stage is `shaping_music`, and the audio is the sketch wav. A validated plan is the only path that asks Eleven for audio. A failed or lost music response is not sent again, and the mode stays `route_sketch` at stage `recording_piece`. A checked music file would be `studio_live`. The result uses the same soundprint contract as the example. Coordinates are not stored in the ledger.
 
@@ -698,7 +698,7 @@ A corner-shaped recording submitted through the API returned `route_sketch` with
 
 ### P3.5 — Verify and cache the real walk demonstration track
 
-**Status:** Not started
+**Status:** Blocked
 **Kind:** Verify · 40 minutes · AC-03, AC-05, AC-17
 **Commit subject:** Verify and cache the real walk demonstration track
 
@@ -706,7 +706,9 @@ Listen to the seed Studio track, timestamp three movement mappings, and store th
 
 **Done when.** The turn, the pause, and a third mapping are perceptible. If they are not, AC-03 is recorded as failed. Stay inside the attempt cap.
 
-**Notes.** Not implemented.
+**Notes.** Blocked on October 10, 2026. No seed Studio track exists, so no listening review was recorded and no cached example was stored.
+
+P2.6 still has no outdoor walk. The live job path returns `route_sketch` because the Gemma Space is unproved, so a submitted walk does not become `studio_live`. The file `artifacts/eleven-arrangement.mp3` is the October 10 arrangement proof: 60.029375 seconds, song id `6JZhKLyXn9BrPEPAnUQC`. It was not made from a seed walk, and it has not been heard for the turn, the pause, and a third mapping. AC-03 needs that hearing. A waveform or duration check would not replace it. No music request was made for this step. The daily attempt cap is unchanged. AC-03 is not marked passed and is not marked failed.
 
 ### P3.6 — Verify provider fallbacks and freeze the feature set
 
