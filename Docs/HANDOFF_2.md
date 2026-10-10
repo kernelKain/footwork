@@ -2,9 +2,9 @@
 
 Step-by-step record of what actually happened. The locked plan stays in `Docs/HANDOFF_1.md`. This file is the place to read after a step is finished.
 
-**Status:** Phase 2 visibility is committed on `build/movement`. The user will deploy to Render at the end. Local build and tests continue until then. The 20-hour ceiling is unchanged. CodeRabbit GitHub App install is still unconfirmed.
-**Next step:** P2.3. P2.0 stays deferred until the user deploys `deploy/render.yaml` and records the public page and `/health`.
-**Last completed step:** P2.2, handle recording interruptions and screen visibility. P2.1 remains `e0c6c94`.
+**Status:** Phase 2 sample cleaning is committed on `build/movement`. The user will deploy to Render at the end. Local build and tests continue until then. The 20-hour ceiling is unchanged. CodeRabbit GitHub App install is still unconfirmed.
+**Next step:** P2.4. P2.0 stays deferred until the user deploys `deploy/render.yaml` and records the public page and `/health`.
+**Last completed step:** P2.3, validate and clean recorded movement samples. P2.2 remains `61ec939`. P2.1 remains `e0c6c94`.
 **Active build time:** 0 of 20 hours recorded. This session was not measured.
 
 Execution notes stay in this file. The diagram and write-up path are under `Docs/`. Each **Notes** section is filled only after that step is finished.
@@ -509,7 +509,7 @@ The white hold-progress overlay at 28% opacity lightens coral to about `#FF9494`
 **Branch:** `build/movement`
 **Window:** Build hours 7–11 (240 minutes)
 **Outcome:** Real capture, four detectors, compression, and an exact Route Sketch Hook.
-**Phase note:** Not started. P2.0 follows the Phase 1 extension or an explicit decision to reduce it. The recording and generation seams are the practice port and `frontend/src/studio/generationContract.ts`, described in frontend polishing step 5 and extended by `Docs/PHASE_1_UI_UX_PLAN.md`. Use the public states in `Docs/FRONTEND_EXPERIENCE.md`. Do not restore sponsor, provenance, or fixture-picker sections.
+**Phase note:** P2.1, P2.2, and P2.3 are committed. P2.0 stays deferred until the final Render deploy. The recording and generation seams are the practice port and `frontend/src/studio/generationContract.ts`. Use the public states in `Docs/FRONTEND_EXPERIENCE.md`. Do not restore sponsor, provenance, or fixture-picker sections.
 
 ### P2.0 — Publish the shell and health endpoint
 
@@ -551,7 +551,7 @@ Record visibility gaps, add a wake lock where the browser allows it, and explain
 
 **Done when.** Hiding and resuming the page marks an interruption, and the interface does not promise screen-off recording.
 
-**Notes.** Implemented on `build/movement` on October 10, 2026.
+**Notes.** Implemented on `build/movement` on October 10, 2026. Commit `61ec939`.
 
 Hiding the page during a live recording stops the watch, freezes active time, and stores an open hidden gap. The page says the missing positions were not filled in and that recording does not continue after the phone locks. Continue asks for a new fix and then closes the gap. A paused walk is left paused. A reload of an open gap returns to that interruption. When the browser allows it, a screen wake lock is held only while recording and is released when the page is hidden, paused, or ended. Draft saves are queued so an earlier write cannot replace a newer one.
 
@@ -559,7 +559,7 @@ Hiding the page during a live recording stops the watch, freezes active time, an
 
 ### P2.3 — Validate and clean recorded movement samples
 
-**Status:** Not started
+**Status:** Done
 **Kind:** Edit · 40 minutes · AC-09, AC-14
 **Commit subject:** Validate and clean recorded movement samples
 
@@ -567,7 +567,11 @@ Validate, clean, and project samples in Python, and score route quality.
 
 **Done when.** Noise, impossible jumps, and invalid timestamps are rejected, and a low-quality trace is explained.
 
-**Notes.** Not implemented.
+**Notes.** Implemented on `build/movement` on October 10, 2026.
+
+`backend/app/movement/clean.py` accepts samples and optional recorded gaps. It drops non-finite or out-of-range coordinates, non-positive timestamps, negative accuracy, accuracy worse than 50 m, samples closer than one second, samples past 30 minutes from the first kept sample, and movement faster than 12 m/s when the interval is not an open gap. It does not sort timestamps into a new order. Distance and active time are not added across an interval longer than 15 seconds or across a recorded gap. Kept samples are projected in meters from the first kept point. A usable trace needs at least 90 seconds of active time, 30 kept samples, and 60 meters. A short or short-distance trace is `trace_too_short`. A trace that only lacks 30 clear positions is `trace_unclear`. The public result has relative time and meters only.
+
+`uv run ruff check .` and `uv run ruff format --check .` passed. `uv run pytest` passed, 15 tests, including six cleaner tests. No new dependency. No active time was measured.
 
 ### P2.4 — Detect turns, pace changes, pauses, and loops
 
