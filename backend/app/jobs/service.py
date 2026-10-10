@@ -2,6 +2,7 @@
 
 import hmac
 import json
+import os
 import re
 from collections.abc import Callable
 from datetime import UTC, datetime
@@ -148,6 +149,8 @@ class JobView:
         self.elapsed_ms = max(0, elapsed)
         self.mode = job.get("mode") if isinstance(job.get("mode"), str) else None
         self.error = error if isinstance(error, dict) else None
+        stored = job.get("result")
+        self.result = stored if isinstance(stored, dict) else None
 
     def public(self) -> dict[str, object]:
         return {
@@ -158,7 +161,7 @@ class JobView:
             "elapsed_ms": self.elapsed_ms,
             "mode": self.mode,
             "error": self.error,
-            "result": None,
+            "result": self.result,
         }
 
 
@@ -176,6 +179,8 @@ class JobService:
         self.ledger = Ledger(data_dir / "quota-ledger.json", clock)
         self.artifacts = data_dir / "artifacts"
         self.dispatch = dispatch or NoProviderDispatch()
+        if hasattr(self.dispatch, "complete") and self.dispatch.complete is None:
+            self.dispatch.complete = self.complete
 
     def capabilities(self) -> dict[str, object]:
         accepting = self._accepting()
@@ -249,13 +254,46 @@ class JobService:
         self._run(reserve)
         if not created:
             return self._view(job_id)
+        prepare = getattr(self.dispatch, "prepare", None)
+        discard = getattr(self.dispatch, "discard", None)
         try:
+            if prepare is not None:
+                prepare(job_id, trace)
             self.dispatch.start(job_id)
         except Exception:  # noqa: BLE001 - any provider failure is an unknown charged outcome
             self._settle(job_id, "unknown")
         else:
             self._settle(job_id, "reserved")
+        finally:
+            if discard is not None:
+                discard(job_id)
         return self._view(job_id)
+
+    def complete(self, job_id: str, outcome: object) -> None:
+        from app.jobs.flow import WalkOutcome
+
+        if not isinstance(outcome, WalkOutcome):
+            raise TypeError("walk outcome is incomplete")
+        audio = outcome.audio
+        result = outcome.result
+        root = self.artifacts / job_id
+        root.mkdir(parents=True, exist_ok=True)
+        handle = os.open(root / "audio", os.O_WRONLY | os.O_CREAT | os.O_TRUNC, 0o600)
+        with os.fdopen(handle, "wb") as stored:
+            stored.write(audio)
+
+        def mark(data: dict[str, object]) -> None:
+            job = _jobs(data).get(job_id)
+            if not isinstance(job, dict) or job.get("status") != "dispatching":
+                return
+            job["status"] = "ready"
+            job["stage"] = outcome.stage
+            job["mode"] = outcome.mode
+            job["error"] = None
+            job["provider_outcome"] = job["mode"]
+            job["result"] = result
+
+        self._run(mark)
 
     def get(self, job_id: str, job_key: str) -> JobView:
         job = self._authorized(job_id, job_key)

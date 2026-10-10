@@ -2,9 +2,9 @@
 
 Step-by-step record of what actually happened. The locked plan stays in `Docs/HANDOFF_1.md`. This file is the place to read after a step is finished.
 
-**Status:** Phase 3 can render a validated arrangement as a 60-second Music v2.5 file on `build/soundprint`. The outdoor seed walk is still waiting on the user. The user will deploy to Render at the end. Local build and tests continue until then. The 20-hour ceiling is unchanged. CodeRabbit GitHub App install is still unconfirmed.
-**Next step:** P3.4. P2.6 stays blocked until the user records one real outdoor walk. P2.0 stays deferred until the user deploys `deploy/render.yaml` and records the public page and `/health`.
-**Last completed step:** P3.3, render validated arrangements with Eleven Music, on `build/soundprint`. P3.2 is `d23b469`. P3.1 remains `4e9e844`.
+**Status:** Phase 3 connects a finished walk to Route Sketch or Studio on `build/soundprint`. The outdoor seed walk is still waiting on the user. The user will deploy to Render at the end. Local build and tests continue until then. The 20-hour ceiling is unchanged. CodeRabbit GitHub App install is still unconfirmed.
+**Next step:** P3.5. P2.6 stays blocked until the user records one real outdoor walk. P2.0 stays deferred until the user deploys `deploy/render.yaml` and records the public page and `/health`.
+**Last completed step:** P3.4, connect recorded walks to live Soundprint generation, on `build/soundprint`. P3.3 is `ab02558`. P3.2 is `d23b469`. P3.1 remains `4e9e844`.
 **Active build time:** 0 of 20 hours recorded. This session was not measured.
 
 Execution notes stay in this file. The diagram and write-up path are under `Docs/`. Each **Notes** section is filled only after that step is finished.
@@ -624,7 +624,7 @@ The user records the outdoor seed walk. Inspect the derived events and save only
 **Branch:** `build/soundprint`
 **Window:** Build hours 11–15 (240 minutes)
 **Outcome:** Live Gemma and Eleven Music adapters, job controls, and one reviewed Studio result. Feature freeze is at the end of this phase.
-**Phase note:** P3.1 is commit `4e9e844`. P3.2 is commit `d23b469`. P3.3 has one checked 60-second audio receipt. The live Gemma Space is still unproved, so AC-04 stays blocked. P2.6 is still blocked on the outdoor walk. Generation uses the stage codes and error codes in `Docs/FRONTEND_EXPERIENCE.md`. Retry is explicit. The same idempotency key and body do not start a second piece. Transport paths now follow the locked `/api/v1` contract. Job submission still does not call Gemma or Eleven.
+**Phase note:** P3.1 is commit `4e9e844`. P3.2 is commit `d23b469`. P3.3 is commit `ab02558`. P3.4 sends a finished walk through the job and returns Route Sketch while the Gemma Space is unproved. AC-04 stays blocked. P2.6 is still blocked on the outdoor walk. Generation uses the stage codes and error codes in `Docs/FRONTEND_EXPERIENCE.md`. Retry is explicit. The same idempotency key and body do not start a second piece. Transport paths now follow the locked `/api/v1` contract.
 
 ### P3.1 — Add protected generation jobs and durable usage limits
 
@@ -670,7 +670,7 @@ Compile timed Music v2.5 chunks, call the Eleven Music API, and check the return
 
 **Done when.** A genuine audio receipt exists, and an ambiguous network failure is not retried automatically.
 
-**Notes.** Implemented on `build/soundprint` on October 10, 2026.
+**Notes.** Implemented on `build/soundprint` on October 10, 2026. Commit `ab02558`.
 
 `backend/app/music/render.py` compiles a validated arrangement into Music v2.5 chunks that total 60 seconds. Each chunk is at least 3 seconds. A turn at 12 seconds and a pause at 30 seconds become chunk boundaries, and the pause is a 10-second hold. Chunk text is a section label only. Vocals, lyrics, and speech are negative styles. The request sends `model_id` `music_v2_5` and a composition plan. It does not send a prompt or `force_instrumental`. The client is httpx. A timeout, a lost connection, an HTTP error, or audio outside 44.5–60.5 seconds is recorded once and is not sent again.
 
@@ -680,7 +680,7 @@ One live compose returned HTTP 200 `audio/mpeg` on the first attempt. The reques
 
 ### P3.4 — Connect recorded walks to live Soundprint generation
 
-**Status:** Not started
+**Status:** Done
 **Kind:** Edit · 40 minutes · AC-01, AC-06, AC-08, AC-18
 **Commit subject:** Connect recorded walks to live Soundprint generation
 
@@ -688,7 +688,13 @@ Replace fixture generation with the live job flow without rebuilding the accepte
 
 **Done when.** A real recording reaches Studio or Route Sketch, and the mode and stages match what happened.
 
-**Notes.** Not implemented.
+**Notes.** Implemented on `build/soundprint` on October 10, 2026.
+
+A finished walk is submitted to the existing job endpoint. The reservation still happens first. The walk trace stays in memory for that call and is not written to the ledger. The job then detects moments, builds the Route Sketch, and asks for an arrangement. The arrangement space is still unproved, so that call fails closed and does not contact the Space. The result mode is `route_sketch`, the stage is `shaping_music`, and the audio is the sketch wav. A validated plan is the only path that asks Eleven for audio. A failed or lost music response is not sent again, and the mode stays `route_sketch` at stage `recording_piece`. A checked music file would be `studio_live`. The result uses the same soundprint contract as the example. Coordinates are not stored in the ledger.
+
+The live walk screen submits when the walk finishes and opens the existing studio screen. That screen polls the job and shows the server stage, then the result. Example and practice walks still use the example. Public capabilities still report both providers unavailable.
+
+A corner-shaped recording submitted through the API returned `route_sketch` with one turn and no music call. `frontend/tests/fixtures/route-sketch-result.json` is that result, and `validateSoundprintResult` accepted it. A lost music response stayed a sketch after one render call. `uv run --directory backend pytest` passed, 60 tests. Frontend typecheck, ESLint, and Prettier passed for the touched files. The Playwright browser binary was not installed in this environment, so the studio page was not clicked through here. AC-06 is covered by the lost-render test. AC-18 is covered by the shared-contract check. AC-08 was not timed on a phone network. AC-01 remains blocked until the outdoor seed walk. No new dependency. No active time was measured. No second music request was made.
 
 ### P3.5 — Verify and cache the real walk demonstration track
 

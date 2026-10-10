@@ -34,7 +34,7 @@ type WalkScreenProps = {
 
 export function WalkScreen({ onNavigate, onGo }: WalkScreenProps) {
   const practice = useMemo(() => hasPracticeFixture(), []);
-  if (!practice) return <LiveWalk onNavigate={onNavigate} />;
+  if (!practice) return <LiveWalk onNavigate={onNavigate} onGo={onGo} />;
   return <PracticeWalk onNavigate={onNavigate} onGo={onGo} />;
 }
 

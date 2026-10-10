@@ -24,6 +24,7 @@ import {
 import type { LocationSample } from "./movementDraft";
 import type { RecordingPort } from "./practicePort";
 import { useRunningOffset } from "./useMonotonicClock";
+import { submitFinishedWalk } from "../studio/liveJob";
 
 type Navigate = (event: { preventDefault: () => void; currentTarget: { href: string } }) => void;
 
@@ -33,7 +34,13 @@ const WATCH_OPTIONS: PositionOptions = {
   timeout: 20000,
 };
 
-export function LiveWalk({ onNavigate }: { onNavigate: Navigate }) {
+export function LiveWalk({
+  onNavigate,
+  onGo,
+}: {
+  onNavigate: Navigate;
+  onGo: (pathname: string) => void;
+}) {
   const store = useMemo(() => createDraftStore(), []);
   const [model, setModel] = useState<LiveModel>(initialLive);
   const [settled, setSettled] = useState(false);
@@ -41,6 +48,7 @@ export function LiveWalk({ onNavigate }: { onNavigate: Navigate }) {
   const [wakeHeld, setWakeHeld] = useState(false);
   const modelRef = useRef(model);
   const sessionRef = useRef("");
+  const sentRef = useRef(false);
   const readActiveRef = useRef<() => number>(() => 0);
   modelRef.current = model;
   const recording = model.phase === "recording";
@@ -164,6 +172,24 @@ export function LiveWalk({ onNavigate }: { onNavigate: Navigate }) {
     }, 1000);
     return () => window.clearTimeout(timer);
   }, [model.phase]);
+
+  useEffect(() => {
+    if (model.phase !== "finished" || !model.draft || sentRef.current) return;
+    sentRef.current = true;
+    const draft = model.draft;
+    void submitFinishedWalk(draft)
+      .catch(() => "timed_out" as const)
+      .then((outcome) => {
+        if (outcome !== "live") {
+          try {
+            sessionStorage.setItem("footwork-generation", outcome);
+          } catch {
+            return;
+          }
+        }
+        onGo("/studio");
+      });
+  }, [model.phase, model.draft, onGo]);
 
   useEffect(() => {
     if (model.phase !== "ending") return;

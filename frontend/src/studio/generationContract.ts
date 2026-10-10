@@ -12,6 +12,7 @@ export type GenerationStageId = (typeof GENERATION_STAGES)[number]["id"];
 
 export const GENERATION_ERRORS = [
   "trace_too_short",
+  "trace_unclear",
   "timed_out",
   "arrangement_unavailable",
   "music_unavailable",
@@ -28,6 +29,7 @@ export const RETRYABLE_GENERATION_ERRORS = new Set<GenerationErrorCode>([
 
 export const GENERATION_ERROR_COPY: Record<GenerationErrorCode, string> = {
   trace_too_short: "That walk was too short to shape a piece.",
+  trace_unclear: "The location was too unclear to trust.",
   timed_out: "Making the piece took too long.",
   arrangement_unavailable: "The music plan is unavailable. A simpler version can still be made.",
   music_unavailable: "The studio recording is unavailable. Your simpler version is ready.",
@@ -51,6 +53,7 @@ export function isGenerationTimeout(elapsedMs: number, forced: boolean): boolean
 export type GenerationRequest =
   | { kind: "example"; repeat: boolean }
   | { kind: "run" }
+  | { kind: "live" }
   | { kind: "error"; code: GenerationErrorCode };
 
 export function readGenerationRequest(): GenerationRequest {
@@ -62,6 +65,7 @@ export function readGenerationRequest(): GenerationRequest {
       return { kind: "example", repeat: true };
     }
     if (value === "run") return { kind: "run" };
+    if (value === "live") return { kind: "live" };
     if (GENERATION_ERRORS.includes(value as GenerationErrorCode)) {
       return { kind: "error", code: value as GenerationErrorCode };
     }

@@ -9,6 +9,7 @@ from starlette.exceptions import HTTPException
 from starlette.types import Scope
 
 from app.jobs.api import install_jobs
+from app.jobs.flow import live_dispatch
 from app.jobs.service import ProviderDispatch
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
@@ -70,4 +71,4 @@ def _index_response(dist: Path) -> FileResponse:
     return FileResponse(index)
 
 
-app = create_app()
+app = create_app(dispatch=live_dispatch())
