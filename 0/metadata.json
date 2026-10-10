@@ -1,0 +1,60 @@
+{
+  "cli_version": "0.11.4",
+  "checkpoint_id": "01M4JT8Z7NHS2JJ4TVDTTTGMVK",
+  "session_id": "62fe2e5e-de2d-4b58-8df1-c5a99d7f79e1",
+  "strategy": "manual-commit",
+  "created_at": "2026-10-10T11:48:19.556058072Z",
+  "branch": "build/soundprint",
+  "checkpoints_count": 1,
+  "save_step_count": 1,
+  "files_touched": [
+    "Docs/HANDOFF_2.md",
+    "backend/app/arrange/__init__.py",
+    "backend/app/arrange/gemma.py",
+    "backend/tests/unit/test_arrange.py"
+  ],
+  "agent": "Cursor",
+  "model": "grok-4.7-high",
+  "turn_id": "989d383bcea8",
+  "checkpoint_transcript_start": 40,
+  "transcript_lines_at_start": 40,
+  "compact_transcript_start": 5,
+  "token_usage": {
+    "input_tokens": 44677,
+    "cache_creation_tokens": 0,
+    "cache_read_tokens": 4199296,
+    "output_tokens": 24850,
+    "api_call_count": 1
+  },
+  "session_metrics": {
+    "turn_count": 3
+  },
+  "initial_attribution": {
+    "calculated_at": "2026-10-10T11:48:19.528231067Z",
+    "agent_lines": 495,
+    "agent_removed": 7,
+    "human_added": 0,
+    "human_modified": 6,
+    "human_removed": 0,
+    "total_committed": 501,
+    "total_lines_changed": 508,
+    "agent_percentage": 98.81889763779527,
+    "metric_version": 2
+  },
+  "prompt_attributions": [
+    {
+      "checkpoint_number": 1,
+      "user_lines_added": 0,
+      "user_lines_removed": 0,
+      "agent_lines_added": 0,
+      "agent_lines_removed": 0
+    },
+    {
+      "checkpoint_number": 2,
+      "user_lines_added": 0,
+      "user_lines_removed": 0,
+      "agent_lines_added": 501,
+      "agent_lines_removed": 7
+    }
+  ]
+}
