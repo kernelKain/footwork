@@ -2,9 +2,9 @@
 
 Step-by-step record of what actually happened. The locked plan stays in `Docs/HANDOFF_1.md`. This file is the place to read after a step is finished.
 
-**Status:** P3.5 is blocked on `build/soundprint`. There is no seed Studio track to review. The outdoor seed walk is still waiting on the user. The user will deploy to Render at the end. Local build and tests continue until then. The 20-hour ceiling is unchanged. CodeRabbit GitHub App install is still unconfirmed.
-**Next step:** P3.5 stays blocked until a seed Studio track from a real walk can be heard. P2.6 stays blocked until the user records one real outdoor walk. P2.0 stays deferred until the user deploys `deploy/render.yaml` and records the public page and `/health`.
-**Last completed step:** P3.4, connect recorded walks to live Soundprint generation, on `build/soundprint`. P3.4 is `0f44b87`. P3.3 is `ab02558`. P3.2 is `d23b469`. P3.1 remains `4e9e844`.
+**Status:** The feature set is frozen on `build/soundprint`. Later phases are fixes and release checks. The outdoor seed walk and the seed Studio review stay open. The user will deploy to Render at the end. The 20-hour ceiling is unchanged. CodeRabbit GitHub App install is still unconfirmed.
+**Next step:** P4.1. P3.5 stays blocked until a seed Studio track from a real walk can be heard. P2.6 stays blocked until the user records one real outdoor walk. P2.0 stays deferred until the user deploys `deploy/render.yaml` and records the public page and `/health`.
+**Last completed step:** P3.6, verify provider fallbacks and freeze the feature set, on `build/soundprint`. P3.5 is `98081fb`. P3.4 is `0f44b87`. P3.3 is `ab02558`. P3.2 is `d23b469`. P3.1 remains `4e9e844`.
 **Active build time:** 0 of 20 hours recorded. This session was not measured.
 
 Execution notes stay in this file. The diagram and write-up path are under `Docs/`. Each **Notes** section is filled only after that step is finished.
@@ -624,7 +624,7 @@ The user records the outdoor seed walk. Inspect the derived events and save only
 **Branch:** `build/soundprint`
 **Window:** Build hours 11–15 (240 minutes)
 **Outcome:** Live Gemma and Eleven Music adapters, job controls, and one reviewed Studio result. Feature freeze is at the end of this phase.
-**Phase note:** P3.1 is commit `4e9e844`. P3.2 is commit `d23b469`. P3.3 is commit `ab02558`. P3.4 is commit `0f44b87`. A finished walk returns Route Sketch while the Gemma Space is unproved. P3.5 has no seed Studio track to review, so AC-03 is not claimed. AC-04 stays blocked. P2.6 is still blocked on the outdoor walk. Generation uses the stage codes and error codes in `Docs/FRONTEND_EXPERIENCE.md`. Retry is explicit. The same idempotency key and body do not start a second piece. Transport paths now follow the locked `/api/v1` contract.
+**Phase note:** P3.1 is commit `4e9e844`. P3.2 is commit `d23b469`. P3.3 is commit `ab02558`. P3.4 is commit `0f44b87`. P3.5 is commit `98081fb` and stays blocked: there is no seed Studio track, so AC-03 is not claimed. A finished walk returns Route Sketch while the Gemma Space is unproved. AC-04 stays blocked. P2.6 is still blocked on the outdoor walk. P3.6 records the feature freeze. Generation uses the stage codes and error codes in `Docs/FRONTEND_EXPERIENCE.md`. Retry is explicit. The same idempotency key and body do not start a second piece. Transport paths now follow the locked `/api/v1` contract.
 
 ### P3.1 — Add protected generation jobs and durable usage limits
 
@@ -706,13 +706,13 @@ Listen to the seed Studio track, timestamp three movement mappings, and store th
 
 **Done when.** The turn, the pause, and a third mapping are perceptible. If they are not, AC-03 is recorded as failed. Stay inside the attempt cap.
 
-**Notes.** Blocked on October 10, 2026. No seed Studio track exists, so no listening review was recorded and no cached example was stored.
+**Notes.** Blocked on October 10, 2026. Commit `98081fb`. No seed Studio track exists, so no listening review was recorded and no cached example was stored.
 
 P2.6 still has no outdoor walk. The live job path returns `route_sketch` because the Gemma Space is unproved, so a submitted walk does not become `studio_live`. The file `artifacts/eleven-arrangement.mp3` is the October 10 arrangement proof: 60.029375 seconds, song id `6JZhKLyXn9BrPEPAnUQC`. It was not made from a seed walk, and it has not been heard for the turn, the pause, and a third mapping. AC-03 needs that hearing. A waveform or duration check would not replace it. No music request was made for this step. The daily attempt cap is unchanged. AC-03 is not marked passed and is not marked failed.
 
 ### P3.6 — Verify provider fallbacks and freeze the feature set
 
-**Status:** Not started
+**Status:** Done
 **Kind:** Verify · 40 minutes · AC-06, AC-08, AC-11, AC-15, AC-18
 **Commit subject:** Verify provider fallbacks and freeze the feature set
 
@@ -720,7 +720,13 @@ Check provider failure, deadline, quota, and fixture parity. Freeze features at 
 
 **Done when.** The same trace can fall back to Route Sketch, the cached example stays separately labeled, and the freeze is recorded.
 
-**Notes.** Not implemented.
+**Notes.** Verified on `build/soundprint` on October 10, 2026.
+
+The same corner walk falls back to `route_sketch` when the arrangement call fails and when a validated plan's music response is lost. Neither result uses `cached_example` or `synthetic_fixture`, and neither is marked `human_reviewed_studio`. The bundled example stays `synthetic_fixture` and is labeled Example walk. `cached_example` uses that same label. `route_sketch` and `studio_live` stay labeled Generated from your walk. No separate cached Studio file was stored, because the seed track review is still blocked.
+
+The client still ends a live attempt at 180 seconds. The public failure sentences and the retry set are locked in `frontend/tests/freeze.spec.ts`. A quota limit is not retryable. A repeated request still reserves once, and a restart still keeps that reservation, in the existing job tests. Cached playback was not timed on a phone network, so the five-second network part of AC-08 is not claimed. `uv run --directory backend pytest` passed, 61 tests. The three freeze checks passed. No new dependency. No active time was measured. No music request was made.
+
+Feature freeze is recorded at the end of this phase. Elapsed build time is still unmeasured, so this is the phase boundary the plan places at hour 15, not a measured clock. Later phases are fixes and release checks. New user-facing features stop here. Still open: the outdoor seed walk, the seed Studio listening review, the unproved Gemma Space, and the Render deploy.
 
 ---
 

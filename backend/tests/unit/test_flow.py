@@ -90,6 +90,52 @@ def test_a_validated_plan_renders_once_and_a_lost_render_stays_a_sketch(tmp_path
     assert "studio_live" not in json.dumps(body["result"]["mode"])
 
 
+def test_the_same_walk_stays_a_sketch_when_either_provider_fails(tmp_path: Path) -> None:
+    body = _corner_body()
+    blocked = _client(tmp_path / "arrange", blocked_arrangement, _unused_render)
+    lost = _client(tmp_path / "music", _valid_plan, _lost_render)
+    first = blocked.post(
+        "/api/v1/soundprints",
+        content=body,
+        headers=_headers("walk-freeze-arrange", token_hex(32)),
+    )
+    second = lost.post(
+        "/api/v1/soundprints",
+        content=body,
+        headers=_headers("walk-freeze-music", token_hex(32)),
+    )
+
+    assert first.status_code == 202
+    assert second.status_code == 202
+    assert first.json()["mode"] == "route_sketch"
+    assert first.json()["stage"] == "shaping_music"
+    assert second.json()["mode"] == "route_sketch"
+    assert second.json()["stage"] == "recording_piece"
+    for created in (first, second):
+        result = created.json()["result"]
+        assert result["mode"] == "route_sketch"
+        assert result["mode"] not in {"cached_example", "synthetic_fixture"}
+        assert result["provenance"]["mapping_status"] != "human_reviewed_studio"
+
+
+def _unused_render(events: object, styles: object) -> MusicReceipt:
+    raise AssertionError(events, styles)
+
+
+def _lost_render(events: object, styles: object) -> MusicReceipt:
+    return MusicReceipt(
+        "degraded",
+        "music_unavailable",
+        "music_v2_5",
+        "c" * 64,
+        None,
+        0,
+        None,
+        1,
+        None,
+    )
+
+
 def test_a_checked_render_is_studio_live(tmp_path: Path) -> None:
     def render(events: object, styles: object) -> MusicReceipt:
         return MusicReceipt(
