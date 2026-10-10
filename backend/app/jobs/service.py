@@ -29,9 +29,27 @@ from app.movement.clean import RawGap, RawSample, clean_trace
 
 MAX_BODY_BYTES = 1_048_576
 MAX_SAMPLES = 3000
-GEMMA_ATTEMPT_LIMIT = 4
-GPU_SECOND_LIMIT = 240
-ELEVEN_ATTEMPT_LIMIT = 6
+_LOCKED_GEMMA_ATTEMPTS = 4
+_LOCKED_GPU_SECONDS = 240
+_LOCKED_MUSIC_ATTEMPTS = 6
+
+
+def _release_cap(name: str, locked: int) -> int:
+    raw = os.environ.get(name, "").strip()
+    if not raw:
+        return locked
+    try:
+        value = int(raw)
+    except ValueError:
+        return locked
+    if value < 1:
+        return locked
+    return min(value, locked)
+
+
+GEMMA_ATTEMPT_LIMIT = _release_cap("MAX_GEMMA_ATTEMPTS_PER_DAY", _LOCKED_GEMMA_ATTEMPTS)
+GPU_SECOND_LIMIT = _release_cap("MAX_GEMMA_GPU_SECONDS_PER_DAY", _LOCKED_GPU_SECONDS)
+ELEVEN_ATTEMPT_LIMIT = _release_cap("MAX_MUSIC_ATTEMPTS_PER_DAY", _LOCKED_MUSIC_ATTEMPTS)
 GEMMA_RESERVE_ATTEMPTS = 1
 GPU_RESERVE_SECONDS = 60
 ELEVEN_RESERVE_ATTEMPTS = 1
@@ -171,17 +189,28 @@ class JobService:
         self,
         data_dir: Path,
         *,
+        ledger_path: Path | None = None,
+        artifacts_dir: Path | None = None,
         now: Callable[[], datetime] | None = None,
         dispatch: ProviderDispatch | None = None,
     ) -> None:
         clock = now or _utcnow
         self.data_dir = data_dir
         self.now = clock
-        self.ledger = Ledger(data_dir / "quota-ledger.json", clock)
-        self.artifacts = data_dir / "artifacts"
+        self.ledger = Ledger(ledger_path or (data_dir / "quota-ledger.json"), clock)
+        self.artifacts = artifacts_dir or (data_dir / "artifacts")
         self.dispatch = dispatch or NoProviderDispatch()
         if hasattr(self.dispatch, "complete") and self.dispatch.complete is None:
             self.dispatch.complete = self.complete
+        self._cleanup_existing_store()
+
+    def _cleanup_existing_store(self) -> None:
+        if not self.ledger.path.is_file():
+            return
+        try:
+            self._run(lambda _data: None)
+        except JobError:
+            return
 
     def capabilities(self) -> dict[str, object]:
         accepting = self._accepting()

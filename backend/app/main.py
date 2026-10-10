@@ -1,3 +1,4 @@
+import os
 from collections.abc import Callable
 from datetime import datetime
 from pathlib import Path
@@ -30,6 +31,20 @@ class SPAStaticFiles(StaticFiles):
         return response
 
 
+def store_paths() -> tuple[Path, Path | None, Path | None]:
+    """Return the job directory and, when set, the release ledger and artifact paths."""
+    ledger = os.environ.get("LEDGER_PATH", "").strip()
+    artifacts = os.environ.get("ARTIFACT_DIR", "").strip()
+    if bool(ledger) != bool(artifacts):
+        raise RuntimeError("LEDGER_PATH and ARTIFACT_DIR must both be set")
+    if ledger and artifacts:
+        ledger_path = Path(ledger)
+        return ledger_path.parent, ledger_path, Path(artifacts)
+    if os.environ.get("APP_ENV", "").strip() == "production":
+        raise RuntimeError("production requires LEDGER_PATH and ARTIFACT_DIR")
+    return DEFAULT_DATA, None, None
+
+
 def create_app(
     frontend_dist: Path | None = None,
     *,
@@ -38,9 +53,16 @@ def create_app(
     dispatch: ProviderDispatch | None = None,
 ) -> FastAPI:
     application = FastAPI(title="Footwork")
+    if data_dir is None:
+        data_dir, ledger_path, artifacts_dir = store_paths()
+    else:
+        ledger_path = None
+        artifacts_dir = None
     install_jobs(
         application,
-        DEFAULT_DATA if data_dir is None else data_dir,
+        data_dir,
+        ledger_path=ledger_path,
+        artifacts_dir=artifacts_dir,
         now=now,
         dispatch=dispatch,
     )

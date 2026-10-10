@@ -3,8 +3,8 @@
 Step-by-step record of what actually happened. The locked plan stays in `Docs/HANDOFF_1.md`. This file is the place to read after a step is finished.
 
 **Status:** The feature set is frozen on `build/soundprint`. Later phases are fixes and release checks. The user will record the outdoor walk, review the seed Studio track, and deploy to Render after the rest of the build. The 20-hour ceiling is unchanged. CodeRabbit GitHub App install is still unconfirmed.
-**Next step:** P4.4. P2.0, P2.6, and P3.5 are pending until that later pass.
-**Last completed step:** P4.3, verify the release journey and synchronization contracts, on `build/release`. P4.2 is `b2c9bfc`. P4.1 is `3419919`. P3.6 is `27ed855`. P3.5 is `98081fb`. P3.4 is `0f44b87`. P3.3 is `ab02558`. P3.2 is `d23b469`. P3.1 remains `4e9e844`.
+**Next step:** P4.4 is blocked on the user deploying the reviewed release. P2.0, P2.6, and P3.5 stay pending until that later pass.
+**Last completed step:** P4.3, verify the release journey and synchronization contracts, on `build/release` at `6915426`. P4.2 is `b2c9bfc`. P4.1 is `3419919`. P3.6 is `27ed855`. P3.5 is `98081fb`. P3.4 is `0f44b87`. P3.3 is `ab02558`. P3.2 is `d23b469`. P3.1 remains `4e9e844`.
 **Active build time:** 0 of 20 hours recorded. This session was not measured.
 
 Execution notes stay in this file. The diagram and write-up path are under `Docs/`. Each **Notes** section is filled only after that step is finished.
@@ -735,7 +735,7 @@ Feature freeze is recorded at the end of this phase. Elapsed build time is still
 **Branch:** `build/release`
 **Window:** Build hours 15–17 (120 minutes)
 **Outcome:** Privacy, accessibility, responsive, and failure checks, then the final deployed release.
-**Phase note:** Not started. Depends on P3. Fixes only. No new features. Checks include integration, accessibility, performance, and device regression for the rebaselined journey.
+**Phase note:** P4.1 through P4.3 are committed on `build/release`. P4.4 has a local release record and is blocked until the user deploys. Fixes only. No new features.
 
 ### P4.1 — Harden location privacy and generation access controls
 
@@ -791,7 +791,7 @@ Still open, and not claimed by this step: AC-01 needs the outdoor walk. AC-03 ne
 
 ### P4.4 — Prepare the verified public release and rollback record
 
-**Status:** Not started
+**Status:** Blocked
 **Kind:** Release · 30 minutes · AC-07, AC-08, AC-14
 **Commit subject:** Prepare the verified public release and rollback record
 
@@ -799,7 +799,22 @@ The user deploys the reviewed release. Record the smoke check, the rollback comm
 
 **Done when.** The public URL is healthy, the example plays, and the live caps are correct.
 
-**Notes.** Not implemented.
+**Notes.** Prepared on October 10, 2026, on `build/release`. No Render service was created, and no public URL was checked.
+
+The blueprint already named the persistent disk, but the app stored jobs under `var/jobs` and ignored those variables. A production process now refuses to start unless `LEDGER_PATH` and `ARTIFACT_DIR` are both set. With the blueprint values, the ledger is `/var/footwork/quota.json` and audio is under `/var/footwork/artifacts`. Tests that pass a data directory still use that directory. Daily caps read `MAX_GEMMA_ATTEMPTS_PER_DAY`, `MAX_GEMMA_GPU_SECONDS_PER_DAY`, and `MAX_MUSIC_ATTEMPTS_PER_DAY`, and a higher value is clamped to 4 attempts, 240 GPU seconds, and 6 music attempts. The blueprint now lists the music cap as 6. `GENERATION_ENABLED` must be the string `true` before the installed dispatcher can call Eleven. It is `false` in the blueprint, so the public release keeps the unproved arrangement space and does not call music. Secret names stay `sync: false`. No secret value is in the blueprint.
+
+Cleanup: when a ledger file already exists, process startup runs the same expiry pass as a request. Ready audio is removed 60 minutes after it becomes ready. Ledger rows stay for 48 hours. Delete removes that job's audio. Spent quota is not refunded.
+
+Smoke check, after the user deploys this reviewed commit manually with `autoDeployTrigger` left off:
+
+1. `GET /health` returns status `ok`, API version `v1`, and schema version `1`.
+2. `/` and `/studio` return the built shell. The cached Studio piece is the example, labeled Example walk.
+3. Dashboard caps stay at 4, 240, and 6. `GENERATION_ENABLED` stays `false`.
+4. Set `PUBLIC_BASE_URL`, `HF_SPACE_URL`, `HF_TOKEN`, `GEMMA_MODEL_ID`, `GEMMA_MODEL_REVISION`, `ELEVENLABS_API_KEY`, and `ELEVEN_MUSIC_MODEL` in the dashboard only.
+
+Rollback: redeploy `6915426` and leave `GENERATION_ENABLED` false. That commit is the last verified application commit. It does not read the disk paths, so use it only to restore the previous process. No earlier Render deploy exists to restore.
+
+`uv run --directory backend pytest` passed, 69 tests. `uv run --directory backend ruff check .` passed, and the format check passed. AC-07 stays open until the public HTTPS check. AC-08 was not timed on a phone network. AC-14 is covered by the capability, redaction, and disk-path checks already in the suite. No active time was measured.
 
 ---
 

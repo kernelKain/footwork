@@ -18,10 +18,18 @@ def install_jobs(
     application: FastAPI,
     data_dir: Path,
     *,
+    ledger_path: Path | None = None,
+    artifacts_dir: Path | None = None,
     now: Callable[[], datetime] | None = None,
     dispatch: ProviderDispatch | None = None,
 ) -> JobService:
-    service = JobService(data_dir, now=now, dispatch=dispatch)
+    service = JobService(
+        data_dir,
+        ledger_path=ledger_path,
+        artifacts_dir=artifacts_dir,
+        now=now,
+        dispatch=dispatch,
+    )
     application.state.jobs = service
     application.add_exception_handler(JobError, _job_error)
     application.include_router(router)

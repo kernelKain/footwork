@@ -492,6 +492,34 @@ def test_another_jobs_capability_cannot_read_or_delete(tmp_path: Path) -> None:
     assert _usage(data)["gemma_attempts"] == 3
 
 
+def test_startup_removes_expired_audio_and_keeps_the_cap(tmp_path: Path) -> None:
+    data = tmp_path / "jobs"
+    clock = Clock()
+    client = TestClient(
+        create_app(
+            tmp_path / "missing",
+            data_dir=data,
+            now=clock,
+            dispatch=_Finishing(b"startup-audio"),
+        )
+    )
+    key = token_hex(32)
+    created = client.post(
+        "/api/v1/soundprints",
+        content=_walk(),
+        headers=_headers("idem-startup-01", key),
+    )
+    job_id = created.json()["job_id"]
+    audio = data / "artifacts" / job_id / "audio"
+    assert audio.read_bytes() == b"startup-audio"
+
+    clock.instant += timedelta(minutes=61)
+    JobService(data, now=clock)
+
+    assert not audio.exists()
+    assert _usage(data)["gemma_attempts"] == 1
+
+
 def test_expired_audio_is_removed_and_the_cap_survives(tmp_path: Path) -> None:
     data = tmp_path / "jobs"
     clock = Clock()
