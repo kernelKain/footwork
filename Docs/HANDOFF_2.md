@@ -3,8 +3,8 @@
 Step-by-step record of what actually happened. The locked plan stays in `Docs/HANDOFF_1.md`. This file is the place to read after a step is finished.
 
 **Status:** The feature set is frozen on `build/soundprint`. Later phases are fixes and release checks. The user will record the outdoor walk, review the seed Studio track, and deploy to Render after the rest of the build. The 20-hour ceiling is unchanged. CodeRabbit GitHub App install is still unconfirmed.
-**Next step:** P4.1. P2.0, P2.6, and P3.5 are pending until that later pass.
-**Last completed step:** P3.6, verify provider fallbacks and freeze the feature set, on `build/soundprint`. P3.6 is `27ed855`. P3.5 is `98081fb`. P3.4 is `0f44b87`. P3.3 is `ab02558`. P3.2 is `d23b469`. P3.1 remains `4e9e844`.
+**Next step:** P4.2. P2.0, P2.6, and P3.5 are pending until that later pass.
+**Last completed step:** P4.1, harden location privacy and generation access controls, on `build/release`. P3.6 is `27ed855`. P3.5 is `98081fb`. P3.4 is `0f44b87`. P3.3 is `ab02558`. P3.2 is `d23b469`. P3.1 remains `4e9e844`.
 **Active build time:** 0 of 20 hours recorded. This session was not measured.
 
 Execution notes stay in this file. The diagram and write-up path are under `Docs/`. Each **Notes** section is filled only after that step is finished.
@@ -739,7 +739,7 @@ Feature freeze is recorded at the end of this phase. Elapsed build time is still
 
 ### P4.1 — Harden location privacy and generation access controls
 
-**Status:** Not started
+**Status:** Done
 **Kind:** Verify · 30 minutes · AC-14, AC-15
 **Commit subject:** Harden location privacy and generation access controls
 
@@ -747,7 +747,13 @@ Audit secrets, payloads, authorization, logs, and retention.
 
 **Done when.** Coordinates and secrets are absent from the inspected artifacts, another job's capability is denied, and caps survive a restart.
 
-**Notes.** Not implemented.
+**Notes.** Verified on `build/release` on October 10, 2026.
+
+The audit found three gaps. Deleted and expired jobs left their audio files on disk. A random wrong key was tested, but another live job's capability was not. Job logs did not exist, so a later log call could have written the raw request.
+
+A result that contains a location field is refused before any audio file is written, and the reservation stays. Delete and expiry remove that job's `audio` file and leave the quota ledger in place. Status, audio, and deletion still require the matching capability: job B's key is denied for job A. The access log is an allowlist of job id, status, stage, mode, error code, and elapsed time. A logger filter drops lines that still contain a location word, an authorization header, or an `sk-` token. Public fixtures were already free of location keys. No new dependency.
+
+`uv run --directory backend ruff check .` passed. `uv run --directory backend ruff format --check .` passed. `uv run --directory backend pytest` passed, 65 tests. No active time was measured. AC-14 is covered by the ledger, log, and refused-result checks. AC-15 is covered by the existing restart test and by a new process that still sees the reserved cap after the audio file is removed.
 
 ### P4.2 — Fix accessibility and responsive layout issues
 

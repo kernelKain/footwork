@@ -24,6 +24,7 @@ from app.jobs.ledger import (
     stamp,
     zero_usage,
 )
+from app.jobs.privacy import access_event, contains_location
 from app.movement.clean import RawGap, RawSample, clean_trace
 
 MAX_BODY_BYTES = 1_048_576
@@ -253,7 +254,7 @@ class JobService:
 
         self._run(reserve)
         if not created:
-            return self._view(job_id)
+            return self._recorded(self._view(job_id))
         prepare = getattr(self.dispatch, "prepare", None)
         discard = getattr(self.dispatch, "discard", None)
         try:
@@ -267,13 +268,15 @@ class JobService:
         finally:
             if discard is not None:
                 discard(job_id)
-        return self._view(job_id)
+        return self._recorded(self._view(job_id))
 
     def complete(self, job_id: str, outcome: object) -> None:
         from app.jobs.flow import WalkOutcome
 
         if not isinstance(outcome, WalkOutcome):
             raise TypeError("walk outcome is incomplete")
+        if contains_location(outcome.result):
+            raise RuntimeError("private result refused")
         audio = outcome.audio
         result = outcome.result
         root = self.artifacts / job_id
@@ -297,7 +300,7 @@ class JobService:
 
     def get(self, job_id: str, job_key: str) -> JobView:
         job = self._authorized(job_id, job_key)
-        return JobView(job, self.now())
+        return self._recorded(JobView(job, self.now()))
 
     def delete(self, job_id: str, job_key: str | None) -> None:
         if not _JOB_ID.fullmatch(job_id):
@@ -318,6 +321,7 @@ class JobService:
                 current["status"] = "deleted"
 
         self._run(mark)
+        access_event(job_id=job_id, status="deleted")
 
     def audio_file(self, job_id: str, job_key: str) -> Path:
         self._authorized(job_id, job_key)
@@ -394,11 +398,53 @@ class JobService:
 
         self._run(mark)
 
+    def _recorded(self, view: JobView) -> JobView:
+        error_code = None
+        if isinstance(view.error, dict) and isinstance(view.error.get("code"), str):
+            error_code = view.error["code"]
+        access_event(
+            job_id=view.job_id,
+            status=view.status,
+            stage=view.stage,
+            mode=view.mode,
+            error_code=error_code,
+            elapsed_ms=view.elapsed_ms,
+        )
+        return view
+
     def _run(self, mutate: Callable[[dict[str, object]], None]) -> None:
+        live: set[str] | None = None
+
+        def wrapped(data: dict[str, object]) -> None:
+            nonlocal live
+            mutate(data)
+            live = _live_job_ids(data)
+
         try:
-            self.ledger.transact(mutate)
+            self.ledger.transact(wrapped)
         except LedgerError as exc:
             raise JobError("processing_unavailable") from exc
+        if live is not None:
+            self._remove_private_artifacts(live)
+
+    def _remove_private_artifacts(self, live: set[str]) -> None:
+        if not self.artifacts.is_dir():
+            return
+        base = self.artifacts.resolve()
+        for child in list(self.artifacts.iterdir()):
+            if not _JOB_ID.fullmatch(child.name) or child.name in live:
+                continue
+            root = child.resolve()
+            if not root.is_dir() or root.parent != base:
+                continue
+            audio = root / "audio"
+            try:
+                if os.path.lexists(audio):
+                    audio.unlink()
+                if not any(root.iterdir()):
+                    root.rmdir()
+            except OSError:
+                continue
 
 
 def _utcnow() -> datetime:
@@ -458,6 +504,14 @@ def _has_active(data: dict[str, object]) -> bool:
     return any(
         isinstance(job, dict) and job.get("status") in ACTIVE for job in _jobs(data).values()
     )
+
+
+def _live_job_ids(data: dict[str, object]) -> set[str]:
+    live: set[str] = set()
+    for job_id, job in _jobs(data).items():
+        if isinstance(job, dict) and job.get("status") not in {"deleted", "expired"}:
+            live.add(str(job_id))
+    return live
 
 
 def _jobs(data: dict[str, object]) -> dict[str, object]:

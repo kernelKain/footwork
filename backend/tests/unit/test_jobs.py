@@ -1,4 +1,5 @@
 import json
+import logging
 import math
 import threading
 import time
@@ -6,7 +7,10 @@ from datetime import UTC, datetime, timedelta
 from pathlib import Path
 from secrets import token_hex
 
+import pytest
+from app.jobs.flow import WalkOutcome
 from app.jobs.ledger import Ledger
+from app.jobs.privacy import LOG
 from app.jobs.service import (
     GPU_RESERVE_SECONDS,
     GPU_SECOND_LIMIT,
@@ -378,6 +382,214 @@ def test_a_short_or_invalid_walk_does_not_reserve_budget(tmp_path: Path) -> None
     assert spy.job_ids == []
     assert not (data / "quota-ledger.json").exists()
     assert client.get("/health").json()["schema_version"] == "1"
+
+
+class _Finishing:
+    def __init__(self, audio: bytes) -> None:
+        self.complete = None
+        self.audio = audio
+
+    def start(self, job_id: str) -> None:
+        if self.complete is None:
+            raise RuntimeError("completion is not connected")
+        self.complete(
+            job_id,
+            WalkOutcome(
+                mode="route_sketch",
+                stage="shaping_music",
+                stages=("reading_walk", "shaping_music"),
+                result={"schema_version": "1", "mode": "route_sketch"},
+                audio=self.audio,
+            ),
+        )
+
+
+class _Leaky:
+    def __init__(self) -> None:
+        self.complete = None
+
+    def start(self, job_id: str) -> None:
+        if self.complete is None:
+            raise RuntimeError("completion is not connected")
+        self.complete(
+            job_id,
+            WalkOutcome(
+                mode="route_sketch",
+                stage="shaping_music",
+                stages=("reading_walk",),
+                result={"latitude": ORIGIN_LAT, "longitude": ORIGIN_LON},
+                audio=b"should-not-be-stored",
+            ),
+        )
+
+
+def test_another_jobs_capability_cannot_read_or_delete(tmp_path: Path) -> None:
+    data = tmp_path / "jobs"
+    clock = Clock()
+    client = TestClient(
+        create_app(tmp_path / "missing", data_dir=data, now=clock, dispatch=_Finishing(b"audio-a"))
+    )
+    key_a = token_hex(32)
+    key_b = token_hex(32)
+    first = client.post(
+        "/api/v1/soundprints",
+        content=_walk(),
+        headers=_headers("idem-cross-01", key_a),
+    )
+    second = client.post(
+        "/api/v1/soundprints",
+        content=_walk(),
+        headers=_headers("idem-cross-02", key_b),
+    )
+    job_a = first.json()["job_id"]
+    job_b = second.json()["job_id"]
+    audio_a = data / "artifacts" / job_a / "audio"
+
+    denied = client.get(f"/api/v1/jobs/{job_a}", headers={"authorization": f"Bearer {key_b}"})
+    denied_audio = client.get(
+        f"/api/v1/jobs/{job_a}/audio",
+        headers={"authorization": f"Bearer {key_b}"},
+    )
+    denied_delete = client.delete(
+        f"/api/v1/jobs/{job_a}",
+        headers={"authorization": f"Bearer {key_b}"},
+    )
+
+    assert first.status_code == 202
+    assert second.status_code == 202
+    assert job_a != job_b
+    assert denied.status_code == 401
+    assert denied.json()["code"] == "invalid_capability"
+    assert "12.9716" not in denied.text
+    assert b"audio-a" not in denied.content
+    assert denied_audio.status_code == 401
+    assert b"audio-a" not in denied_audio.content
+    assert denied_delete.status_code == 401
+    assert audio_a.read_bytes() == b"audio-a"
+    assert (
+        client.get(
+            f"/api/v1/jobs/{job_b}", headers={"authorization": f"Bearer {key_a}"}
+        ).status_code
+        == 401
+    )
+
+    removed = client.delete(f"/api/v1/jobs/{job_a}", headers={"authorization": f"Bearer {key_a}"})
+    assert removed.status_code == 204
+    assert not audio_a.exists()
+    assert _usage(data)["gemma_attempts"] == 2
+    _assert_private(data, key_a, "idem-cross-01")
+    _assert_private(data, key_b, "idem-cross-02")
+
+    restarted = TestClient(
+        create_app(tmp_path / "missing", data_dir=data, now=clock, dispatch=_Finishing(b"audio-c"))
+    )
+    third = restarted.post(
+        "/api/v1/soundprints",
+        content=_walk(),
+        headers=_headers("idem-cross-03", token_hex(32)),
+    )
+    assert third.status_code == 202
+    assert _usage(data)["gemma_attempts"] == 3
+
+
+def test_expired_audio_is_removed_and_the_cap_survives(tmp_path: Path) -> None:
+    data = tmp_path / "jobs"
+    clock = Clock()
+    client = TestClient(
+        create_app(
+            tmp_path / "missing",
+            data_dir=data,
+            now=clock,
+            dispatch=_Finishing(b"expired-audio"),
+        )
+    )
+    key = token_hex(32)
+    created = client.post(
+        "/api/v1/soundprints",
+        content=_walk(),
+        headers=_headers("idem-expire-01", key),
+    )
+    job_id = created.json()["job_id"]
+    audio = data / "artifacts" / job_id / "audio"
+    assert audio.read_bytes() == b"expired-audio"
+
+    clock.instant += timedelta(minutes=61)
+    expired = client.get(f"/api/v1/jobs/{job_id}", headers={"authorization": f"Bearer {key}"})
+
+    assert expired.status_code == 410
+    assert expired.json()["code"] == "expired"
+    assert not audio.exists()
+    assert "12.9716" not in expired.text
+    assert _usage(data)["gemma_attempts"] == 1
+    restarted = TestClient(
+        create_app(
+            tmp_path / "missing", data_dir=data, now=clock, dispatch=Spy(data / "quota-ledger.json")
+        )
+    )
+    replay = restarted.post(
+        "/api/v1/soundprints",
+        content=_walk(),
+        headers=_headers("idem-expire-02", token_hex(32)),
+    )
+    assert replay.status_code == 202
+    assert _usage(data)["gemma_attempts"] == 2
+
+
+def test_a_located_result_is_not_stored(tmp_path: Path) -> None:
+    data = tmp_path / "jobs"
+    client = TestClient(
+        create_app(tmp_path / "missing", data_dir=data, now=Clock(), dispatch=_Leaky())
+    )
+    key = token_hex(32)
+    created = client.post(
+        "/api/v1/soundprints",
+        content=_walk(),
+        headers=_headers("idem-leak-0001", key),
+    )
+    saved = (data / "quota-ledger.json").read_text(encoding="utf-8")
+
+    assert created.status_code == 202
+    assert created.json()["status"] == "interrupted"
+    assert created.json()["error"]["code"] == "provider_unknown"
+    assert "12.9716" not in created.text
+    assert "latitude" not in saved
+    assert "12.9716" not in saved
+    assert not (data / "artifacts").exists()
+    assert _usage(data)["gemma_attempts"] == 1
+
+
+def test_job_log_omits_locations_capabilities_and_keys(
+    tmp_path: Path, caplog: pytest.LogCaptureFixture
+) -> None:
+    caplog.set_level(logging.INFO, logger="footwork.jobs")
+    data = tmp_path / "jobs"
+    client = TestClient(
+        create_app(
+            tmp_path / "missing", data_dir=data, now=Clock(), dispatch=_Finishing(b"audio-log")
+        )
+    )
+    key = token_hex(32)
+    created = client.post(
+        "/api/v1/soundprints",
+        content=_walk(),
+        headers=_headers("idem-log-00001", key),
+    )
+    job_id = created.json()["job_id"]
+    client.get(f"/api/v1/jobs/{job_id}", headers={"authorization": f"Bearer {key}"})
+    client.get(f"/api/v1/jobs/{job_id}", headers={"authorization": f"Bearer {token_hex(32)}"})
+    LOG.info("latitude 12.9716 authorization Bearer %s sk-live-secret", key)
+
+    text = caplog.text
+    assert job_id in text
+    assert "shaping_music" in text
+    assert "invalid_capability" in text
+    assert "12.9716" not in text
+    assert "latitude" not in text
+    assert key not in text
+    assert "idem-log-00001" not in text
+    assert "Bearer" not in text
+    assert "authorization" not in text.lower()
+    assert "sk-live-secret" not in text
 
 
 def test_a_corrupt_ledger_stays_generic(tmp_path: Path) -> None:
