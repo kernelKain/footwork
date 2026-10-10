@@ -2,9 +2,9 @@
 
 Step-by-step record of what actually happened. The locked plan stays in `Docs/HANDOFF_1.md`. This file is the place to read after a step is finished.
 
-**Status:** Phase 3 job controls are committed on `build/soundprint`. The outdoor seed walk is still waiting on the user. The user will deploy to Render at the end. Local build and tests continue until then. The 20-hour ceiling is unchanged. CodeRabbit GitHub App install is still unconfirmed.
-**Next step:** P3.2. P2.6 stays blocked until the user records one real outdoor walk. P2.0 stays deferred until the user deploys `deploy/render.yaml` and records the public page and `/health`.
-**Last completed step:** P3.1, add protected generation jobs and durable usage limits, on `build/soundprint`. P2.5 remains `6535866`.
+**Status:** Phase 3 arrangement validation is committed on `build/soundprint`. The outdoor seed walk is still waiting on the user. The user will deploy to Render at the end. Local build and tests continue until then. The 20-hour ceiling is unchanged. CodeRabbit GitHub App install is still unconfirmed.
+**Next step:** P3.3. P2.6 stays blocked until the user records one real outdoor walk. P2.0 stays deferred until the user deploys `deploy/render.yaml` and records the public page and `/health`.
+**Last completed step:** P3.2, integrate Gemma arrangement generation and validation, on `build/soundprint`. P3.1 remains `4e9e844`.
 **Active build time:** 0 of 20 hours recorded. This session was not measured.
 
 Execution notes stay in this file. The diagram and write-up path are under `Docs/`. Each **Notes** section is filled only after that step is finished.
@@ -624,7 +624,7 @@ The user records the outdoor seed walk. Inspect the derived events and save only
 **Branch:** `build/soundprint`
 **Window:** Build hours 11–15 (240 minutes)
 **Outcome:** Live Gemma and Eleven Music adapters, job controls, and one reviewed Studio result. Feature freeze is at the end of this phase.
-**Phase note:** P3.1 is committed on `build/soundprint`. P2.6 is still blocked on the outdoor walk; that walk is not required for the job ledger. Generation uses the stage codes and error codes in `Docs/FRONTEND_EXPERIENCE.md`. Retry is explicit. The same idempotency key and body do not start a second piece. Transport paths now follow the locked `/api/v1` contract.
+**Phase note:** P3.1 is commit `4e9e844`. P3.2 is committed on `build/soundprint`. The live Gemma Space is still unproved, so AC-04 stays blocked. P2.6 is still blocked on the outdoor walk. Generation uses the stage codes and error codes in `Docs/FRONTEND_EXPERIENCE.md`. Retry is explicit. The same idempotency key and body do not start a second piece. Transport paths now follow the locked `/api/v1` contract.
 
 ### P3.1 — Add protected generation jobs and durable usage limits
 
@@ -636,7 +636,7 @@ Add job endpoints, per-job capability checks, the quota ledger, and idempotency.
 
 **Done when.** Duplicate, restart, and quota tests pass, and budget is reserved before a provider is called.
 
-**Notes.** Implemented on `build/soundprint` on October 10, 2026.
+**Notes.** Implemented on `build/soundprint` on October 10, 2026. Commit `4e9e844`.
 
 `POST /api/v1/soundprints` accepts a finished walk, `X-Idempotency-Key`, and a 256-bit `X-Job-Key`. The server stores only hashes of the key, the capability, and the raw body. The same key and body return the same job. A changed body returns 409. One job can be active. Status, audio, and deletion require `Authorization: Bearer` with that capability. The ledger is an atomic JSON file under `var/jobs/`, which is gitignored. Before the dispatch hook runs, the ledger reserves one Gemma attempt, 60 GPU seconds, and one Eleven attempt, inside the daily caps of four attempts, 240 GPU seconds, and six Eleven attempts. The default hook does not call Gemma or Eleven. An exception from the hook is recorded as an unknown outcome and the reservation stays. A new process marks an active job interrupted and keeps the reserved counts. Deleting a job does not refund the reservation. Coordinates, capabilities, and idempotency keys are not written to the ledger. `GET /api/v1/capabilities` reports generation as open or capped and both providers as unavailable. It does not report balances.
 
@@ -646,7 +646,7 @@ A repeated finished walk is the same attempt only when the client reuses the ide
 
 ### P3.2 — Integrate Gemma arrangement generation and validation
 
-**Status:** Not started
+**Status:** Done
 **Kind:** Edit · 40 minutes · AC-04, AC-06
 **Commit subject:** Integrate Gemma arrangement generation and validation
 
@@ -654,7 +654,11 @@ Call Gemma with an anonymous event timeline and validate the arrangement. Allow 
 
 **Done when.** A valid plan is produced, and invalid output becomes an honest Route Sketch.
 
-**Notes.** Not implemented.
+**Notes.** Implemented on `build/soundprint` on October 10, 2026.
+
+`backend/app/arrange/gemma.py` builds an anonymous timeline from event id, type, and audio offset. It strips location fields before any call. A reply is accepted only when the mood is `warm_cinematic`, the style list is one to six words from the closed instrumental vocabulary and includes `instrumental`, and every event reference matches the timeline. A fenced JSON object is parsed locally. Schema-invalid output may be submitted once, with field codes only, when another Gemma attempt, 60 GPU seconds, and 90 seconds of deadline remain, and only after an optional reservation succeeds. A transport exception is not repeated. Failure returns `arrangement_unavailable` and `route_sketch` with no invented plan. `pace_change` ids that contain an underscore are renamed into the shared hyphen pattern. `SpaceArrangeClient` can call `/arrange`, and it was not used. The Space recorded in `Docs/evidence/gemma-access.md` is still `NO_APP_FILE`, so this step does not claim a live checkpoint result.
+
+`uv run --directory backend ruff check app/arrange tests/unit/test_arrange.py` passed. `uv run --directory backend ruff format --check` passed for those files. `uv run --directory backend pytest` passed, 52 tests. No new dependency. No active time was measured. AC-06 is covered by the invalid-plan and transport tests. AC-04 remains blocked until a named Gemma call returns a validated arrangement.
 
 ### P3.3 — Render validated arrangements with Eleven Music
 
