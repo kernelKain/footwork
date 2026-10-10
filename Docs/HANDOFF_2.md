@@ -2,9 +2,9 @@
 
 Step-by-step record of what actually happened. The locked plan stays in `Docs/HANDOFF_1.md`. This file is the place to read after a step is finished.
 
-**Status:** Phase 2 sample cleaning is committed on `build/movement`. The user will deploy to Render at the end. Local build and tests continue until then. The 20-hour ceiling is unchanged. CodeRabbit GitHub App install is still unconfirmed.
-**Next step:** P2.4. P2.0 stays deferred until the user deploys `deploy/render.yaml` and records the public page and `/health`.
-**Last completed step:** P2.3, validate and clean recorded movement samples, commit `aef013b`. P2.2 remains `61ec939`. P2.1 remains `e0c6c94`.
+**Status:** Phase 2 event detection is committed on `build/movement`. The user will deploy to Render at the end. Local build and tests continue until then. The 20-hour ceiling is unchanged. CodeRabbit GitHub App install is still unconfirmed.
+**Next step:** P2.5. P2.0 stays deferred until the user deploys `deploy/render.yaml` and records the public page and `/health`.
+**Last completed step:** P2.4, detect turns, pace changes, pauses, and loops. P2.3 remains `aef013b`.
 **Active build time:** 0 of 20 hours recorded. This session was not measured.
 
 Execution notes stay in this file. The diagram and write-up path are under `Docs/`. Each **Notes** section is filled only after that step is finished.
@@ -509,7 +509,7 @@ The white hold-progress overlay at 28% opacity lightens coral to about `#FF9494`
 **Branch:** `build/movement`
 **Window:** Build hours 7–11 (240 minutes)
 **Outcome:** Real capture, four detectors, compression, and an exact Route Sketch Hook.
-**Phase note:** P2.1, P2.2, and P2.3 are committed. P2.0 stays deferred until the final Render deploy. The recording and generation seams are the practice port and `frontend/src/studio/generationContract.ts`. Use the public states in `Docs/FRONTEND_EXPERIENCE.md`. Do not restore sponsor, provenance, or fixture-picker sections.
+**Phase note:** P2.1 through P2.4 are committed. P2.0 stays deferred until the final Render deploy. The recording and generation seams are the practice port and `frontend/src/studio/generationContract.ts`. Use the public states in `Docs/FRONTEND_EXPERIENCE.md`. Do not restore sponsor, provenance, or fixture-picker sections.
 
 ### P2.0 — Publish the shell and health endpoint
 
@@ -575,7 +575,7 @@ Validate, clean, and project samples in Python, and score route quality.
 
 ### P2.4 — Detect turns, pace changes, pauses, and loops
 
-**Status:** Not started
+**Status:** Done
 **Kind:** Edit · 40 minutes · AC-09
 **Commit subject:** Detect turns pace changes pauses and loops
 
@@ -583,7 +583,11 @@ Implement the four detectors with positive and negative fixtures.
 
 **Done when.** Turn, pace, pause, and loop fixtures pass, and control traces do not gain invented events.
 
-**Notes.** Not implemented.
+**Notes.** Implemented on `build/movement` on October 10, 2026.
+
+`backend/app/movement/detect.py` reads a cleaned trace. It finds a turn when the heading changes by at least 60 degrees across about 12 meters of straight approach and departure. It finds a pace change when smoothed speed changes by at least 30 percent and the new speed holds for about 10 seconds, and both speeds stay at or above 0.5 meters per second. It finds a pause when speed stays under 0.5 meters per second for at least 10 seconds. It finds a loop when the route returns within 20 meters of an earlier stretch after at least 60 seconds and 100 meters, and the path left that neighborhood in between. Gaps are not treated as movement. An unusable trace produces no events. A trace can be usable and still have only some of the four events.
+
+`uv run ruff check .` and `uv run ruff format --check .` passed. `uv run pytest` passed, 27 tests, including 12 detector tests. No new dependency. No active time was measured.
 
 ### P2.5 — Generate synchronized route sketches from movement events
 

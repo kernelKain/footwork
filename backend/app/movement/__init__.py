@@ -1,1 +1,1 @@
-"""Movement cleaning and, later, event detection."""
+"""Movement cleaning and event detection."""

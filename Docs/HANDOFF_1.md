@@ -1388,8 +1388,8 @@ The Phase 1 frontend that this handoff now starts from is the landing and practi
 |---|---|
 | Status | **IN PROGRESS** |
 | Current phase | P2 — Real recording and movement engine |
-| Last completed step | P2.3 validate and clean recorded movement samples, commit `aef013b` |
-| Next step | P2.4. P2.0 stays deferred until the final Render deploy. |
+| Last completed step | P2.4 detect turns, pace changes, pauses, and loops |
+| Next step | P2.5. P2.0 stays deferred until the final Render deploy. |
 | Current execution branch | `build/movement` |
 | Last execution commit | `aef013b` |
 | Existing baseline commit | `22df0e7` |
@@ -1421,8 +1421,8 @@ Active-work ceiling: 20 hours
 Feature freeze: Build hour 15, at 75%
 Autonomy: A1 — agent edits; user runs commands and controls Git/deployment
 Status: IN PROGRESS
-Last completed: P2.3 validate and clean recorded movement samples, commit aef013b. P2.2 remains 61ec939. P2.1 remains e0c6c94.
-Next step: P2.4. P2.0 stays deferred until the final Render deploy. The user is managing the clock. The 20-hour ceiling is unchanged.
+Last completed: P2.4 detect turns, pace changes, pauses, and loops. P2.3 remains aef013b.
+Next step: P2.5. P2.0 stays deferred until the final Render deploy. The user is managing the clock. The 20-hour ceiling is unchanged.
 Active phase: P2 — Real recording and movement engine
 Branch: build/movement
 Live URL: NOT YET DEPLOYED
