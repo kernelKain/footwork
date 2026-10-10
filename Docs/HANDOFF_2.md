@@ -2,9 +2,9 @@
 
 Step-by-step record of what actually happened. The locked plan stays in `Docs/HANDOFF_1.md`. This file is the place to read after a step is finished.
 
-**Status:** Phase 2 route sketches are committed on `build/movement`. The outdoor seed walk is waiting on the user. The user will deploy to Render at the end. Local build and tests continue until then. The 20-hour ceiling is unchanged. CodeRabbit GitHub App install is still unconfirmed.
-**Next step:** P2.6, after the user records one real outdoor walk. P2.0 stays deferred until the user deploys `deploy/render.yaml` and records the public page and `/health`.
-**Last completed step:** P2.5, generate synchronized route sketches from movement events, commit `6535866`. P2.4 remains `b913a93`.
+**Status:** Phase 3 job controls are committed on `build/soundprint`. The outdoor seed walk is still waiting on the user. The user will deploy to Render at the end. Local build and tests continue until then. The 20-hour ceiling is unchanged. CodeRabbit GitHub App install is still unconfirmed.
+**Next step:** P3.2. P2.6 stays blocked until the user records one real outdoor walk. P2.0 stays deferred until the user deploys `deploy/render.yaml` and records the public page and `/health`.
+**Last completed step:** P3.1, add protected generation jobs and durable usage limits, on `build/soundprint`. P2.5 remains `6535866`.
 **Active build time:** 0 of 20 hours recorded. This session was not measured.
 
 Execution notes stay in this file. The diagram and write-up path are under `Docs/`. Each **Notes** section is filled only after that step is finished.
@@ -624,11 +624,11 @@ The user records the outdoor seed walk. Inspect the derived events and save only
 **Branch:** `build/soundprint`
 **Window:** Build hours 11–15 (240 minutes)
 **Outcome:** Live Gemma and Eleven Music adapters, job controls, and one reviewed Studio result. Feature freeze is at the end of this phase.
-**Phase note:** Not started. Depends on P2. Generation uses the stage codes and error codes in `Docs/FRONTEND_EXPERIENCE.md`. Retry is explicit, and the same finished walk does not start a second piece. Transport paths are not fixed.
+**Phase note:** P3.1 is committed on `build/soundprint`. P2.6 is still blocked on the outdoor walk; that walk is not required for the job ledger. Generation uses the stage codes and error codes in `Docs/FRONTEND_EXPERIENCE.md`. Retry is explicit. The same idempotency key and body do not start a second piece. Transport paths now follow the locked `/api/v1` contract.
 
 ### P3.1 — Add protected generation jobs and durable usage limits
 
-**Status:** Not started
+**Status:** Done
 **Kind:** Edit · 40 minutes · AC-08, AC-14, AC-15
 **Commit subject:** Add protected generation jobs and durable usage limits
 
@@ -636,7 +636,13 @@ Add job endpoints, per-job capability checks, the quota ledger, and idempotency.
 
 **Done when.** Duplicate, restart, and quota tests pass, and budget is reserved before a provider is called.
 
-**Notes.** Not implemented.
+**Notes.** Implemented on `build/soundprint` on October 10, 2026.
+
+`POST /api/v1/soundprints` accepts a finished walk, `X-Idempotency-Key`, and a 256-bit `X-Job-Key`. The server stores only hashes of the key, the capability, and the raw body. The same key and body return the same job. A changed body returns 409. One job can be active. Status, audio, and deletion require `Authorization: Bearer` with that capability. The ledger is an atomic JSON file under `var/jobs/`, which is gitignored. Before the dispatch hook runs, the ledger reserves one Gemma attempt, 60 GPU seconds, and one Eleven attempt, inside the daily caps of four attempts, 240 GPU seconds, and six Eleven attempts. The default hook does not call Gemma or Eleven. An exception from the hook is recorded as an unknown outcome and the reservation stays. A new process marks an active job interrupted and keeps the reserved counts. Deleting a job does not refund the reservation. Coordinates, capabilities, and idempotency keys are not written to the ledger. `GET /api/v1/capabilities` reports generation as open or capped and both providers as unavailable. It does not report balances.
+
+A repeated finished walk is the same attempt only when the client reuses the idempotency key. After an interruption, a new key is a new reserved attempt, which matches the restart rule that retry is an explicit budgeted action. No per-client cooldown duration is locked, and there is no account, so the single active job is the concurrency control. Audio range requests are not implemented; an authorized artifact is returned in full.
+
+`uv run --directory backend ruff check app tests/unit/test_jobs.py` passed. `uv run --directory backend ruff format --check` passed for the job files. `uv run --directory backend pytest` passed, 44 tests. No new dependency. No active time was measured. AC-15 is covered by the duplicate, conflict, quota, restart, and unknown-outcome tests. AC-14 is covered by capability checks and the ledger redaction checks. AC-08 is not measured yet; this step stores elapsed time and does not run a timed provider.
 
 ### P3.2 — Integrate Gemma arrangement generation and validation
 
