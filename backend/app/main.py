@@ -20,6 +20,7 @@ DEFAULT_DATA = REPO_ROOT / "var" / "jobs"
 
 class SPAStaticFiles(StaticFiles):
     async def get_response(self, path: str, scope: Scope):
+        """Serve the requested static file, falling back to the SPA index on 404."""
         try:
             response = await super().get_response(path, scope)
         except HTTPException as exc:
@@ -52,6 +53,7 @@ def create_app(
     now: Callable[[], datetime] | None = None,
     dispatch: ProviderDispatch | None = None,
 ) -> FastAPI:
+    """Build and configure the Footwork FastAPI application."""
     application = FastAPI(title="Footwork")
     if data_dir is None:
         data_dir, ledger_path, artifacts_dir = store_paths()
@@ -70,6 +72,7 @@ def create_app(
 
     @application.get("/health")
     def health() -> dict[str, str]:
+        """Report service status and API/schema versions."""
         return {
             "status": "ok",
             "api_version": "v1",
@@ -82,11 +85,13 @@ def create_app(
 
 
 def _use_spa_fallback(path: str) -> bool:
+    """Return True when the request path should fall back to the SPA index."""
     name = Path(path).name
     return name == "" or "." not in name
 
 
 def _index_response(dist: Path) -> FileResponse:
+    """Return the SPA's index.html, raising 404 if the build is missing."""
     index = dist / "index.html"
     if not index.is_file():
         raise HTTPException(status_code=404, detail="Frontend build is missing.")

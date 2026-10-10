@@ -35,6 +35,7 @@ _LOCKED_MUSIC_ATTEMPTS = 6
 
 
 def _release_cap(name: str, locked: int) -> int:
+    """Return the env-configured cap for name, capped at locked, or locked if unset/invalid."""
     raw = os.environ.get(name, "").strip()
     if not raw:
         return locked
@@ -130,6 +131,7 @@ _ERRORS: dict[str, tuple[int, str, bool, str]] = {
 
 class JobError(Exception):
     def __init__(self, code: str) -> None:
+        """Build the error from its code, looking up the matching status and message."""
         status, message, retryable, next_action = _ERRORS[code]
         self.status = status
         self.code = code
@@ -142,6 +144,7 @@ class JobError(Exception):
         self.headers = {"WWW-Authenticate": "Bearer"} if status == 401 else {}
 
     def envelope(self) -> dict[str, object]:
+        """Return the error body with a freshly generated request id attached."""
         return {**self.body, "request_id": uuid4().hex}
 
 
@@ -154,11 +157,13 @@ class NoProviderDispatch:
     """P3.1 reserves budget and does not call Gemma or Eleven."""
 
     def start(self, job_id: str) -> None:
+        """Do nothing; no provider is dispatched."""
         return None
 
 
 class JobView:
     def __init__(self, job: dict[str, object], now: datetime) -> None:
+        """Build a read-only view of the stored job, computing elapsed time against now."""
         created = parse_stamp(str(job["created_at"]))
         elapsed = int((now - created).total_seconds() * 1000)
         error = job.get("error")
@@ -172,6 +177,7 @@ class JobView:
         self.result = stored if isinstance(stored, dict) else None
 
     def public(self) -> dict[str, object]:
+        """Return the job's public, client-facing representation."""
         return {
             "schema_version": "1",
             "job_id": self.job_id,
@@ -194,6 +200,7 @@ class JobService:
         now: Callable[[], datetime] | None = None,
         dispatch: ProviderDispatch | None = None,
     ) -> None:
+        """Set up the ledger, artifact storage, and dispatcher, cleaning up stale state."""
         clock = now or _utcnow
         self.data_dir = data_dir
         self.now = clock
@@ -205,6 +212,7 @@ class JobService:
         self._cleanup_existing_store()
 
     def _cleanup_existing_store(self) -> None:
+        """Run a no-op ledger transaction to expire/interrupt stale state on startup."""
         if not self.ledger.path.is_file():
             return
         try:
@@ -213,6 +221,7 @@ class JobService:
             return
 
     def capabilities(self) -> dict[str, object]:
+        """Return the service's public capabilities, including current generation status."""
         accepting = self._accepting()
         return {
             "schema_version": "1",
@@ -227,6 +236,7 @@ class JobService:
         }
 
     def submit(self, raw_body: bytes, idempotency_key: str, job_key: str) -> JobView:
+        """Validate, clean, and reserve a new job from the request, then dispatch it."""
         if not _IDEMPOTENCY.fullmatch(idempotency_key) or not _CAPABILITY.fullmatch(job_key):
             raise JobError("invalid_request")
         if len(raw_body) > MAX_BODY_BYTES:
@@ -245,6 +255,7 @@ class JobService:
         job_id = ""
 
         def reserve(data: dict[str, object]) -> None:
+            """Reuse an existing job for this idempotency key, or reserve a new one."""
             nonlocal created, job_id
             existing = _find_idempotency(data, idempotency_hash)
             if existing is not None:
@@ -300,6 +311,7 @@ class JobService:
         return self._recorded(self._view(job_id))
 
     def complete(self, job_id: str, outcome: object) -> None:
+        """Persist the walk outcome's audio and result, marking the job ready."""
         from app.jobs.flow import WalkOutcome
 
         if not isinstance(outcome, WalkOutcome):
@@ -315,6 +327,7 @@ class JobService:
             stored.write(audio)
 
         def mark(data: dict[str, object]) -> None:
+            """Mark the dispatching job as ready with its final result."""
             job = _jobs(data).get(job_id)
             if not isinstance(job, dict) or job.get("status") != "dispatching":
                 return
@@ -328,10 +341,12 @@ class JobService:
         self._run(mark)
 
     def get(self, job_id: str, job_key: str) -> JobView:
+        """Return the view of the job if job_key authorizes access to it."""
         job = self._authorized(job_id, job_key)
         return self._recorded(JobView(job, self.now()))
 
     def delete(self, job_id: str, job_key: str | None) -> None:
+        """Mark the job deleted if job_key authorizes it; silently no-op if unknown."""
         if not _JOB_ID.fullmatch(job_id):
             return
         job = self._load(job_id)
@@ -345,6 +360,7 @@ class JobService:
             raise JobError("invalid_capability")
 
         def mark(data: dict[str, object]) -> None:
+            """Mark the job deleted in the ledger."""
             current = _jobs(data).get(job_id)
             if isinstance(current, dict):
                 current["status"] = "deleted"
@@ -353,6 +369,7 @@ class JobService:
         access_event(job_id=job_id, status="deleted")
 
     def audio_file(self, job_id: str, job_key: str) -> Path:
+        """Return the path to the job's audio file, if job_key authorizes access."""
         self._authorized(job_id, job_key)
         root = (self.artifacts / job_id).resolve()
         audio = (root / "audio").resolve()
@@ -361,9 +378,11 @@ class JobService:
         return audio
 
     def _accepting(self) -> bool:
+        """Return True when there is no active job and usage still fits today's limits."""
         open_slot = True
 
         def look(data: dict[str, object]) -> None:
+            """Compute whether a new job can be accepted given current ledger state."""
             nonlocal open_slot
             usage = _usage_bucket(data, day_key(self.now()))
             open_slot = not _has_active(data) and _fits(usage)
@@ -372,6 +391,7 @@ class JobService:
         return open_slot
 
     def _authorized(self, job_id: str, job_key: str) -> dict[str, object]:
+        """Return the stored job if job_key matches it and it's not deleted/expired."""
         if not _JOB_ID.fullmatch(job_id):
             raise JobError("not_found")
         job = self._load(job_id)
@@ -389,9 +409,11 @@ class JobService:
         return job
 
     def _load(self, job_id: str) -> dict[str, object] | None:
+        """Return the stored job dict for job_id, or None if it doesn't exist."""
         found: dict[str, object | None] = {"job": None}
 
         def read(data: dict[str, object]) -> None:
+            """Look up the job in the ledger data and stash it in found."""
             job = _jobs(data).get(job_id)
             found["job"] = job if isinstance(job, dict) else None
 
@@ -400,6 +422,7 @@ class JobService:
         return job if isinstance(job, dict) else None
 
     def _view(self, job_id: str) -> JobView:
+        """Return the job's view, raising if it's missing or expired."""
         job = self._load(job_id)
         if job is None:
             raise JobError("not_found")
@@ -408,7 +431,10 @@ class JobService:
         return JobView(job, self.now())
 
     def _settle(self, job_id: str, outcome: str) -> None:
+        """Resolve a dispatching job's status based on whether the provider outcome is known."""
+
         def mark(data: dict[str, object]) -> None:
+            """Apply the settled outcome to the job if it's still dispatching."""
             job = _jobs(data).get(job_id)
             if not isinstance(job, dict) or job.get("status") != "dispatching":
                 return
@@ -428,6 +454,7 @@ class JobService:
         self._run(mark)
 
     def _recorded(self, view: JobView) -> JobView:
+        """Log an access event for the view and return it unchanged."""
         error_code = None
         if isinstance(view.error, dict) and isinstance(view.error.get("code"), str):
             error_code = view.error["code"]
@@ -442,9 +469,11 @@ class JobService:
         return view
 
     def _run(self, mutate: Callable[[dict[str, object]], None]) -> None:
+        """Run mutate inside a ledger transaction and clean up non-live artifacts after."""
         live: set[str] | None = None
 
         def wrapped(data: dict[str, object]) -> None:
+            """Apply mutate and record the resulting set of live job ids."""
             nonlocal live
             mutate(data)
             live = _live_job_ids(data)
@@ -457,6 +486,7 @@ class JobService:
             self._remove_private_artifacts(live)
 
     def _remove_private_artifacts(self, live: set[str]) -> None:
+        """Delete artifact directories for jobs no longer in the live set."""
         if not self.artifacts.is_dir():
             return
         base = self.artifacts.resolve()
@@ -477,6 +507,7 @@ class JobService:
 
 
 def _utcnow() -> datetime:
+    """Return the current UTC time."""
     return datetime.now(UTC)
 
 
@@ -504,6 +535,7 @@ class _Request(BaseModel):
 
 
 def _validated_trace(raw_body: bytes) -> tuple[list[RawSample], list[RawGap]]:
+    """Parse and validate the raw request body into samples and gaps."""
     try:
         loaded = json.loads(raw_body)
     except json.JSONDecodeError as exc:
@@ -523,6 +555,7 @@ def _validated_trace(raw_body: bytes) -> tuple[list[RawSample], list[RawGap]]:
 
 
 def _find_idempotency(data: dict[str, object], idempotency_hash: str) -> dict[str, object] | None:
+    """Return the existing job matching this idempotency hash, if any."""
     for job in _jobs(data).values():
         if isinstance(job, dict) and job.get("idempotency_hash") == idempotency_hash:
             return job
@@ -530,12 +563,14 @@ def _find_idempotency(data: dict[str, object], idempotency_hash: str) -> dict[st
 
 
 def _has_active(data: dict[str, object]) -> bool:
+    """Return True if any job in the ledger is currently reserved or dispatching."""
     return any(
         isinstance(job, dict) and job.get("status") in ACTIVE for job in _jobs(data).values()
     )
 
 
 def _live_job_ids(data: dict[str, object]) -> set[str]:
+    """Return the ids of jobs that are neither deleted nor expired."""
     live: set[str] = set()
     for job_id, job in _jobs(data).items():
         if isinstance(job, dict) and job.get("status") not in {"deleted", "expired"}:
@@ -544,6 +579,7 @@ def _live_job_ids(data: dict[str, object]) -> set[str]:
 
 
 def _jobs(data: dict[str, object]) -> dict[str, object]:
+    """Return the ledger's jobs dict, raising if the ledger shape is invalid."""
     jobs = data["jobs"]
     if not isinstance(jobs, dict):
         raise LedgerError
@@ -551,6 +587,7 @@ def _jobs(data: dict[str, object]) -> dict[str, object]:
 
 
 def _usage_bucket(data: dict[str, object], day: str) -> dict[str, int]:
+    """Return the usage counters for the given day, creating a zeroed bucket if needed."""
     usage = data["usage"]
     if not isinstance(usage, dict):
         raise LedgerError
@@ -565,6 +602,7 @@ def _usage_bucket(data: dict[str, object], day: str) -> dict[str, int]:
 
 
 def _fits(usage: dict[str, int]) -> bool:
+    """Return True when reserving one more attempt still fits within daily limits."""
     return (
         usage["gemma_attempts"] + GEMMA_RESERVE_ATTEMPTS <= GEMMA_ATTEMPT_LIMIT
         and usage["gpu_seconds"] + GPU_RESERVE_SECONDS <= GPU_SECOND_LIMIT
@@ -573,6 +611,7 @@ def _fits(usage: dict[str, int]) -> bool:
 
 
 def _new_job_id(data: dict[str, object]) -> str:
+    """Generate a job id not already present in the ledger's jobs."""
     jobs = _jobs(data)
     for _ in range(3):
         job_id = token_hex(16)
@@ -582,6 +621,7 @@ def _new_job_id(data: dict[str, object]) -> str:
 
 
 def _same(stored: str, presented: str) -> bool:
+    """Compare two hashes for equality in constant time."""
     if len(stored) != len(presented):
         return False
     return hmac.compare_digest(stored, presented)

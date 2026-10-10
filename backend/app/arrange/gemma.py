@@ -61,6 +61,7 @@ class ArrangementOutcome:
     extra_attempts: int
 
     def public_arrangement(self) -> dict[str, object] | None:
+        """Return the arrangement safe for exposure to callers."""
         return self.arrangement
 
 
@@ -68,13 +69,16 @@ class SpaceArrangeClient:
     """Calls the named `/arrange` endpoint. It does not log the token."""
 
     def __init__(self, space_url: str, token: str | None = None) -> None:
+        """Store the Space URL and optional auth token for later calls."""
         self.space_url = space_url
         self._token = token
 
     def __repr__(self) -> str:
+        """Return a repr that omits the token."""
         return f"SpaceArrangeClient(space_url={self.space_url!r})"
 
     def arrange(self, timeline: dict[str, object]) -> object:
+        """Call the Space's `/arrange` endpoint with the given timeline."""
         from gradio_client import Client
 
         client = Client(self.space_url, token=self._token)
@@ -82,6 +86,7 @@ class SpaceArrangeClient:
 
 
 def client_from_env() -> SpaceArrangeClient:
+    """Build a SpaceArrangeClient from the HF_SPACE_URL/HF_TOKEN environment."""
     space_url = os.environ.get("HF_SPACE_URL", "").strip()
     if not space_url:
         raise RuntimeError("HF_SPACE_URL is not configured")
@@ -90,6 +95,7 @@ def client_from_env() -> SpaceArrangeClient:
 
 
 def anonymous_timeline(events: Sequence[object]) -> dict[str, object] | None:
+    """Build a de-identified timeline payload from events, or None if invalid."""
     if _contains_forbidden(events):
         return None
     prepared: list[dict[str, object]] = []
@@ -118,6 +124,7 @@ def generate_arrangement(
     deadline: datetime,
     reserve_repair: Callable[[], bool] | None = None,
 ) -> ArrangementOutcome:
+    """Request an arrangement from the client, repairing once if the plan is invalid."""
     timeline = anonymous_timeline(events)
     if timeline is None:
         return _degraded("timeline_rejected", 0, 0)
@@ -153,6 +160,7 @@ def generate_arrangement(
 def parse_arrangement(
     value: object, event_ids: set[str]
 ) -> tuple[dict[str, object] | None, list[str]]:
+    """Parse and validate a raw model reply against the shared arrangement schema."""
     loaded = _coerce(value)
     if loaded is None:
         return None, ["json"]
@@ -180,6 +188,7 @@ def parse_arrangement(
 
 
 def _accepted(plan: dict[str, object], attempts: int, extra: int) -> ArrangementOutcome:
+    """Build a valid ArrangementOutcome for an accepted plan."""
     return ArrangementOutcome(
         status="valid",
         arrangement=plan,
@@ -194,6 +203,7 @@ def _accepted(plan: dict[str, object], attempts: int, extra: int) -> Arrangement
 
 
 def _degraded(reason: str, attempts: int, extra: int) -> ArrangementOutcome:
+    """Build a degraded ArrangementOutcome that falls back to Route Sketch."""
     return ArrangementOutcome(
         status="degraded",
         arrangement=None,
@@ -210,6 +220,7 @@ def _degraded(reason: str, attempts: int, extra: int) -> ArrangementOutcome:
 def _repair_allowed(
     attempts_used: int, gpu_seconds_used: int, now: datetime, deadline: datetime
 ) -> bool:
+    """Return True when attempt, GPU-second, and deadline budgets allow a repair call."""
     return (
         attempts_used + 1 <= GEMMA_ATTEMPT_LIMIT
         and gpu_seconds_used + GPU_RESERVE_SECONDS <= GPU_SECOND_LIMIT
@@ -218,10 +229,12 @@ def _repair_allowed(
 
 
 def _window_open(now: datetime, deadline: datetime) -> bool:
+    """Return True when enough time remains before the deadline for another call."""
     return deadline - now >= CLIENT_DEADLINE
 
 
 def _events(timeline: dict[str, object]) -> list[dict[str, object]]:
+    """Return the timeline's event dicts, ignoring malformed entries."""
     events = timeline["events"]
     if not isinstance(events, list):
         return []
@@ -231,6 +244,7 @@ def _events(timeline: dict[str, object]) -> list[dict[str, object]]:
 def _public_event(
     event: object, seen: set[str], counts: dict[str, int]
 ) -> dict[str, object] | None:
+    """Normalize one event to its public form, assigning a fallback id if needed."""
     raw_type = _field(event, "type")
     raw_offset = _field(event, "audio_offset_ms")
     if (
@@ -252,12 +266,14 @@ def _public_event(
 
 
 def _field(event: object, name: str) -> object:
+    """Read a field from an event, whether it's a mapping or an object."""
     if isinstance(event, Mapping):
         return event.get(name)
     return getattr(event, name, None)
 
 
 def _valid_style(value: object) -> bool:
+    """Return True when value is a valid, deduplicated style list including instrumental."""
     if not isinstance(value, list) or not 1 <= len(value) <= 6:
         return False
     if any(not isinstance(item, str) or item not in STYLES for item in value):
@@ -266,6 +282,7 @@ def _valid_style(value: object) -> bool:
 
 
 def _valid_refs(value: object, event_ids: set[str]) -> bool:
+    """Return True when value is a deduplicated list of known event ids."""
     if not isinstance(value, list) or not 1 <= len(value) <= 64:
         return False
     if any(
@@ -277,6 +294,7 @@ def _valid_refs(value: object, event_ids: set[str]) -> bool:
 
 
 def _coerce(value: object) -> object | None:
+    """Coerce a raw model reply (dict or fenced JSON string) into a Python object."""
     if isinstance(value, dict):
         return value
     if not isinstance(value, str) or len(value) > MAX_MODEL_CHARS:
@@ -292,6 +310,7 @@ def _coerce(value: object) -> object | None:
 
 
 def _contains_forbidden(value: object) -> bool:
+    """Return True if value contains any forbidden (potentially identifying) key."""
     if isinstance(value, Mapping):
         return any(
             str(key).lower() in _FORBIDDEN or _contains_forbidden(nested)
