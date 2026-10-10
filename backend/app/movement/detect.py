@@ -39,6 +39,7 @@ class MovementEvent:
     summary: str
 
     def public_dict(self) -> dict[str, object]:
+        """Return the event as a public-facing dict."""
         return {
             "id": self.id,
             "type": self.type,
@@ -50,6 +51,7 @@ class MovementEvent:
 
 
 def detect_events(trace: CleanTrace) -> tuple[MovementEvent, ...]:
+    """Detect turns, pace changes, pauses, and loops across the trace's continuous segments."""
     if not trace.usable or len(trace.samples) < 2:
         return ()
     samples = trace.samples
@@ -72,6 +74,7 @@ def detect_events(trace: CleanTrace) -> tuple[MovementEvent, ...]:
 def _segments(
     samples: Sequence[ProjectedSample], gaps: Sequence[tuple[int, int]]
 ) -> list[tuple[ProjectedSample, ...]]:
+    """Split samples into continuous runs separated by gaps."""
     segments: list[list[ProjectedSample]] = [[samples[0]]]
     for previous, sample in pairwise(samples):
         if _separated(previous, sample, gaps):
@@ -82,6 +85,7 @@ def _segments(
 
 
 def _turns(samples: Sequence[ProjectedSample]) -> list[MovementEvent]:
+    """Find turn events where the heading changes sharply between straight legs."""
     candidates: list[tuple[int, float]] = []
     for index in range(1, len(samples) - 1):
         back = _support_index(samples, index, -1)
@@ -119,6 +123,7 @@ def _turns(samples: Sequence[ProjectedSample]) -> list[MovementEvent]:
 
 
 def _pace_changes(samples: Sequence[ProjectedSample]) -> list[MovementEvent]:
+    """Find points where the steady speed rises or falls by a significant fraction."""
     events: list[MovementEvent] = []
     next_t = samples[0].t_ms
     for sample in samples:
@@ -150,6 +155,7 @@ def _pace_changes(samples: Sequence[ProjectedSample]) -> list[MovementEvent]:
 
 
 def _pauses(samples: Sequence[ProjectedSample]) -> list[MovementEvent]:
+    """Find pause events where movement stays below the moving-speed threshold."""
     events: list[MovementEvent] = []
     start: ProjectedSample | None = None
     end = samples[0]
@@ -168,6 +174,7 @@ def _pauses(samples: Sequence[ProjectedSample]) -> list[MovementEvent]:
 
 
 def _pause_event(start: ProjectedSample, end: ProjectedSample) -> list[MovementEvent]:
+    """Build a pause event if the slow interval lasted long enough."""
     duration_ms = end.t_ms - start.t_ms
     if duration_ms < PAUSE_MS:
         return []
@@ -187,6 +194,7 @@ def _pause_event(start: ProjectedSample, end: ProjectedSample) -> list[MovementE
 def _loops(
     samples: Sequence[ProjectedSample], gaps: Sequence[tuple[int, int]]
 ) -> list[MovementEvent]:
+    """Find loop events where the route returns near an earlier, distant stretch."""
     prefix = _prefix(samples, gaps)
     events: list[MovementEvent] = []
     skip_near: ProjectedSample | None = None
@@ -218,6 +226,7 @@ def _loops(
 def _loop_match(
     samples: Sequence[ProjectedSample], prefix: list[float], index: int
 ) -> tuple[float, float] | None:
+    """Find an earlier sample close enough and far enough traveled to count as a loop."""
     here = samples[index]
     for earlier_index in range(index):
         earlier = samples[earlier_index]
@@ -236,11 +245,13 @@ def _loop_match(
 
 
 def _left_neighborhood(samples: Sequence[ProjectedSample], start: int, end: int) -> bool:
+    """Return True when the path leaves the loop radius between start and end."""
     origin = samples[start]
     return any(_distance(samples[index], origin) > LOOP_RADIUS_M for index in range(start + 1, end))
 
 
 def _support_index(samples: Sequence[ProjectedSample], index: int, step: int) -> int | None:
+    """Walk from index until TURN_SUPPORT_M has been covered, or return None."""
     travelled = 0.0
     cursor = index
     while 0 <= cursor + step < len(samples):
@@ -252,6 +263,7 @@ def _support_index(samples: Sequence[ProjectedSample], index: int, step: int) ->
 
 
 def _straight_leg(samples: Sequence[ProjectedSample], start: int, end: int) -> bool:
+    """Return True when the path between two samples is nearly a straight line."""
     left, right = sorted((start, end))
     path = _path(samples, left, right)
     chord = _distance(samples[left], samples[right])
@@ -269,6 +281,7 @@ def _straight_leg(samples: Sequence[ProjectedSample], start: int, end: int) -> b
 
 
 def _steady_speed(samples: Sequence[ProjectedSample], start_ms: int, end_ms: int) -> float | None:
+    """Return the mean speed over a window if it stays steady, else None."""
     if end_ms - start_ms < PACE_HOLD_MS or start_ms < samples[0].t_ms or end_ms > samples[-1].t_ms:
         return None
     speeds: list[float] = []
@@ -288,6 +301,7 @@ def _steady_speed(samples: Sequence[ProjectedSample], start_ms: int, end_ms: int
 
 
 def _slow_interval(previous: ProjectedSample, sample: ProjectedSample) -> bool:
+    """Return True when the interval between two samples counts as moving too slowly."""
     elapsed = sample.t_ms - previous.t_ms
     if elapsed <= 0:
         return False
@@ -298,6 +312,7 @@ def _slow_interval(previous: ProjectedSample, sample: ProjectedSample) -> bool:
 
 
 def _prefix(samples: Sequence[ProjectedSample], gaps: Sequence[tuple[int, int]]) -> list[float]:
+    """Return cumulative distance traveled up to each sample, treating gaps as zero distance."""
     prefix = [0.0]
     for previous, sample in pairwise(samples):
         step = 0.0 if _separated(previous, sample, gaps) else _distance(previous, sample)
@@ -308,20 +323,24 @@ def _prefix(samples: Sequence[ProjectedSample], gaps: Sequence[tuple[int, int]])
 def _separated(
     previous: ProjectedSample, sample: ProjectedSample, gaps: Sequence[tuple[int, int]]
 ) -> bool:
+    """Return True when two samples are split by an open gap or a recorded interruption."""
     if sample.t_ms - previous.t_ms > OPEN_GAP_MS:
         return True
     return any(gap[0] < sample.t_ms and gap[1] > previous.t_ms for gap in gaps)
 
 
 def _path(samples: Sequence[ProjectedSample], start: int, end: int) -> float:
+    """Return the summed distance along samples from start to end."""
     return sum(_distance(samples[index], samples[index + 1]) for index in range(start, end))
 
 
 def _distance(left: ProjectedSample, right: ProjectedSample) -> float:
+    """Return the planar distance in meters between two samples."""
     return hypot(right.x_m - left.x_m, right.y_m - left.y_m)
 
 
 def _angle_degrees(ax: float, ay: float, bx: float, by: float) -> float:
+    """Return the angle in degrees between two vectors."""
     denom = hypot(ax, ay) * hypot(bx, by)
     if denom == 0.0:
         return 0.0
@@ -330,4 +349,5 @@ def _angle_degrees(ax: float, ay: float, bx: float, by: float) -> float:
 
 
 def _wrap(delta: float) -> float:
+    """Wrap an angle in radians to the range [-pi, pi]."""
     return (delta + pi) % (2.0 * pi) - pi

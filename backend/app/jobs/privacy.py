@@ -33,11 +33,13 @@ _FORBIDDEN_WORDS = ("latitude", "longitude", "authorization", "bearer ", "sk-")
 
 class _DropSensitive(logging.Filter):
     def filter(self, record: logging.LogRecord) -> bool:
+        """Return True to keep a record, or False to drop one that still looks sensitive."""
         lowered = record.getMessage().lower()
         return all(word not in lowered for word in _FORBIDDEN_WORDS)
 
 
 def _install_filter() -> None:
+    """Attach the sensitive-data filter to the logger, if not already attached."""
     if any(isinstance(item, _DropSensitive) for item in LOG.filters):
         return
     LOG.addFilter(_DropSensitive())
@@ -47,6 +49,7 @@ _install_filter()
 
 
 def access_event(*, elapsed_ms: int | None = None, **fields: object) -> None:
+    """Log an allowlisted, non-sensitive summary of a job access."""
     safe: dict[str, object] = {}
     for key in _FIELDS:
         value = fields.get(key)
@@ -64,6 +67,7 @@ def access_event(*, elapsed_ms: int | None = None, **fields: object) -> None:
 
 
 def contains_location(value: object) -> bool:
+    """Return True when value contains a forbidden key or an obvious location string."""
     if isinstance(value, dict):
         return any(
             str(key).lower() in _FORBIDDEN_KEYS or contains_location(nested)

@@ -80,6 +80,7 @@ def compile_chunks(
     events: Sequence[Mapping[str, object]],
     styles: Sequence[str],
 ) -> list[dict[str, object]]:
+    """Split the arrangement into composition-plan chunks timed to the detected events."""
     edges, kinds = _edges(events)
     chunks: list[dict[str, object]] = []
     turn_at = _first_time(events, "turn")
@@ -104,6 +105,7 @@ def compile_chunks(
 
 
 def request_body(chunks: Sequence[Mapping[str, object]]) -> dict[str, object]:
+    """Wrap composition chunks in the request body for the Eleven Music endpoint."""
     return {"model_id": MODEL_ID, "composition_plan": {"chunks": list(chunks)}}
 
 
@@ -113,6 +115,7 @@ def render_arrangement(
     post: Callable[[dict[str, object]], HttpResult],
     inspect: Callable[[bytes], tuple[bool, int | None]],
 ) -> MusicReceipt:
+    """Post the composition plan once and build a receipt from the response."""
     body = request_body(compile_chunks(events, styles))
     digest = hashlib.sha256(
         json.dumps(body, sort_keys=True, separators=(",", ":")).encode()
@@ -151,6 +154,7 @@ def render_arrangement(
 
 
 def post_eleven(body: dict[str, object], api_key: str) -> HttpResult:
+    """POST the composition request to Eleven Music, catching timeout and transport errors."""
     try:
         response = httpx.post(
             COMPOSE_URL,
@@ -167,6 +171,7 @@ def post_eleven(body: dict[str, object], api_key: str) -> HttpResult:
 
 
 def inspect_mpeg(data: bytes) -> tuple[bool, int | None]:
+    """Check that the returned MPEG audio has a valid duration and is not silent."""
     if len(data) < 128:
         return False, None
     with tempfile.TemporaryDirectory() as directory:
@@ -180,10 +185,12 @@ def inspect_mpeg(data: bytes) -> tuple[bool, int | None]:
 
 
 def _failed(digest: str, code: str, size: int, song_id: str | None) -> MusicReceipt:
+    """Build a degraded receipt for a failed render attempt."""
     return MusicReceipt("degraded", code, MODEL_ID, digest, song_id, size, None, 1, None)
 
 
 def _edges(events: Sequence[Mapping[str, object]]) -> tuple[list[int], dict[int, str]]:
+    """Build the chunk boundary times and their event kinds, splitting around detected events."""
     edges = [0, TARGET_MS]
     kinds = {0: "opening"}
     ordered = sorted(
@@ -216,6 +223,7 @@ def _edges(events: Sequence[Mapping[str, object]]) -> tuple[list[int], dict[int,
 
 
 def _event(event: Mapping[str, object]) -> tuple[int, str]:
+    """Return an event's (audio_offset_ms, type), or (0, "") if its offset is invalid."""
     time_ms = event.get("audio_offset_ms", 0)
     kind = event.get("type", "")
     if isinstance(time_ms, bool) or not isinstance(time_ms, int):
@@ -224,6 +232,7 @@ def _event(event: Mapping[str, object]) -> tuple[int, str]:
 
 
 def _can_split(edges: Sequence[int], time_ms: int) -> bool:
+    """Return True when a split at time_ms would leave both neighboring chunks long enough."""
     if time_ms in edges or time_ms <= 0 or time_ms >= TARGET_MS:
         return False
     previous = max(edge for edge in edges if edge < time_ms)
@@ -232,6 +241,7 @@ def _can_split(edges: Sequence[int], time_ms: int) -> bool:
 
 
 def _styles(styles: Sequence[str], movement: Sequence[str], *, leading: bool) -> list[str]:
+    """Build the ordered, deduplicated style list for a chunk, combining the plan and movement."""
     chosen: list[str] = []
     source = [style for style in styles if isinstance(style, str)]
     source.extend(_BASE_STYLES if leading else ("instrumental",))
@@ -244,11 +254,13 @@ def _styles(styles: Sequence[str], movement: Sequence[str], *, leading: bool) ->
 
 
 def _first_time(events: Sequence[Mapping[str, object]], kind: str) -> int | None:
+    """Return the earliest audio offset for events of kind, or None if there are none."""
     times = [_event(event)[0] for event in events if _event(event)[1] == kind]
     return min(times) if times else None
 
 
 def _song_id(headers: Mapping[str, str]) -> str | None:
+    """Return the response's song id header, checking a few possible header names."""
     folded = {key.lower(): value for key, value in headers.items()}
     for name in ("song-id", "song_id", "x-song-id"):
         value = folded.get(name)
@@ -258,6 +270,7 @@ def _song_id(headers: Mapping[str, str]) -> str | None:
 
 
 def _duration_ms(path: Path) -> int | None:
+    """Return the audio file's duration in milliseconds, via ffprobe."""
     completed = subprocess.run(
         [
             "ffprobe",
@@ -283,6 +296,7 @@ def _duration_ms(path: Path) -> int | None:
 
 
 def _audible(path: Path) -> bool:
+    """Return True when the decoded audio has at least one sample above the silence floor."""
     completed = subprocess.run(
         ["ffmpeg", "-v", "error", "-i", str(path), "-f", "s16le", "-ac", "1", "-ar", "16000", "-"],
         check=False,

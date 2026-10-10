@@ -12,6 +12,7 @@ from arrange import arrange
 
 
 def arrange_request(timeline_json: str) -> str:
+    """Parse the timeline JSON, run the arrange proof, and return the JSON result."""
     try:
         timeline = json.loads(timeline_json)
     except json.JSONDecodeError:

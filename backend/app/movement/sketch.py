@@ -38,6 +38,7 @@ class SketchEvent:
     confidence: float
 
     def public_dict(self) -> dict[str, object]:
+        """Return the event as a public-facing dict."""
         return {
             "id": self.id,
             "type": self.type,
@@ -55,6 +56,7 @@ class Chapter:
     title: str
 
     def public_dict(self) -> dict[str, object]:
+        """Return the chapter as a public-facing dict."""
         return {
             "id": self.id,
             "start_ms": self.start_ms,
@@ -73,6 +75,7 @@ class SyncInterval:
     anchor_id: str | None
 
     def public_dict(self) -> dict[str, object]:
+        """Return the sync interval as a public-facing dict."""
         return {
             "id": self.id,
             "source_start_ms": self.source_start_ms,
@@ -90,6 +93,7 @@ class RoutePoint:
     t_ms: int
 
     def public_dict(self) -> dict[str, object]:
+        """Return the point as a public-facing dict."""
         return {"x": self.x, "y": self.y, "t_ms": self.t_ms}
 
 
@@ -104,6 +108,7 @@ class RouteSketch:
     wav: bytes
 
     def public_dict(self) -> dict[str, object]:
+        """Return the sketch as a public-facing dict."""
         return {
             "duration_ms": self.duration_ms,
             "route": [point.public_dict() for point in self.route],
@@ -116,6 +121,7 @@ class RouteSketch:
 
 
 def compose_sketch(trace: CleanTrace, events: Sequence[MovementEvent]) -> RouteSketch:
+    """Build a 60-second Route Sketch from a cleaned trace and its detected events."""
     source = list(events) if trace.usable else []
     t0 = trace.samples[0].t_ms if trace.samples else 0
     t1 = trace.samples[-1].t_ms if trace.samples else 0
@@ -140,6 +146,7 @@ def compose_sketch(trace: CleanTrace, events: Sequence[MovementEvent]) -> RouteS
 
 
 def frequency_hz(time_ms: float, turn_ms: int, pause_start_ms: int, pause_end_ms: int) -> float:
+    """Return the sketch tone's frequency at time_ms, given the turn and pause windows."""
     if pause_start_ms <= time_ms < pause_end_ms:
         return 0.0
     if time_ms < turn_ms:
@@ -152,6 +159,7 @@ def frequency_hz(time_ms: float, turn_ms: int, pause_start_ms: int, pause_end_ms
 
 
 def mean_abs_sample(wav: bytes, start_ms: int, end_ms: int) -> float:
+    """Return the mean absolute sample amplitude of the wav between two audio offsets."""
     start = max(0, int(SAMPLE_RATE * start_ms / 1000))
     end = min(int(SAMPLE_RATE * end_ms / 1000), (len(wav) - 44) // 2)
     if end <= start:
@@ -164,6 +172,7 @@ def mean_abs_sample(wav: bytes, start_ms: int, end_ms: int) -> float:
 
 
 def _schedule(events: Sequence[MovementEvent], t0: int, span: int) -> list[SketchEvent]:
+    """Map detected events onto the audio timeline, in source order."""
     ordered = sorted(events, key=lambda event: (event.source_offset_ms, _PRIORITY[event.type]))
     return [
         SketchEvent(
@@ -178,6 +187,7 @@ def _schedule(events: Sequence[MovementEvent], t0: int, span: int) -> list[Sketc
 
 
 def _anchors(events: Sequence[SketchEvent]) -> list[SketchEvent]:
+    """Pick up to MAX_ANCHORS well-spaced events to anchor chapters, by priority."""
     ranked = sorted(events, key=lambda event: (_PRIORITY[event.type], event.source_offset_ms))
     chosen: list[SketchEvent] = []
     for event in ranked:
@@ -195,6 +205,7 @@ def _anchors(events: Sequence[SketchEvent]) -> list[SketchEvent]:
 
 
 def _chapter_bounds(anchor_times: Sequence[int]) -> list[int]:
+    """Build chapter boundary times, splitting the largest gap until MIN_CHAPTERS is met."""
     bounds = sorted({0, *anchor_times, TARGET_MS})
     while len(bounds) - 1 < MIN_CHAPTERS:
         gaps = [bounds[index + 1] - bounds[index] for index in range(len(bounds) - 1)]
@@ -206,6 +217,7 @@ def _chapter_bounds(anchor_times: Sequence[int]) -> list[int]:
 
 
 def _chapters(bounds: Sequence[int], anchors: Sequence[SketchEvent]) -> list[Chapter]:
+    """Build chapters between consecutive bounds, titled by their anchor event."""
     by_time = {anchor.audio_offset_ms: anchor for anchor in anchors}
     chapters: list[Chapter] = []
     for index in range(len(bounds) - 1):
@@ -218,6 +230,7 @@ def _chapters(bounds: Sequence[int], anchors: Sequence[SketchEvent]) -> list[Cha
 
 
 def _title(index: int, anchor: SketchEvent | None) -> str:
+    """Return a chapter title for its anchor event, or a generic one when there is none."""
     if anchor is None:
         return "Opening" if index == 0 else "Continue"
     return {"turn": "Turn", "pause": "Hold", "pace_change": "Pace", "loop": "Return"}[anchor.type]
@@ -226,6 +239,7 @@ def _title(index: int, anchor: SketchEvent | None) -> str:
 def _sync(
     bounds: Sequence[int], anchors: Sequence[SketchEvent], t0: int, span: int
 ) -> list[SyncInterval]:
+    """Build sync intervals mapping each chapter back to its source time range."""
     by_time = {anchor.audio_offset_ms: anchor.id for anchor in anchors}
     intervals: list[SyncInterval] = []
     for index in range(len(bounds) - 1):
@@ -247,6 +261,7 @@ def _sync(
 def _route(
     samples: Sequence[ProjectedSample], t0: int, t1: int, span: int
 ) -> tuple[RoutePoint, ...]:
+    """Build the display route: trimmed, centered, rotated, and scaled to the unit square."""
     trim = int(span * TRIM_FRACTION)
     kept = [sample for sample in samples if t0 + trim <= sample.t_ms <= t1 - trim]
     if len(kept) < 2:
@@ -264,6 +279,7 @@ def _route(
 
 
 def _center(samples: Sequence[ProjectedSample]) -> list[tuple[float, float]]:
+    """Shift samples so their centroid is at the origin."""
     count = len(samples)
     origin_x = sum(sample.x_m for sample in samples) / count
     origin_y = sum(sample.y_m for sample in samples) / count
@@ -271,6 +287,7 @@ def _center(samples: Sequence[ProjectedSample]) -> list[tuple[float, float]]:
 
 
 def _rotate(points: Sequence[tuple[float, float]]) -> list[tuple[float, float]]:
+    """Rotate points to align their principal axis of movement with x."""
     count = len(points)
     cxx = sum(x_value * x_value for x_value, _y_value in points) / count
     cyy = sum(y_value * y_value for _x_value, y_value in points) / count
@@ -284,6 +301,7 @@ def _rotate(points: Sequence[tuple[float, float]]) -> list[tuple[float, float]]:
 
 
 def _normalize(points: Sequence[tuple[float, float]]) -> list[tuple[float, float]]:
+    """Scale and pad points to fit the unit square while preserving aspect ratio."""
     xs = [point[0] for point in points]
     ys = [point[1] for point in points]
     min_x, max_x = min(xs), max(xs)
@@ -298,6 +316,7 @@ def _normalize(points: Sequence[tuple[float, float]]) -> list[tuple[float, float
 
 
 def _pause_window(events: Sequence[SketchEvent]) -> tuple[int, int]:
+    """Return the audio start and end of the pause hold, or (TARGET_MS, TARGET_MS) if none."""
     pause = next((event for event in events if event.type == "pause"), None)
     if pause is None:
         return (TARGET_MS, TARGET_MS)
@@ -311,6 +330,7 @@ def _pause_window(events: Sequence[SketchEvent]) -> tuple[int, int]:
 
 
 def _tone(turn_ms: int, pause_start_ms: int, pause_end_ms: int) -> array.array:
+    """Synthesize the sketch's tone samples across the full 60-second duration."""
     count = SAMPLE_RATE * TARGET_MS // 1000
     samples = array.array("h")
     phase = 0.0
@@ -324,6 +344,7 @@ def _tone(turn_ms: int, pause_start_ms: int, pause_end_ms: int) -> array.array:
 
 
 def _wav(samples: array.array) -> bytes:
+    """Wrap PCM samples in a WAV header."""
     if sys.byteorder != "little":
         samples.byteswap()
     data = samples.tobytes()
@@ -347,12 +368,15 @@ def _wav(samples: array.array) -> bytes:
 
 
 def _audio_at(source_ms: int, t0: int, span: int) -> int:
+    """Map a source timestamp onto the audio timeline, clamped to its bounds."""
     return min(TARGET_MS, max(0, round((source_ms - t0) * TARGET_MS / span)))
 
 
 def _source_at(audio_ms: int, t0: int, span: int) -> int:
+    """Map an audio timestamp back onto the source timeline."""
     return t0 + audio_ms * span // TARGET_MS
 
 
 def _unit(value: float) -> float:
+    """Clamp and round a coordinate into the unit interval."""
     return min(1.0, max(0.0, round(value, 4)))

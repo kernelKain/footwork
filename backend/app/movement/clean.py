@@ -54,6 +54,7 @@ class CleanTrace:
     rejected: Mapping[str, int]
 
     def public_dict(self) -> dict[str, object]:
+        """Return the trace as a public-facing dict."""
         return {
             "samples": [
                 {"t_ms": sample.t_ms, "x_m": sample.x_m, "y_m": sample.y_m}
@@ -73,6 +74,7 @@ def clean_trace(
     samples: list[RawSample],
     gaps: list[RawGap] | None = None,
 ) -> CleanTrace:
+    """Filter raw samples into a privacy-safe, relative-coordinate trace."""
     recorded = [gap for gap in (gaps or []) if _valid_gap(gap)]
     rejected = {"invalid": 0, "inaccurate": 0, "too_soon": 0, "jump": 0, "duration": 0}
     accepted: list[RawSample] = []
@@ -149,6 +151,7 @@ def clean_trace(
 
 
 def _valid_sample(sample: RawSample) -> bool:
+    """Return True when a raw sample's fields are finite and in range."""
     return (
         _finite(sample.latitude)
         and -90.0 <= sample.latitude <= 90.0
@@ -162,10 +165,12 @@ def _valid_sample(sample: RawSample) -> bool:
 
 
 def _valid_gap(gap: RawGap) -> bool:
+    """Return True when a raw gap's bounds are finite and ordered."""
     return _finite(gap.start_ms) and _finite(gap.end_ms) and gap.end_ms >= gap.start_ms
 
 
 def _is_jump(previous: RawSample, sample: RawSample, gaps: list[RawGap]) -> bool:
+    """Return True when the implied speed between samples exceeds the maximum."""
     elapsed = sample.timestamp_ms - previous.timestamp_ms
     if elapsed > OPEN_GAP_MS or _overlaps_gap(previous.timestamp_ms, sample.timestamp_ms, gaps):
         return False
@@ -174,23 +179,27 @@ def _is_jump(previous: RawSample, sample: RawSample, gaps: list[RawGap]) -> bool
 
 
 def _separated(previous: RawSample, sample: RawSample, gaps: list[RawGap]) -> bool:
+    """Return True when two samples are split by an open gap or a recorded interruption."""
     elapsed = sample.timestamp_ms - previous.timestamp_ms
     return elapsed > OPEN_GAP_MS or _overlaps_gap(previous.timestamp_ms, sample.timestamp_ms, gaps)
 
 
 def _overlaps_gap(start_ms: float, end_ms: float, gaps: list[RawGap]) -> bool:
+    """Return True when the interval overlaps any recorded gap."""
     return any(gap.start_ms < end_ms and gap.end_ms > start_ms for gap in gaps)
 
 
 def _project(
     latitude: float, longitude: float, origin_lat: float, origin_lon: float
 ) -> tuple[float, float]:
+    """Project latitude and longitude to meters relative to the origin point."""
     x_m = radians(longitude - origin_lon) * cos(radians(origin_lat)) * EARTH_M
     y_m = radians(latitude - origin_lat) * EARTH_M
     return (x_m, y_m)
 
 
 def _haversine_m(lat1: float, lon1: float, lat2: float, lon2: float) -> float:
+    """Return the great-circle distance in meters between two coordinates."""
     phi1 = radians(lat1)
     phi2 = radians(lat2)
     delta_phi = radians(lat2 - lat1)
@@ -202,6 +211,7 @@ def _haversine_m(lat1: float, lon1: float, lat2: float, lon2: float) -> float:
 def _explain(
     active_ms: float, distance_m: float, accepted: int, rejected: Mapping[str, int]
 ) -> tuple[str, str | None]:
+    """Build a usability summary and failure code, or confirm the trace is usable."""
     reasons: list[str] = []
     if active_ms < MIN_ACTIVE_MS:
         reasons.append("It was shorter than 90 seconds of clear movement.")
@@ -222,4 +232,5 @@ def _explain(
 
 
 def _finite(value: float) -> bool:
+    """Return True when value is a finite number."""
     return isfinite(value)
