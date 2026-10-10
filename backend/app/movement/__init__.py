@@ -1,1 +1,1 @@
-"""Movement cleaning and event detection."""
+"""Movement cleaning, event detection, and route sketches."""

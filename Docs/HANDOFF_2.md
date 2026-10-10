@@ -2,9 +2,9 @@
 
 Step-by-step record of what actually happened. The locked plan stays in `Docs/HANDOFF_1.md`. This file is the place to read after a step is finished.
 
-**Status:** Phase 2 event detection is committed on `build/movement`. The user will deploy to Render at the end. Local build and tests continue until then. The 20-hour ceiling is unchanged. CodeRabbit GitHub App install is still unconfirmed.
-**Next step:** P2.5. P2.0 stays deferred until the user deploys `deploy/render.yaml` and records the public page and `/health`.
-**Last completed step:** P2.4, detect turns, pace changes, pauses, and loops. P2.3 remains `aef013b`.
+**Status:** Phase 2 route sketches are committed on `build/movement`. The outdoor seed walk is waiting on the user. The user will deploy to Render at the end. Local build and tests continue until then. The 20-hour ceiling is unchanged. CodeRabbit GitHub App install is still unconfirmed.
+**Next step:** P2.6, after the user records one real outdoor walk. P2.0 stays deferred until the user deploys `deploy/render.yaml` and records the public page and `/health`.
+**Last completed step:** P2.5, generate synchronized route sketches from movement events. P2.4 remains `b913a93`.
 **Active build time:** 0 of 20 hours recorded. This session was not measured.
 
 Execution notes stay in this file. The diagram and write-up path are under `Docs/`. Each **Notes** section is filled only after that step is finished.
@@ -509,7 +509,7 @@ The white hold-progress overlay at 28% opacity lightens coral to about `#FF9494`
 **Branch:** `build/movement`
 **Window:** Build hours 7–11 (240 minutes)
 **Outcome:** Real capture, four detectors, compression, and an exact Route Sketch Hook.
-**Phase note:** P2.1 through P2.4 are committed. P2.0 stays deferred until the final Render deploy. The recording and generation seams are the practice port and `frontend/src/studio/generationContract.ts`. Use the public states in `Docs/FRONTEND_EXPERIENCE.md`. Do not restore sponsor, provenance, or fixture-picker sections.
+**Phase note:** P2.1 through P2.5 are committed. P2.6 is waiting on one real outdoor walk. No events will be invented to fill that walk. P2.0 stays deferred until the final Render deploy. The recording and generation seams are the practice port and `frontend/src/studio/generationContract.ts`. Use the public states in `Docs/FRONTEND_EXPERIENCE.md`. Do not restore sponsor, provenance, or fixture-picker sections.
 
 ### P2.0 — Publish the shell and health endpoint
 
@@ -583,7 +583,7 @@ Implement the four detectors with positive and negative fixtures.
 
 **Done when.** Turn, pace, pause, and loop fixtures pass, and control traces do not gain invented events.
 
-**Notes.** Implemented on `build/movement` on October 10, 2026.
+**Notes.** Implemented on `build/movement` on October 10, 2026. Commit `b913a93`.
 
 `backend/app/movement/detect.py` reads a cleaned trace. It finds a turn when the heading changes by at least 60 degrees across about 12 meters of straight approach and departure. It finds a pace change when smoothed speed changes by at least 30 percent and the new speed holds for about 10 seconds, and both speeds stay at or above 0.5 meters per second. It finds a pause when speed stays under 0.5 meters per second for at least 10 seconds. It finds a loop when the route returns within 20 meters of an earlier stretch after at least 60 seconds and 100 meters, and the path left that neighborhood in between. Gaps are not treated as movement. An unusable trace produces no events. A trace can be usable and still have only some of the four events.
 
@@ -591,7 +591,7 @@ Implement the four detectors with positive and negative fixtures.
 
 ### P2.5 — Generate synchronized route sketches from movement events
 
-**Status:** Not started
+**Status:** Done
 **Kind:** Edit · 40 minutes · AC-02, AC-10, AC-14, AC-17
 **Commit subject:** Generate synchronized route sketches from movement events
 
@@ -599,11 +599,15 @@ Compress the journey, transform the route for display, and synthesize the determ
 
 **Done when.** The automated turn and pause Hook test passes, the shared map stays in order, and the audio is valid.
 
-**Notes.** Not implemented.
+**Notes.** Implemented on `build/movement` on October 10, 2026.
+
+`backend/app/movement/sketch.py` compresses a cleaned trace onto a 60-second timeline. The melody falls until the first turn and rises after it. The pause is silence until the next event, or for 10 seconds. Turn and pause times are chapter boundaries. The shared map keeps source and audio intervals in order, without overlap, from the start of the walk to 60 seconds. Up to eight events open chapters. Every detected event stays in the metadata. Display points are recentered, rotated onto their long axis, and scaled into the unit square. A short stretch is trimmed from each end. The summary says the shape can still be identifying. An unusable trace does not receive invented turn or pause events.
+
+`uv run ruff check .` and `uv run ruff format --check .` passed. `uv run pytest` passed, 33 tests, including six sketch tests. No new dependency. No active time was measured. Headphones listening is still outstanding for AC-17.
 
 ### P2.6 — Validate the movement pipeline with a real outdoor walk
 
-**Status:** Not started
+**Status:** Blocked on the user
 **Kind:** Verify · 40 minutes · AC-01, AC-09, AC-14
 **Commit subject:** Validate the movement pipeline with a real outdoor walk
 
@@ -611,7 +615,7 @@ The user records the outdoor seed walk. Inspect the derived events and save only
 
 **Done when.** The real recording shows useful events, and the raw trace stays out of Git.
 
-**Notes.** Not implemented.
+**Notes.** Not started. On October 10, 2026 this step is waiting for one real outdoor walk from the user. A synthetic trace will not be saved as that walk. The raw coordinates stay out of Git.
 
 ---
 
