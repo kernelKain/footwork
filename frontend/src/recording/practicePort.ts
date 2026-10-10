@@ -51,12 +51,14 @@ export function resumeFailureLine(result: Exclude<ResumeFix, "ready">): string {
 }
 
 /**
- * Phase 1 practice stand-in for the recording adapter.
- * Phase 2 replaces these methods with geolocation, Wake Lock, and IndexedDB.
- * This object does not call those browser APIs. A paused practice is kept in
- * sessionStorage as durations and segment ids, never as coordinates.
+ * Practice stand-in used when `footwork-practice` is set.
+ * The public page leaves that key unset and uses the live location watch.
+ * This object does not call geolocation, Wake Lock, or IndexedDB.
  */
+export type RecordingMode = "practice" | "live";
+
 export type RecordingPort = {
+  mode: RecordingMode;
   scenario: PracticeScenario;
   checkSupport: () => "ok" | "unsupported";
   explainThenResolve: () => PracticeDecision;
@@ -68,8 +70,18 @@ export type RecordingPort = {
   reacquireFix: () => ResumeFix;
 };
 
+export function hasPracticeFixture(): boolean {
+  try {
+    const value = window.sessionStorage.getItem("footwork-practice");
+    return SCENARIOS.includes(value as PracticeScenario);
+  } catch {
+    return false;
+  }
+}
+
 export function createPracticePort(scenario: PracticeScenario): RecordingPort {
   return {
+    mode: "practice",
     scenario,
     checkSupport: () => (scenario === "unsupported" ? "unsupported" : "ok"),
     explainThenResolve: () => {

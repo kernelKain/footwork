@@ -35,28 +35,34 @@ export function RecordingView({
   clocks,
   draft,
   liveSegmentMs,
+  sampleCount = 0,
   port,
   resumeNote,
+  saveError = null,
   onCancel,
   onPause,
   onResume,
   onCancelResume,
   onEnd,
   onRetry,
+  onContinue = onRetry,
   onNavigate,
 }: {
   phase: RecordingPhase;
   clocks: WalkClocks;
   draft: PracticeDraft | null;
   liveSegmentMs: number;
+  sampleCount?: number;
   port: RecordingPort;
   resumeNote: string | null;
+  saveError?: string | null;
   onCancel: () => void;
   onPause: () => void;
   onResume: () => void;
   onCancelResume: () => void;
   onEnd: () => void;
   onRetry: () => void;
+  onContinue?: () => void;
   onNavigate: Navigate;
 }) {
   const headingRef = useRef<HTMLHeadingElement>(null);
@@ -91,7 +97,9 @@ export function RecordingView({
       <section className="recording-view" aria-labelledby="check-title">
         <h1 id="check-title">Checking location</h1>
         <p role="status">
-          Checking this phone for a location fix. This practice is not using your location.
+          {port.mode === "live"
+            ? "Checking this phone for a location fix."
+            : "Checking this phone for a location fix. This practice is not using your location."}
         </p>
         <div className="walk-dock">
           <button type="button" className="ui-button ui-button-secondary" onClick={onCancel}>
@@ -112,8 +120,8 @@ export function RecordingView({
       >
         <p>This site cannot use your location yet.</p>
         <p>
-          Allow location for this site in the browser settings, then try again. This practice did
-          not open a location prompt.
+          Allow location for this site in the browser settings, then try again.
+          {port.mode === "live" ? "" : " This practice did not open a location prompt."}
         </p>
       </Recovery>
     );
@@ -123,7 +131,11 @@ export function RecordingView({
     return (
       <Recovery title="This browser cannot record a walk" onNavigate={onNavigate}>
         <p>A real walk needs a browser that can share your location.</p>
-        <p>This practice did not ask for location. You can still hear an example.</p>
+        <p>
+          {port.mode === "live"
+            ? "You can still hear an example."
+            : "This practice did not ask for location. You can still hear an example."}
+        </p>
       </Recovery>
     );
   }
@@ -136,20 +148,35 @@ export function RecordingView({
         action="Start again"
         onAction={onRetry}
       >
-        <p>This practice did not save a walk. Hear an example when you can play it.</p>
+        <p>
+          {port.mode === "live"
+            ? "A walk cannot start until this phone is online. Nothing was uploaded."
+            : "This practice did not save a walk. Hear an example when you can play it."}
+        </p>
       </Recovery>
     );
   }
 
   if (phase === "interrupted") {
+    const live = port.mode === "live";
     return (
       <Recovery
         title="The page was hidden"
         onNavigate={onNavigate}
-        action="Start again"
-        onAction={onRetry}
+        action={live ? "Continue the walk" : "Start again"}
+        onAction={live ? onContinue : onRetry}
       >
-        <p>Missing time was not filled in. Nothing was stored on this phone.</p>
+        <p>
+          {live
+            ? "Missing positions were not filled in. This walk is still saved on this phone."
+            : "Missing time was not filled in. Nothing was stored on this phone."}
+        </p>
+        {live ? (
+          <p>
+            Recording stopped while this tab was hidden. It does not continue after the phone locks.
+          </p>
+        ) : null}
+        {live && resumeNote ? <p role="alert">{resumeNote}</p> : null}
       </Recovery>
     );
   }
@@ -158,9 +185,19 @@ export function RecordingView({
     const finished = phase === "finished";
     return (
       <section className="recording-view" aria-labelledby="end-title">
-        <h1 id="end-title">{finished ? "Practice walk finished" : "Finishing"}</h1>
+        <h1 id="end-title">
+          {finished
+            ? port.mode === "live"
+              ? "Walk saved"
+              : "Practice walk finished"
+            : "Finishing"}
+        </h1>
         <p role="status">
-          Finishing this practice walk. Nothing is being saved. No location was stored.
+          {port.mode === "live"
+            ? finished
+              ? "This walk is saved on this phone. A piece is not being made yet."
+              : "Saving this walk on this phone. It is not being uploaded."
+            : "Finishing this practice walk. Nothing is being saved. No location was stored."}
         </p>
         {finished ? (
           <div className="actions">
@@ -186,31 +223,46 @@ export function RecordingView({
       data-break-ms={breakMs}
       data-current-break-ms={currentBreakMs}
       data-elapsed-ms={activeMs + breakMs}
+      data-capture={port.mode}
+      data-sample-count={port.mode === "live" ? sampleCount : undefined}
     >
       <div className="walk-title-row">
         <Walker pose={phase === "recording" ? "stride" : "still"} />
         <h1 id="walk-title" tabIndex={-1} ref={headingRef}>
-          {headingFor(phase)}
+          {headingFor(phase, port.mode)}
         </h1>
       </div>
       {phase === "recording" ? <RecordingIndicator /> : null}
-      {phase === "pausing" ? <p role="status">Pausing this practice walk.</p> : null}
+      {phase === "pausing" ? (
+        <p role="status">
+          {port.mode === "live" ? "Pausing this walk." : "Pausing this practice walk."}
+        </p>
+      ) : null}
       {phase === "paused" ? (
         <p role="status">Movement is not being recorded. Your walk is saved on this phone.</p>
       ) : null}
       {phase === "resuming" ? (
-        <p role="status">Finding your location again. This practice is not using your location.</p>
+        <p role="status">
+          {port.mode === "live"
+            ? "Finding your location again."
+            : "Finding your location again. This practice is not using your location."}
+        </p>
       ) : null}
       {resumeNote && phase === "paused" ? <p role="alert">{resumeNote}</p> : null}
+      {saveError ? <p role="alert">{saveError}</p> : null}
       <WalkClocks clocks={clocks} showBreak={phase !== "recording"} />
       {phase === "recording" ? (
         <>
           <StatusChip label={port.signalLabel()} tone="live" />
           <p>{port.wakeLockLabel()}</p>
-          <p>Keep this tab open. This practice does not read or save your location.</p>
+          <p>
+            {port.mode === "live"
+              ? "Keep this tab open and the screen on. This walk is saved on this phone. It is not uploaded."
+              : "Keep this tab open. This practice does not read or save your location."}
+          </p>
         </>
       ) : null}
-      {draft ? (
+      {draft && port.mode === "practice" ? (
         <PracticeRoute draft={draft} moving={phase === "recording"} liveMs={liveSegmentMs} />
       ) : null}
       {phase === "recording" ? (
@@ -250,11 +302,14 @@ export function RecordingView({
   );
 }
 
-function headingFor(phase: "recording" | "pausing" | "paused" | "resuming"): string {
+function headingFor(
+  phase: "recording" | "pausing" | "paused" | "resuming",
+  mode: "practice" | "live",
+): string {
   if (phase === "pausing") return "Pausing walk";
   if (phase === "paused") return "Walk paused";
   if (phase === "resuming") return "Finding your location again";
-  return "Practice walk";
+  return mode === "live" ? "Recording" : "Practice walk";
 }
 
 function WalkClocks({ clocks, showBreak }: { clocks: WalkClocks; showBreak: boolean }) {

@@ -2,9 +2,9 @@
 
 Step-by-step record of what actually happened. The locked plan stays in `Docs/HANDOFF_1.md`. This file is the place to read after a step is finished.
 
-**Status:** The Phase 1 frontend extension, including Daylight, is committed as `56b9c06` on `build/experience`. P1.7 was not a separate implementation step. The 290-minute budget decision is still open. CodeRabbit GitHub App install is still unconfirmed.
-**Next step:** Decide whether the 20-hour ceiling increases, later work is replaced, or only the remaining Must ship subset is timeboxed. P2.0 stays deferred until that decision.
-**Last completed step:** Frontend extension and Daylight, commit `56b9c06`. P1.6 layout remains `4d3e9d1`. Polishing step 5 remains `847a294`.
+**Status:** Phase 2 route sketches are committed on `build/movement`. The outdoor seed walk is waiting on the user. The user will deploy to Render at the end. Local build and tests continue until then. The 20-hour ceiling is unchanged. CodeRabbit GitHub App install is still unconfirmed.
+**Next step:** P2.6, after the user records one real outdoor walk. P2.0 stays deferred until the user deploys `deploy/render.yaml` and records the public page and `/health`.
+**Last completed step:** P2.5, generate synchronized route sketches from movement events, commit `6535866`. P2.4 remains `b913a93`.
 **Active build time:** 0 of 20 hours recorded. This session was not measured.
 
 Execution notes stay in this file. The diagram and write-up path are under `Docs/`. Each **Notes** section is filled only after that step is finished.
@@ -509,7 +509,7 @@ The white hold-progress overlay at 28% opacity lightens coral to about `#FF9494`
 **Branch:** `build/movement`
 **Window:** Build hours 7–11 (240 minutes)
 **Outcome:** Real capture, four detectors, compression, and an exact Route Sketch Hook.
-**Phase note:** Not started. P2.0 follows the Phase 1 extension or an explicit decision to reduce it. The recording and generation seams are the practice port and `frontend/src/studio/generationContract.ts`, described in frontend polishing step 5 and extended by `Docs/PHASE_1_UI_UX_PLAN.md`. Use the public states in `Docs/FRONTEND_EXPERIENCE.md`. Do not restore sponsor, provenance, or fixture-picker sections.
+**Phase note:** P2.1 through P2.5 are committed. P2.6 is waiting on one real outdoor walk. No events will be invented to fill that walk. P2.0 stays deferred until the final Render deploy. The recording and generation seams are the practice port and `frontend/src/studio/generationContract.ts`. Use the public states in `Docs/FRONTEND_EXPERIENCE.md`. Do not restore sponsor, provenance, or fixture-picker sections.
 
 ### P2.0 — Publish the shell and health endpoint
 
@@ -521,11 +521,11 @@ After `build/experience` is pushed, create the Render Blueprint from `deploy/ren
 
 **Done when.** The public HTTPS page and `/health` both work.
 
-**Notes.** Not started. The user will deploy after pushing this branch. Provider keys stay in the Render dashboard.
+**Notes.** Not started. On October 10, 2026 the user deferred this deploy until the end. Local build and tests continue. Provider keys stay in the Render dashboard.
 
 ### P2.1 — Record browser movement and recover local drafts
 
-**Status:** Not started
+**Status:** Done
 **Kind:** Edit · 40 minutes · AC-01, AC-14
 **Commit subject:** Record browser movement and recover local drafts
 
@@ -533,11 +533,17 @@ Record permissioned browser location, keep samples bounded, and store the draft 
 
 **Done when.** Start and end stop the watch, and a reload recovers the draft. There is no upload interface.
 
-**Notes.** Not implemented.
+**Notes.** Implemented on `build/movement` on October 10, 2026. Commit `e0c6c94`.
+
+The public page, with `footwork-practice` unset, asks for location and keeps one draft in IndexedDB database `footwork`, store `drafts`, key `current`. Consent version is `1`. Samples need finite coordinates, accuracy no worse than 50 m, at least one second since the previous kept sample, and the draft stops at 3,000 samples. Start and end call `clearWatch`. Pause also stops the watch and a reload restores that paused draft. An ended draft stays stored and does not resume. A draft older than 24 hours is deleted on read. The page does not show coordinates, a file input, or a generated piece. Wake Lock and hidden-page gaps stay in P2.2. Accuracy jumps and trace quality stay in P2.3.
+
+Practice screens still run when `footwork-practice` is `granted`, `denied`, `unsupported`, `offline`, or `interrupted`. Frontend tests set `granted` when the key is empty so the existing practice journey stays covered. The public page does not set the key.
+
+`npx tsc -b --pretty false`, `npm run lint`, and `npm run format` passed. `PLAYWRIGHT_BROWSERS_PATH=/home/kernel-kain/.cache/ms-playwright npm test` passed, 86 tests, including the five capture tests. The test command builds the frontend before it starts. No new dependency. No active time was measured.
 
 ### P2.2 — Handle recording interruptions and screen visibility
 
-**Status:** Not started
+**Status:** Done
 **Kind:** Edit · 40 minutes · AC-01, AC-11
 **Commit subject:** Handle recording interruptions and screen visibility
 
@@ -545,11 +551,15 @@ Record visibility gaps, add a wake lock where the browser allows it, and explain
 
 **Done when.** Hiding and resuming the page marks an interruption, and the interface does not promise screen-off recording.
 
-**Notes.** Not implemented.
+**Notes.** Implemented on `build/movement` on October 10, 2026. Commit `61ec939`.
+
+Hiding the page during a live recording stops the watch, freezes active time, and stores an open hidden gap. The page says the missing positions were not filled in and that recording does not continue after the phone locks. Continue asks for a new fix and then closes the gap. A paused walk is left paused. A reload of an open gap returns to that interruption. When the browser allows it, a screen wake lock is held only while recording and is released when the page is hidden, paused, or ended. Draft saves are queued so an earlier write cannot replace a newer one.
+
+`npx tsc -b --pretty false` and `npx eslint` on the recording files passed. `PLAYWRIGHT_BROWSERS_PATH=/home/kernel-kain/.cache/ms-playwright npm test` passed, 89 tests. The test command builds the frontend before it starts. No new dependency. No active time was measured.
 
 ### P2.3 — Validate and clean recorded movement samples
 
-**Status:** Not started
+**Status:** Done
 **Kind:** Edit · 40 minutes · AC-09, AC-14
 **Commit subject:** Validate and clean recorded movement samples
 
@@ -557,11 +567,15 @@ Validate, clean, and project samples in Python, and score route quality.
 
 **Done when.** Noise, impossible jumps, and invalid timestamps are rejected, and a low-quality trace is explained.
 
-**Notes.** Not implemented.
+**Notes.** Implemented on `build/movement` on October 10, 2026. Commit `aef013b`.
+
+`backend/app/movement/clean.py` accepts samples and optional recorded gaps. It drops non-finite or out-of-range coordinates, non-positive timestamps, negative accuracy, accuracy worse than 50 m, samples closer than one second, samples past 30 minutes from the first kept sample, and movement faster than 12 m/s when the interval is not an open gap. It does not sort timestamps into a new order. Distance and active time are not added across an interval longer than 15 seconds or across a recorded gap. Kept samples are projected in meters from the first kept point. A usable trace needs at least 90 seconds of active time, 30 kept samples, and 60 meters. A short or short-distance trace is `trace_too_short`. A trace that only lacks 30 clear positions is `trace_unclear`. The public result has relative time and meters only.
+
+`uv run ruff check .` and `uv run ruff format --check .` passed. `uv run pytest` passed, 15 tests, including six cleaner tests. No new dependency. No active time was measured.
 
 ### P2.4 — Detect turns, pace changes, pauses, and loops
 
-**Status:** Not started
+**Status:** Done
 **Kind:** Edit · 40 minutes · AC-09
 **Commit subject:** Detect turns pace changes pauses and loops
 
@@ -569,11 +583,15 @@ Implement the four detectors with positive and negative fixtures.
 
 **Done when.** Turn, pace, pause, and loop fixtures pass, and control traces do not gain invented events.
 
-**Notes.** Not implemented.
+**Notes.** Implemented on `build/movement` on October 10, 2026. Commit `b913a93`.
+
+`backend/app/movement/detect.py` reads a cleaned trace. It finds a turn when the heading changes by at least 60 degrees across about 12 meters of straight approach and departure. It finds a pace change when smoothed speed changes by at least 30 percent and the new speed holds for about 10 seconds, and both speeds stay at or above 0.5 meters per second. It finds a pause when speed stays under 0.5 meters per second for at least 10 seconds. It finds a loop when the route returns within 20 meters of an earlier stretch after at least 60 seconds and 100 meters, and the path left that neighborhood in between. Gaps are not treated as movement. An unusable trace produces no events. A trace can be usable and still have only some of the four events.
+
+`uv run ruff check .` and `uv run ruff format --check .` passed. `uv run pytest` passed, 27 tests, including 12 detector tests. No new dependency. No active time was measured.
 
 ### P2.5 — Generate synchronized route sketches from movement events
 
-**Status:** Not started
+**Status:** Done
 **Kind:** Edit · 40 minutes · AC-02, AC-10, AC-14, AC-17
 **Commit subject:** Generate synchronized route sketches from movement events
 
@@ -581,11 +599,15 @@ Compress the journey, transform the route for display, and synthesize the determ
 
 **Done when.** The automated turn and pause Hook test passes, the shared map stays in order, and the audio is valid.
 
-**Notes.** Not implemented.
+**Notes.** Implemented on `build/movement` on October 10, 2026. Commit `6535866`.
+
+`backend/app/movement/sketch.py` compresses a cleaned trace onto a 60-second timeline. The melody falls until the first turn and rises after it. The pause is silence until the next event, or for 10 seconds. Turn and pause times are chapter boundaries. The shared map keeps source and audio intervals in order, without overlap, from the start of the walk to 60 seconds. Up to eight events open chapters. Every detected event stays in the metadata. Display points are recentered, rotated onto their long axis, and scaled into the unit square. A short stretch is trimmed from each end. The summary says the shape can still be identifying. An unusable trace does not receive invented turn or pause events.
+
+`uv run ruff check .` and `uv run ruff format --check .` passed. `uv run pytest` passed, 33 tests, including six sketch tests. No new dependency. No active time was measured. Headphones listening is still outstanding for AC-17.
 
 ### P2.6 — Validate the movement pipeline with a real outdoor walk
 
-**Status:** Not started
+**Status:** Blocked on the user
 **Kind:** Verify · 40 minutes · AC-01, AC-09, AC-14
 **Commit subject:** Validate the movement pipeline with a real outdoor walk
 
@@ -593,7 +615,7 @@ The user records the outdoor seed walk. Inspect the derived events and save only
 
 **Done when.** The real recording shows useful events, and the raw trace stays out of Git.
 
-**Notes.** Not implemented.
+**Notes.** Not started. On October 10, 2026 this step is waiting for one real outdoor walk from the user. A synthetic trace will not be saved as that walk. The raw coordinates stay out of Git.
 
 ---
 

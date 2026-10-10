@@ -1387,19 +1387,19 @@ The Phase 1 frontend that this handoff now starts from is the landing and practi
 | Field | Current state |
 |---|---|
 | Status | **IN PROGRESS** |
-| Current phase | P1 — Complete frontend experience |
-| Last completed step | Frontend extension and Daylight — `56b9c06` |
-| Next step | Decide the 290-minute budget, then start P2.0. The frontend extension and Daylight are on `build/experience`. |
-| Current execution branch | `build/experience` |
-| Last execution commit | `56b9c06` |
+| Current phase | P2 — Real recording and movement engine |
+| Last completed step | P2.5 generate synchronized route sketches from movement events, commit `6535866` |
+| Next step | P2.6 after the user records one real outdoor walk. P2.0 stays deferred until the final Render deploy. |
+| Current execution branch | `build/movement` |
+| Last execution commit | `6535866` |
 | Existing baseline commit | `22df0e7` |
-| Last PR | NONE |
+| Last PR | Pull request #1 merged to `main` |
 | Live URL | NOT YET DEPLOYED |
 | Feature freeze | NOT REACHED |
 | Active build time used | 0 hours recorded |
 | Active build time remaining | 20 hours maximum |
 | New build spend recorded | $0 |
-| Known blockers | The Phase 1 extension adds about 290 minutes without a budget change; public Render URL is deferred to P2.0; Gemma arrangement is still unproved; CodeRabbit GitHub App install is unconfirmed |
+| Known blockers | Public Render URL is still P2.0; Gemma arrangement is still unproved; CodeRabbit GitHub App install is unconfirmed. The user is managing the clock. The 20-hour ceiling is unchanged. |
 
 Update this section after every completed step or meaningful interruption.
 
@@ -1421,10 +1421,10 @@ Active-work ceiling: 20 hours
 Feature freeze: Build hour 15, at 75%
 Autonomy: A1 — agent edits; user runs commands and controls Git/deployment
 Status: IN PROGRESS
-Last completed: Frontend extension and Daylight — 56b9c06
-Next step: Decide the 290-minute budget, then start P2.0. The frontend extension and Daylight are on build/experience. The plan is Docs/PHASE_1_UI_UX_PLAN.md and the measured notes are in Docs/HANDOFF_2.md.
-Active phase: P1 — Complete frontend experience
-Branch: build/experience
+Last completed: P2.5 generate synchronized route sketches from movement events, commit 6535866. P2.4 remains b913a93.
+Next step: P2.6 after the user records one real outdoor walk. Do not invent that walk. P2.0 stays deferred until the final Render deploy. The user is managing the clock. The 20-hour ceiling is unchanged.
+Active phase: P2 — Real recording and movement engine
+Branch: build/movement
 Live URL: NOT YET DEPLOYED
 Locked Hook: A sharp route turn changes melodic direction; a pause becomes an audible musical break.
 Primary fallback: Deterministic Route Sketch for the current trace, plus a separately labeled cached genuine Studio example.

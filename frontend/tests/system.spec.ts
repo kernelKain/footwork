@@ -1,5 +1,5 @@
 import AxeBuilder from "@axe-core/playwright";
-import { expect, test } from "@playwright/test";
+import { expect, test } from "./practicePage";
 
 test("design controls show focus, disabled, and loading states", async ({ page }) => {
   await page.goto("/system");
