@@ -1,0 +1,66 @@
+{
+  "cli_version": "0.11.4",
+  "checkpoint_id": "01M4JPGAGMXZRJM83NA1CJX4JN",
+  "session_id": "e60568ea-6b42-4525-bcb0-84f2c858f86a",
+  "strategy": "manual-commit",
+  "created_at": "2026-10-10T10:42:26.332118961Z",
+  "branch": "build/movement",
+  "checkpoints_count": 1,
+  "save_step_count": 1,
+  "files_touched": [
+    "Docs/HANDOFF_1.md",
+    "Docs/HANDOFF_2.md",
+    "backend/app/movement/__init__.py",
+    "backend/app/movement/detect.py",
+    "backend/tests/unit/test_detect.py"
+  ],
+  "agent": "Cursor",
+  "model": "grok-4.7-high",
+  "turn_id": "993cd339f85d",
+  "checkpoint_transcript_start": 125,
+  "transcript_lines_at_start": 125,
+  "compact_transcript_start": 14,
+  "token_usage": {
+    "input_tokens": 157593,
+    "cache_creation_tokens": 0,
+    "cache_read_tokens": 1858176,
+    "output_tokens": 40182,
+    "api_call_count": 1
+  },
+  "session_metrics": {
+    "turn_count": 5,
+    "context_tokens": 237759,
+    "context_window_size": 256000
+  },
+  "initial_attribution": {
+    "calculated_at": "2026-10-10T10:42:26.258875611Z",
+    "agent_lines": 548,
+    "agent_removed": 9,
+    "human_added": 0,
+    "human_modified": 10,
+    "human_removed": 0,
+    "total_committed": 558,
+    "total_lines_changed": 567,
+    "agent_percentage": 98.2363315696649,
+    "metric_version": 2
+  },
+  "prompt_attributions": [
+    {
+      "checkpoint_number": 1,
+      "user_lines_added": 0,
+      "user_lines_removed": 0,
+      "agent_lines_added": 0,
+      "agent_lines_removed": 0
+    },
+    {
+      "checkpoint_number": 2,
+      "user_lines_added": 269,
+      "user_lines_removed": 0,
+      "agent_lines_added": 6702,
+      "agent_lines_removed": 9,
+      "user_added_per_file": {
+        ".opencode/plugins/entire.ts": 269
+      }
+    }
+  ]
+}
