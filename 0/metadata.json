@@ -1,0 +1,66 @@
+{
+  "cli_version": "0.11.4",
+  "checkpoint_id": "01M4K09JSM3JR2GX8D5VM1W0VX",
+  "session_id": "595c8e09-6570-4e3e-a942-832825d9fc28",
+  "strategy": "manual-commit",
+  "created_at": "2026-10-10T13:33:31.516765179Z",
+  "branch": "build/release",
+  "checkpoints_count": 1,
+  "save_step_count": 1,
+  "files_touched": [
+    "Docs/HANDOFF_2.md",
+    "backend/app/jobs/api.py",
+    "backend/app/jobs/flow.py",
+    "backend/app/jobs/service.py",
+    "backend/app/main.py",
+    "backend/tests/unit/test_health.py",
+    "backend/tests/unit/test_jobs.py",
+    "deploy/render.yaml"
+  ],
+  "agent": "Cursor",
+  "model": "grok-4.7-high",
+  "turn_id": "e61dc41e231a",
+  "checkpoint_transcript_start": 108,
+  "transcript_lines_at_start": 108,
+  "compact_transcript_start": 16,
+  "token_usage": {
+    "input_tokens": 70383,
+    "cache_creation_tokens": 0,
+    "cache_read_tokens": 2108544,
+    "output_tokens": 25469,
+    "api_call_count": 1
+  },
+  "session_metrics": {
+    "turn_count": 5,
+    "context_tokens": 248238,
+    "context_window_size": 256000
+  },
+  "initial_attribution": {
+    "calculated_at": "2026-10-10T13:33:31.428696962Z",
+    "agent_lines": 188,
+    "agent_removed": 14,
+    "human_added": 0,
+    "human_modified": 1,
+    "human_removed": 0,
+    "total_committed": 189,
+    "total_lines_changed": 203,
+    "agent_percentage": 99.50738916256158,
+    "metric_version": 2
+  },
+  "prompt_attributions": [
+    {
+      "checkpoint_number": 1,
+      "user_lines_added": 0,
+      "user_lines_removed": 0,
+      "agent_lines_added": 0,
+      "agent_lines_removed": 0
+    },
+    {
+      "checkpoint_number": 2,
+      "user_lines_added": 0,
+      "user_lines_removed": 0,
+      "agent_lines_added": 189,
+      "agent_lines_removed": 14
+    }
+  ]
+}
