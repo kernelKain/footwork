@@ -3,8 +3,8 @@
 Step-by-step record of what actually happened. The locked plan stays in `Docs/HANDOFF_1.md`. This file is the place to read after a step is finished.
 
 **Status:** The feature set is frozen on `build/soundprint`. Later phases are fixes and release checks. The user will record the outdoor walk, review the seed Studio track, and deploy to Render after the rest of the build. The 20-hour ceiling is unchanged. CodeRabbit GitHub App install is still unconfirmed.
-**Next step:** P4.2. P2.0, P2.6, and P3.5 are pending until that later pass.
-**Last completed step:** P4.1, harden location privacy and generation access controls, on `build/release`. P3.6 is `27ed855`. P3.5 is `98081fb`. P3.4 is `0f44b87`. P3.3 is `ab02558`. P3.2 is `d23b469`. P3.1 remains `4e9e844`.
+**Next step:** P4.3. P2.0, P2.6, and P3.5 are pending until that later pass.
+**Last completed step:** P4.2, fix accessibility and responsive layout issues, on `build/release`. P4.1 is `3419919`. P3.6 is `27ed855`. P3.5 is `98081fb`. P3.4 is `0f44b87`. P3.3 is `ab02558`. P3.2 is `d23b469`. P3.1 remains `4e9e844`.
 **Active build time:** 0 of 20 hours recorded. This session was not measured.
 
 Execution notes stay in this file. The diagram and write-up path are under `Docs/`. Each **Notes** section is filled only after that step is finished.
@@ -757,7 +757,7 @@ A result that contains a location field is refused before any audio file is writ
 
 ### P4.2 — Fix accessibility and responsive layout issues
 
-**Status:** Not started
+**Status:** Done
 **Kind:** Verify · 30 minutes · AC-12, AC-13
 **Commit subject:** Fix accessibility and responsive layout issues
 
@@ -765,7 +765,11 @@ Check keyboard use, contrast, reduced motion, and the 390 px and 1280 px layouts
 
 **Done when.** The core flow works at both widths and by keyboard. Fix required failures only.
 
-**Notes.** Not implemented.
+**Notes.** Verified on `build/release` on October 10, 2026.
+
+No required layout or keyboard failure turned up, so no component or token change was made. Focus outlines were already present, and body text, headings, muted copy, and primary actions stayed at or above 4.5:1 in both themes. The border line color is not used as text.
+
+`frontend/tests/release-a11y.spec.ts` now walks the live path. At 390 px and 1280 px, the keyboard starts the walk, accepts location, and pauses it, with the pause control inside the viewport and no horizontal overflow. The example Play control and scrubber work from the keyboard at both widths. Light and dark home and studio pages pass axe serious and critical checks and the same contrast floor. With reduced motion, two Enter presses end the walk, and Hear the example is reachable from the keyboard. `PLAYWRIGHT_BROWSERS_PATH=$HOME/.cache/ms-playwright npx playwright test tests/release-a11y.spec.ts` passed, 9 tests. Prettier and ESLint passed for that file. No active time was measured. AC-12 and AC-13 are covered by that run.
 
 ### P4.3 — Verify the release journey and synchronization contracts
 
