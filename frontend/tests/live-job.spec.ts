@@ -1,10 +1,19 @@
 import { readFileSync } from "node:fs";
 import { expect, test } from "@playwright/test";
 import { validateSoundprintResult } from "../src/contracts/validate";
+import { synthesizeSketchWav, type TimedEvent } from "../src/studio/sketchAudio";
 
 const sketch = JSON.parse(
   readFileSync(new URL("./fixtures/route-sketch-result.json", import.meta.url), "utf8"),
-) as { job_id: string; audio_format: string; mode: string };
+) as {
+  job_id: string;
+  audio_format: string;
+  mode: string;
+  duration_ms: number;
+  events: TimedEvent[];
+};
+
+const sketchAudio = Buffer.from(synthesizeSketchWav(sketch.duration_ms, sketch.events));
 
 test("a recorded walk result matches the shared contract", () => {
   const checked = validateSoundprintResult(sketch);
@@ -27,8 +36,8 @@ test("a live job shows the server stage and then the sketch", async ({ page }) =
     if (route.request().url().endsWith("/audio")) {
       await route.fulfill({
         status: 200,
-        contentType: "application/octet-stream",
-        body: Buffer.from("RIFF"),
+        contentType: "audio/wav",
+        body: sketchAudio,
       });
       return;
     }
@@ -67,4 +76,19 @@ test("a live job shows the server stage and then the sketch", async ({ page }) =
   await expect(page.getByText("Generated from your walk")).toBeVisible({ timeout: 8000 });
   await expect(page.getByText("This is a simpler version made from your walk.")).toBeVisible();
   await expect(page.getByText("This is an example, not a recorded walk.")).toHaveCount(0);
+
+  const turn = sketch.events.find((event) => event.type === "turn");
+  expect(turn).toBeTruthy();
+  await page.getByRole("button", { name: /Melody changed direction/ }).click();
+  const route = Number(await page.locator(".route-cursor").getAttribute("data-time-ms"));
+  const graph = Number(await page.locator(".graph-playhead").getAttribute("data-time-ms"));
+  const story = Number(await page.locator("[data-story-time]").getAttribute("data-story-time"));
+  const audioMs = await page.locator("audio").evaluate((element) => {
+    const player = element as HTMLAudioElement;
+    return player.currentTime * 1000;
+  });
+  expect(Math.abs(route - turn!.audio_offset_ms)).toBeLessThanOrEqual(500);
+  expect(Math.abs(graph - route)).toBeLessThanOrEqual(500);
+  expect(Math.abs(story - route)).toBeLessThanOrEqual(500);
+  expect(Math.abs(audioMs - route)).toBeLessThanOrEqual(500);
 });

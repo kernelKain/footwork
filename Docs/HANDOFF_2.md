@@ -3,8 +3,8 @@
 Step-by-step record of what actually happened. The locked plan stays in `Docs/HANDOFF_1.md`. This file is the place to read after a step is finished.
 
 **Status:** The feature set is frozen on `build/soundprint`. Later phases are fixes and release checks. The user will record the outdoor walk, review the seed Studio track, and deploy to Render after the rest of the build. The 20-hour ceiling is unchanged. CodeRabbit GitHub App install is still unconfirmed.
-**Next step:** P4.3. P2.0, P2.6, and P3.5 are pending until that later pass.
-**Last completed step:** P4.2, fix accessibility and responsive layout issues, on `build/release`. P4.1 is `3419919`. P3.6 is `27ed855`. P3.5 is `98081fb`. P3.4 is `0f44b87`. P3.3 is `ab02558`. P3.2 is `d23b469`. P3.1 remains `4e9e844`.
+**Next step:** P4.4. P2.0, P2.6, and P3.5 are pending until that later pass.
+**Last completed step:** P4.3, verify the release journey and synchronization contracts, on `build/release`. P4.2 is `b2c9bfc`. P4.1 is `3419919`. P3.6 is `27ed855`. P3.5 is `98081fb`. P3.4 is `0f44b87`. P3.3 is `ab02558`. P3.2 is `d23b469`. P3.1 remains `4e9e844`.
 **Active build time:** 0 of 20 hours recorded. This session was not measured.
 
 Execution notes stay in this file. The diagram and write-up path are under `Docs/`. Each **Notes** section is filled only after that step is finished.
@@ -773,7 +773,7 @@ No required layout or keyboard failure turned up, so no component or token chang
 
 ### P4.3 — Verify the release journey and synchronization contracts
 
-**Status:** Not started
+**Status:** Done
 **Kind:** Verify · 30 minutes · AC-02, AC-10, AC-11, AC-18
 **Commit subject:** Verify the release journey and synchronization contracts
 
@@ -781,7 +781,13 @@ Run the contract tests, the browser journey, and the targeted failure cases.
 
 **Done when.** The automated Hook test and the release journey pass. Any criterion still open is written down.
 
-**Notes.** Not implemented.
+**Notes.** Verified on `build/release` on October 10, 2026.
+
+The Hook tests passed. The composer and the browser synthesizer both drop the tone into the turn and keep the pause quieter than the moving section, within 500 ms. The example page keeps the route, graph, and story within 500 ms of the audio clock when scrubbed or when a marker is chosen. The live sketch journey now serves that same synthesizer and, after the turn card is chosen, keeps the route cursor, ribbon, story, and audio element within 500 ms of the turn at 28 seconds.
+
+`uv run --directory backend pytest tests/unit/test_sketch.py tests/unit/test_flow.py tests/unit/test_fixtures.py` passed, 12 tests. Playwright passed 47 tests across the fixture contract, freeze labels, studio failures, practice journey, playback, markers, and the live sketch, then 8 capture tests for permission denial, offline, a missing location API, a hidden gap, and wake lock. Prettier left `frontend/tests/live-job.spec.ts` unchanged and ESLint passed. No active time was measured.
+
+Still open, and not claimed by this step: AC-01 needs the outdoor walk. AC-03 needs the seed Studio listening review. AC-04 stays blocked while the Gemma Space is unproved. AC-08 was not timed on a phone network. The saved route-sketch fixture has a turn and no pause, so the pause half of the Hook is proven on the composer and the example synthesizer, not on that fixture. No headphones listening was done in this run.
 
 ### P4.4 — Prepare the verified public release and rollback record
 
