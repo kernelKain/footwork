@@ -2,9 +2,9 @@
 
 Step-by-step record of what actually happened. The locked plan stays in `Docs/HANDOFF_1.md`. This file is the place to read after a step is finished.
 
-**Status:** The feature set is frozen on `build/soundprint`. Later phases are fixes and release checks. The outdoor seed walk and the seed Studio review stay open. The user will deploy to Render at the end. The 20-hour ceiling is unchanged. CodeRabbit GitHub App install is still unconfirmed.
-**Next step:** P4.1. P3.5 stays blocked until a seed Studio track from a real walk can be heard. P2.6 stays blocked until the user records one real outdoor walk. P2.0 stays deferred until the user deploys `deploy/render.yaml` and records the public page and `/health`.
-**Last completed step:** P3.6, verify provider fallbacks and freeze the feature set, on `build/soundprint`. P3.5 is `98081fb`. P3.4 is `0f44b87`. P3.3 is `ab02558`. P3.2 is `d23b469`. P3.1 remains `4e9e844`.
+**Status:** The feature set is frozen on `build/soundprint`. Later phases are fixes and release checks. The user will record the outdoor walk, review the seed Studio track, and deploy to Render after the rest of the build. The 20-hour ceiling is unchanged. CodeRabbit GitHub App install is still unconfirmed.
+**Next step:** P4.1. P2.0, P2.6, and P3.5 are pending until that later pass.
+**Last completed step:** P3.6, verify provider fallbacks and freeze the feature set, on `build/soundprint`. P3.6 is `27ed855`. P3.5 is `98081fb`. P3.4 is `0f44b87`. P3.3 is `ab02558`. P3.2 is `d23b469`. P3.1 remains `4e9e844`.
 **Active build time:** 0 of 20 hours recorded. This session was not measured.
 
 Execution notes stay in this file. The diagram and write-up path are under `Docs/`. Each **Notes** section is filled only after that step is finished.
@@ -13,7 +13,7 @@ Execution notes stay in this file. The diagram and write-up path are under `Docs
 
 After a step is implemented, edit only that step and its phase summary:
 
-1. Set the step status to **Done**, **Blocked**, or **Partial**.
+1. Set the step status to **Done**, **Blocked**, **Pending**, or **Partial**. Pending means the user will do that step after the rest of the build.
 2. Replace **Notes** with what changed, what was verified, the commit hash, and anything left open.
 3. Update the phase summary once every step in that phase has a finished note.
 4. Update the status lines at the top of this file.
@@ -509,11 +509,11 @@ The white hold-progress overlay at 28% opacity lightens coral to about `#FF9494`
 **Branch:** `build/movement`
 **Window:** Build hours 7–11 (240 minutes)
 **Outcome:** Real capture, four detectors, compression, and an exact Route Sketch Hook.
-**Phase note:** P2.1 through P2.5 are committed. P2.6 is waiting on one real outdoor walk. No events will be invented to fill that walk. P2.0 stays deferred until the final Render deploy. The recording and generation seams are the practice port and `frontend/src/studio/generationContract.ts`. Use the public states in `Docs/FRONTEND_EXPERIENCE.md`. Do not restore sponsor, provenance, or fixture-picker sections.
+**Phase note:** P2.1 through P2.5 are committed. P2.6 and P2.0 are pending. The user will record the outdoor walk and deploy to Render after the rest of the build. No events will be invented to fill that walk. The recording and generation seams are the practice port and `frontend/src/studio/generationContract.ts`. Use the public states in `Docs/FRONTEND_EXPERIENCE.md`. Do not restore sponsor, provenance, or fixture-picker sections.
 
 ### P2.0 — Publish the shell and health endpoint
 
-**Status:** Not started
+**Status:** Pending
 **Kind:** Release · user-directed · AC-07
 **Commit subject:** Record the public shell and health endpoint
 
@@ -521,7 +521,7 @@ After `build/experience` is pushed, create the Render Blueprint from `deploy/ren
 
 **Done when.** The public HTTPS page and `/health` both work.
 
-**Notes.** Not started. On October 10, 2026 the user deferred this deploy until the end. Local build and tests continue. Provider keys stay in the Render dashboard.
+**Notes.** Pending on October 10, 2026. The user will deploy `deploy/render.yaml` and record the public page and `/health` after the rest of the build. Local build and tests continue. Provider keys stay in the Render dashboard.
 
 ### P2.1 — Record browser movement and recover local drafts
 
@@ -607,7 +607,7 @@ Compress the journey, transform the route for display, and synthesize the determ
 
 ### P2.6 — Validate the movement pipeline with a real outdoor walk
 
-**Status:** Blocked on the user
+**Status:** Pending
 **Kind:** Verify · 40 minutes · AC-01, AC-09, AC-14
 **Commit subject:** Validate the movement pipeline with a real outdoor walk
 
@@ -615,7 +615,7 @@ The user records the outdoor seed walk. Inspect the derived events and save only
 
 **Done when.** The real recording shows useful events, and the raw trace stays out of Git.
 
-**Notes.** Not started. On October 10, 2026 this step is waiting for one real outdoor walk from the user. A synthetic trace will not be saved as that walk. The raw coordinates stay out of Git.
+**Notes.** Pending on October 10, 2026. The user will record one real outdoor walk after the rest of the build. A synthetic trace will not be saved as that walk. The raw coordinates stay out of Git.
 
 ---
 
@@ -624,7 +624,7 @@ The user records the outdoor seed walk. Inspect the derived events and save only
 **Branch:** `build/soundprint`
 **Window:** Build hours 11–15 (240 minutes)
 **Outcome:** Live Gemma and Eleven Music adapters, job controls, and one reviewed Studio result. Feature freeze is at the end of this phase.
-**Phase note:** P3.1 is commit `4e9e844`. P3.2 is commit `d23b469`. P3.3 is commit `ab02558`. P3.4 is commit `0f44b87`. P3.5 is commit `98081fb` and stays blocked: there is no seed Studio track, so AC-03 is not claimed. A finished walk returns Route Sketch while the Gemma Space is unproved. AC-04 stays blocked. P2.6 is still blocked on the outdoor walk. P3.6 records the feature freeze. Generation uses the stage codes and error codes in `Docs/FRONTEND_EXPERIENCE.md`. Retry is explicit. The same idempotency key and body do not start a second piece. Transport paths now follow the locked `/api/v1` contract.
+**Phase note:** P3.1 is commit `4e9e844`. P3.2 is commit `d23b469`. P3.3 is commit `ab02558`. P3.4 is commit `0f44b87`. P3.5 is commit `98081fb` and is pending: the user will review the seed Studio track after the rest of the build, so AC-03 is not claimed. A finished walk returns Route Sketch while the Gemma Space is unproved. AC-04 stays blocked. P2.6 and P2.0 are pending. P3.6 is commit `27ed855` and records the feature freeze. Generation uses the stage codes and error codes in `Docs/FRONTEND_EXPERIENCE.md`. Retry is explicit. The same idempotency key and body do not start a second piece. Transport paths now follow the locked `/api/v1` contract.
 
 ### P3.1 — Add protected generation jobs and durable usage limits
 
@@ -698,7 +698,7 @@ A corner-shaped recording submitted through the API returned `route_sketch` with
 
 ### P3.5 — Verify and cache the real walk demonstration track
 
-**Status:** Blocked
+**Status:** Pending
 **Kind:** Verify · 40 minutes · AC-03, AC-05, AC-17
 **Commit subject:** Verify and cache the real walk demonstration track
 
@@ -706,7 +706,7 @@ Listen to the seed Studio track, timestamp three movement mappings, and store th
 
 **Done when.** The turn, the pause, and a third mapping are perceptible. If they are not, AC-03 is recorded as failed. Stay inside the attempt cap.
 
-**Notes.** Blocked on October 10, 2026. Commit `98081fb`. No seed Studio track exists, so no listening review was recorded and no cached example was stored.
+**Notes.** Pending on October 10, 2026. Commit `98081fb`. The user will listen to the seed Studio track after the rest of the build. No listening review was recorded and no cached example was stored.
 
 P2.6 still has no outdoor walk. The live job path returns `route_sketch` because the Gemma Space is unproved, so a submitted walk does not become `studio_live`. The file `artifacts/eleven-arrangement.mp3` is the October 10 arrangement proof: 60.029375 seconds, song id `6JZhKLyXn9BrPEPAnUQC`. It was not made from a seed walk, and it has not been heard for the turn, the pause, and a third mapping. AC-03 needs that hearing. A waveform or duration check would not replace it. No music request was made for this step. The daily attempt cap is unchanged. AC-03 is not marked passed and is not marked failed.
 
@@ -720,13 +720,13 @@ Check provider failure, deadline, quota, and fixture parity. Freeze features at 
 
 **Done when.** The same trace can fall back to Route Sketch, the cached example stays separately labeled, and the freeze is recorded.
 
-**Notes.** Verified on `build/soundprint` on October 10, 2026.
+**Notes.** Verified on `build/soundprint` on October 10, 2026. Commit `27ed855`.
 
-The same corner walk falls back to `route_sketch` when the arrangement call fails and when a validated plan's music response is lost. Neither result uses `cached_example` or `synthetic_fixture`, and neither is marked `human_reviewed_studio`. The bundled example stays `synthetic_fixture` and is labeled Example walk. `cached_example` uses that same label. `route_sketch` and `studio_live` stay labeled Generated from your walk. No separate cached Studio file was stored, because the seed track review is still blocked.
+The same corner walk falls back to `route_sketch` when the arrangement call fails and when a validated plan's music response is lost. Neither result uses `cached_example` or `synthetic_fixture`, and neither is marked `human_reviewed_studio`. The bundled example stays `synthetic_fixture` and is labeled Example walk. `cached_example` uses that same label. `route_sketch` and `studio_live` stay labeled Generated from your walk. No separate cached Studio file was stored, because the seed track review is still pending.
 
 The client still ends a live attempt at 180 seconds. The public failure sentences and the retry set are locked in `frontend/tests/freeze.spec.ts`. A quota limit is not retryable. A repeated request still reserves once, and a restart still keeps that reservation, in the existing job tests. Cached playback was not timed on a phone network, so the five-second network part of AC-08 is not claimed. `uv run --directory backend pytest` passed, 61 tests. The three freeze checks passed. No new dependency. No active time was measured. No music request was made.
 
-Feature freeze is recorded at the end of this phase. Elapsed build time is still unmeasured, so this is the phase boundary the plan places at hour 15, not a measured clock. Later phases are fixes and release checks. New user-facing features stop here. Still open: the outdoor seed walk, the seed Studio listening review, the unproved Gemma Space, and the Render deploy.
+Feature freeze is recorded at the end of this phase. Elapsed build time is still unmeasured, so this is the phase boundary the plan places at hour 15, not a measured clock. Later phases are fixes and release checks. New user-facing features stop here. The outdoor walk, the seed Studio review, and the Render deploy are pending until after the rest of the build. The Gemma Space stays unproved.
 
 ---
 
