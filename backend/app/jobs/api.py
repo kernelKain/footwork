@@ -8,6 +8,7 @@ from fastapi import APIRouter, FastAPI, Request
 from fastapi.responses import FileResponse, JSONResponse
 from starlette.responses import Response
 
+from app.jobs.privacy import access_event
 from app.jobs.service import JobError, JobService, ProviderDispatch
 
 router = APIRouter()
@@ -17,10 +18,18 @@ def install_jobs(
     application: FastAPI,
     data_dir: Path,
     *,
+    ledger_path: Path | None = None,
+    artifacts_dir: Path | None = None,
     now: Callable[[], datetime] | None = None,
     dispatch: ProviderDispatch | None = None,
 ) -> JobService:
-    service = JobService(data_dir, now=now, dispatch=dispatch)
+    service = JobService(
+        data_dir,
+        ledger_path=ledger_path,
+        artifacts_dir=artifacts_dir,
+        now=now,
+        dispatch=dispatch,
+    )
     application.state.jobs = service
     application.add_exception_handler(JobError, _job_error)
     application.include_router(router)
@@ -29,6 +38,7 @@ def install_jobs(
 
 async def _job_error(_request: Request, exc: Exception) -> JSONResponse:
     error = exc if isinstance(exc, JobError) else JobError("processing_unavailable")
+    access_event(error_code=error.code)
     return JSONResponse(status_code=error.status, content=error.envelope(), headers=error.headers)
 
 

@@ -132,8 +132,27 @@ def render_with_key(
     return render_arrangement(events, styles, post, inspect_mpeg)
 
 
+def generation_disabled(
+    _events: Sequence[Mapping[str, object]],
+    _styles: Sequence[str],
+) -> MusicReceipt:
+    return MusicReceipt(
+        status="unavailable",
+        code="generation_disabled",
+        model_id="",
+        request_sha256="",
+        song_id=None,
+        byte_length=0,
+        duration_ms=None,
+        attempts=0,
+        audio=None,
+    )
+
+
 def live_dispatch() -> WalkDispatch:
-    return WalkDispatch(blocked_arrangement, render_with_key)
+    enabled = os.environ.get("GENERATION_ENABLED", "").strip().lower() == "true"
+    music = render_with_key if enabled else generation_disabled
+    return WalkDispatch(blocked_arrangement, music)
 
 
 class _BlockedSpace:

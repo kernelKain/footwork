@@ -24,13 +24,32 @@ from app.jobs.ledger import (
     stamp,
     zero_usage,
 )
+from app.jobs.privacy import access_event, contains_location
 from app.movement.clean import RawGap, RawSample, clean_trace
 
 MAX_BODY_BYTES = 1_048_576
 MAX_SAMPLES = 3000
-GEMMA_ATTEMPT_LIMIT = 4
-GPU_SECOND_LIMIT = 240
-ELEVEN_ATTEMPT_LIMIT = 6
+_LOCKED_GEMMA_ATTEMPTS = 4
+_LOCKED_GPU_SECONDS = 240
+_LOCKED_MUSIC_ATTEMPTS = 6
+
+
+def _release_cap(name: str, locked: int) -> int:
+    raw = os.environ.get(name, "").strip()
+    if not raw:
+        return locked
+    try:
+        value = int(raw)
+    except ValueError:
+        return locked
+    if value < 1:
+        return locked
+    return min(value, locked)
+
+
+GEMMA_ATTEMPT_LIMIT = _release_cap("MAX_GEMMA_ATTEMPTS_PER_DAY", _LOCKED_GEMMA_ATTEMPTS)
+GPU_SECOND_LIMIT = _release_cap("MAX_GEMMA_GPU_SECONDS_PER_DAY", _LOCKED_GPU_SECONDS)
+ELEVEN_ATTEMPT_LIMIT = _release_cap("MAX_MUSIC_ATTEMPTS_PER_DAY", _LOCKED_MUSIC_ATTEMPTS)
 GEMMA_RESERVE_ATTEMPTS = 1
 GPU_RESERVE_SECONDS = 60
 ELEVEN_RESERVE_ATTEMPTS = 1
@@ -170,17 +189,28 @@ class JobService:
         self,
         data_dir: Path,
         *,
+        ledger_path: Path | None = None,
+        artifacts_dir: Path | None = None,
         now: Callable[[], datetime] | None = None,
         dispatch: ProviderDispatch | None = None,
     ) -> None:
         clock = now or _utcnow
         self.data_dir = data_dir
         self.now = clock
-        self.ledger = Ledger(data_dir / "quota-ledger.json", clock)
-        self.artifacts = data_dir / "artifacts"
+        self.ledger = Ledger(ledger_path or (data_dir / "quota-ledger.json"), clock)
+        self.artifacts = artifacts_dir or (data_dir / "artifacts")
         self.dispatch = dispatch or NoProviderDispatch()
         if hasattr(self.dispatch, "complete") and self.dispatch.complete is None:
             self.dispatch.complete = self.complete
+        self._cleanup_existing_store()
+
+    def _cleanup_existing_store(self) -> None:
+        if not self.ledger.path.is_file():
+            return
+        try:
+            self._run(lambda _data: None)
+        except JobError:
+            return
 
     def capabilities(self) -> dict[str, object]:
         accepting = self._accepting()
@@ -253,7 +283,7 @@ class JobService:
 
         self._run(reserve)
         if not created:
-            return self._view(job_id)
+            return self._recorded(self._view(job_id))
         prepare = getattr(self.dispatch, "prepare", None)
         discard = getattr(self.dispatch, "discard", None)
         try:
@@ -267,13 +297,15 @@ class JobService:
         finally:
             if discard is not None:
                 discard(job_id)
-        return self._view(job_id)
+        return self._recorded(self._view(job_id))
 
     def complete(self, job_id: str, outcome: object) -> None:
         from app.jobs.flow import WalkOutcome
 
         if not isinstance(outcome, WalkOutcome):
             raise TypeError("walk outcome is incomplete")
+        if contains_location(outcome.result):
+            raise RuntimeError("private result refused")
         audio = outcome.audio
         result = outcome.result
         root = self.artifacts / job_id
@@ -297,7 +329,7 @@ class JobService:
 
     def get(self, job_id: str, job_key: str) -> JobView:
         job = self._authorized(job_id, job_key)
-        return JobView(job, self.now())
+        return self._recorded(JobView(job, self.now()))
 
     def delete(self, job_id: str, job_key: str | None) -> None:
         if not _JOB_ID.fullmatch(job_id):
@@ -318,6 +350,7 @@ class JobService:
                 current["status"] = "deleted"
 
         self._run(mark)
+        access_event(job_id=job_id, status="deleted")
 
     def audio_file(self, job_id: str, job_key: str) -> Path:
         self._authorized(job_id, job_key)
@@ -394,11 +427,53 @@ class JobService:
 
         self._run(mark)
 
+    def _recorded(self, view: JobView) -> JobView:
+        error_code = None
+        if isinstance(view.error, dict) and isinstance(view.error.get("code"), str):
+            error_code = view.error["code"]
+        access_event(
+            job_id=view.job_id,
+            status=view.status,
+            stage=view.stage,
+            mode=view.mode,
+            error_code=error_code,
+            elapsed_ms=view.elapsed_ms,
+        )
+        return view
+
     def _run(self, mutate: Callable[[dict[str, object]], None]) -> None:
+        live: set[str] | None = None
+
+        def wrapped(data: dict[str, object]) -> None:
+            nonlocal live
+            mutate(data)
+            live = _live_job_ids(data)
+
         try:
-            self.ledger.transact(mutate)
+            self.ledger.transact(wrapped)
         except LedgerError as exc:
             raise JobError("processing_unavailable") from exc
+        if live is not None:
+            self._remove_private_artifacts(live)
+
+    def _remove_private_artifacts(self, live: set[str]) -> None:
+        if not self.artifacts.is_dir():
+            return
+        base = self.artifacts.resolve()
+        for child in list(self.artifacts.iterdir()):
+            if not _JOB_ID.fullmatch(child.name) or child.name in live:
+                continue
+            root = child.resolve()
+            if not root.is_dir() or root.parent != base:
+                continue
+            audio = root / "audio"
+            try:
+                if os.path.lexists(audio):
+                    audio.unlink()
+                if not any(root.iterdir()):
+                    root.rmdir()
+            except OSError:
+                continue
 
 
 def _utcnow() -> datetime:
@@ -458,6 +533,14 @@ def _has_active(data: dict[str, object]) -> bool:
     return any(
         isinstance(job, dict) and job.get("status") in ACTIVE for job in _jobs(data).values()
     )
+
+
+def _live_job_ids(data: dict[str, object]) -> set[str]:
+    live: set[str] = set()
+    for job_id, job in _jobs(data).items():
+        if isinstance(job, dict) and job.get("status") not in {"deleted", "expired"}:
+            live.add(str(job_id))
+    return live
 
 
 def _jobs(data: dict[str, object]) -> dict[str, object]:

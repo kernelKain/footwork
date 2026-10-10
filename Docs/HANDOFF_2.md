@@ -3,8 +3,8 @@
 Step-by-step record of what actually happened. The locked plan stays in `Docs/HANDOFF_1.md`. This file is the place to read after a step is finished.
 
 **Status:** The feature set is frozen on `build/soundprint`. Later phases are fixes and release checks. The user will record the outdoor walk, review the seed Studio track, and deploy to Render after the rest of the build. The 20-hour ceiling is unchanged. CodeRabbit GitHub App install is still unconfirmed.
-**Next step:** P4.1. P2.0, P2.6, and P3.5 are pending until that later pass.
-**Last completed step:** P3.6, verify provider fallbacks and freeze the feature set, on `build/soundprint`. P3.6 is `27ed855`. P3.5 is `98081fb`. P3.4 is `0f44b87`. P3.3 is `ab02558`. P3.2 is `d23b469`. P3.1 remains `4e9e844`.
+**Next step:** P4.4 is blocked on the user deploying the reviewed release. P2.0, P2.6, and P3.5 stay pending until that later pass.
+**Last completed step:** P4.3, verify the release journey and synchronization contracts, on `build/release` at `6915426`. P4.2 is `b2c9bfc`. P4.1 is `3419919`. P3.6 is `27ed855`. P3.5 is `98081fb`. P3.4 is `0f44b87`. P3.3 is `ab02558`. P3.2 is `d23b469`. P3.1 remains `4e9e844`.
 **Active build time:** 0 of 20 hours recorded. This session was not measured.
 
 Execution notes stay in this file. The diagram and write-up path are under `Docs/`. Each **Notes** section is filled only after that step is finished.
@@ -735,11 +735,11 @@ Feature freeze is recorded at the end of this phase. Elapsed build time is still
 **Branch:** `build/release`
 **Window:** Build hours 15–17 (120 minutes)
 **Outcome:** Privacy, accessibility, responsive, and failure checks, then the final deployed release.
-**Phase note:** Not started. Depends on P3. Fixes only. No new features. Checks include integration, accessibility, performance, and device regression for the rebaselined journey.
+**Phase note:** P4.1 through P4.3 are committed on `build/release`. P4.4 has a local release record and is blocked until the user deploys. Fixes only. No new features.
 
 ### P4.1 — Harden location privacy and generation access controls
 
-**Status:** Not started
+**Status:** Done
 **Kind:** Verify · 30 minutes · AC-14, AC-15
 **Commit subject:** Harden location privacy and generation access controls
 
@@ -747,11 +747,17 @@ Audit secrets, payloads, authorization, logs, and retention.
 
 **Done when.** Coordinates and secrets are absent from the inspected artifacts, another job's capability is denied, and caps survive a restart.
 
-**Notes.** Not implemented.
+**Notes.** Verified on `build/release` on October 10, 2026.
+
+The audit found three gaps. Deleted and expired jobs left their audio files on disk. A random wrong key was tested, but another live job's capability was not. Job logs did not exist, so a later log call could have written the raw request.
+
+A result that contains a location field is refused before any audio file is written, and the reservation stays. Delete and expiry remove that job's `audio` file and leave the quota ledger in place. Status, audio, and deletion still require the matching capability: job B's key is denied for job A. The access log is an allowlist of job id, status, stage, mode, error code, and elapsed time. A logger filter drops lines that still contain a location word, an authorization header, or an `sk-` token. Public fixtures were already free of location keys. No new dependency.
+
+`uv run --directory backend ruff check .` passed. `uv run --directory backend ruff format --check .` passed. `uv run --directory backend pytest` passed, 65 tests. No active time was measured. AC-14 is covered by the ledger, log, and refused-result checks. AC-15 is covered by the existing restart test and by a new process that still sees the reserved cap after the audio file is removed.
 
 ### P4.2 — Fix accessibility and responsive layout issues
 
-**Status:** Not started
+**Status:** Done
 **Kind:** Verify · 30 minutes · AC-12, AC-13
 **Commit subject:** Fix accessibility and responsive layout issues
 
@@ -759,11 +765,15 @@ Check keyboard use, contrast, reduced motion, and the 390 px and 1280 px layouts
 
 **Done when.** The core flow works at both widths and by keyboard. Fix required failures only.
 
-**Notes.** Not implemented.
+**Notes.** Verified on `build/release` on October 10, 2026.
+
+No required layout or keyboard failure turned up, so no component or token change was made. Focus outlines were already present, and body text, headings, muted copy, and primary actions stayed at or above 4.5:1 in both themes. The border line color is not used as text.
+
+`frontend/tests/release-a11y.spec.ts` now walks the live path. At 390 px and 1280 px, the keyboard starts the walk, accepts location, and pauses it, with the pause control inside the viewport and no horizontal overflow. The example Play control and scrubber work from the keyboard at both widths. Light and dark home and studio pages pass axe serious and critical checks and the same contrast floor. With reduced motion, two Enter presses end the walk, and Hear the example is reachable from the keyboard. `PLAYWRIGHT_BROWSERS_PATH=$HOME/.cache/ms-playwright npx playwright test tests/release-a11y.spec.ts` passed, 9 tests. Prettier and ESLint passed for that file. No active time was measured. AC-12 and AC-13 are covered by that run.
 
 ### P4.3 — Verify the release journey and synchronization contracts
 
-**Status:** Not started
+**Status:** Done
 **Kind:** Verify · 30 minutes · AC-02, AC-10, AC-11, AC-18
 **Commit subject:** Verify the release journey and synchronization contracts
 
@@ -771,11 +781,17 @@ Run the contract tests, the browser journey, and the targeted failure cases.
 
 **Done when.** The automated Hook test and the release journey pass. Any criterion still open is written down.
 
-**Notes.** Not implemented.
+**Notes.** Verified on `build/release` on October 10, 2026.
+
+The Hook tests passed. The composer and the browser synthesizer both drop the tone into the turn and keep the pause quieter than the moving section, within 500 ms. The example page keeps the route, graph, and story within 500 ms of the audio clock when scrubbed or when a marker is chosen. The live sketch journey now serves that same synthesizer and, after the turn card is chosen, keeps the route cursor, ribbon, story, and audio element within 500 ms of the turn at 28 seconds.
+
+`uv run --directory backend pytest tests/unit/test_sketch.py tests/unit/test_flow.py tests/unit/test_fixtures.py` passed, 12 tests. Playwright passed 47 tests across the fixture contract, freeze labels, studio failures, practice journey, playback, markers, and the live sketch, then 8 capture tests for permission denial, offline, a missing location API, a hidden gap, and wake lock. Prettier left `frontend/tests/live-job.spec.ts` unchanged and ESLint passed. No active time was measured.
+
+Still open, and not claimed by this step: AC-01 needs the outdoor walk. AC-03 needs the seed Studio listening review. AC-04 stays blocked while the Gemma Space is unproved. AC-08 was not timed on a phone network. The saved route-sketch fixture has a turn and no pause, so the pause half of the Hook is proven on the composer and the example synthesizer, not on that fixture. No headphones listening was done in this run.
 
 ### P4.4 — Prepare the verified public release and rollback record
 
-**Status:** Not started
+**Status:** Blocked
 **Kind:** Release · 30 minutes · AC-07, AC-08, AC-14
 **Commit subject:** Prepare the verified public release and rollback record
 
@@ -783,7 +799,22 @@ The user deploys the reviewed release. Record the smoke check, the rollback comm
 
 **Done when.** The public URL is healthy, the example plays, and the live caps are correct.
 
-**Notes.** Not implemented.
+**Notes.** Prepared on October 10, 2026, on `build/release`. No Render service was created, and no public URL was checked.
+
+The blueprint already named the persistent disk, but the app stored jobs under `var/jobs` and ignored those variables. A production process now refuses to start unless `LEDGER_PATH` and `ARTIFACT_DIR` are both set. With the blueprint values, the ledger is `/var/footwork/quota.json` and audio is under `/var/footwork/artifacts`. Tests that pass a data directory still use that directory. Daily caps read `MAX_GEMMA_ATTEMPTS_PER_DAY`, `MAX_GEMMA_GPU_SECONDS_PER_DAY`, and `MAX_MUSIC_ATTEMPTS_PER_DAY`, and a higher value is clamped to 4 attempts, 240 GPU seconds, and 6 music attempts. The blueprint now lists the music cap as 6. `GENERATION_ENABLED` must be the string `true` before the installed dispatcher can call Eleven. It is `false` in the blueprint, so the public release keeps the unproved arrangement space and does not call music. Secret names stay `sync: false`. No secret value is in the blueprint.
+
+Cleanup: when a ledger file already exists, process startup runs the same expiry pass as a request. Ready audio is removed 60 minutes after it becomes ready. Ledger rows stay for 48 hours. Delete removes that job's audio. Spent quota is not refunded.
+
+Smoke check, after the user deploys this reviewed commit manually with `autoDeployTrigger` left off:
+
+1. `GET /health` returns status `ok`, API version `v1`, and schema version `1`.
+2. `/` and `/studio` return the built shell. The cached Studio piece is the example, labeled Example walk.
+3. Dashboard caps stay at 4, 240, and 6. `GENERATION_ENABLED` stays `false`.
+4. Set `PUBLIC_BASE_URL`, `HF_SPACE_URL`, `HF_TOKEN`, `GEMMA_MODEL_ID`, `GEMMA_MODEL_REVISION`, `ELEVENLABS_API_KEY`, and `ELEVEN_MUSIC_MODEL` in the dashboard only.
+
+Rollback: redeploy `6915426` and leave `GENERATION_ENABLED` false. That commit is the last verified application commit. It does not read the disk paths, so use it only to restore the previous process. No earlier Render deploy exists to restore.
+
+`uv run --directory backend pytest` passed, 69 tests. `uv run --directory backend ruff check .` passed, and the format check passed. AC-07 stays open until the public HTTPS check. AC-08 was not timed on a phone network. AC-14 is covered by the capability, redaction, and disk-path checks already in the suite. No active time was measured.
 
 ---
 
