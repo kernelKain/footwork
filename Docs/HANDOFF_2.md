@@ -2,9 +2,9 @@
 
 Step-by-step record of what actually happened. The locked plan stays in `Docs/HANDOFF_1.md`. This file is the place to read after a step is finished.
 
-**Status:** Phase 3 arrangement validation is committed on `build/soundprint`. The outdoor seed walk is still waiting on the user. The user will deploy to Render at the end. Local build and tests continue until then. The 20-hour ceiling is unchanged. CodeRabbit GitHub App install is still unconfirmed.
-**Next step:** P3.3. P2.6 stays blocked until the user records one real outdoor walk. P2.0 stays deferred until the user deploys `deploy/render.yaml` and records the public page and `/health`.
-**Last completed step:** P3.2, integrate Gemma arrangement generation and validation, on `build/soundprint`. P3.1 remains `4e9e844`.
+**Status:** Phase 3 can render a validated arrangement as a 60-second Music v2.5 file on `build/soundprint`. The outdoor seed walk is still waiting on the user. The user will deploy to Render at the end. Local build and tests continue until then. The 20-hour ceiling is unchanged. CodeRabbit GitHub App install is still unconfirmed.
+**Next step:** P3.4. P2.6 stays blocked until the user records one real outdoor walk. P2.0 stays deferred until the user deploys `deploy/render.yaml` and records the public page and `/health`.
+**Last completed step:** P3.3, render validated arrangements with Eleven Music, on `build/soundprint`. P3.2 is `d23b469`. P3.1 remains `4e9e844`.
 **Active build time:** 0 of 20 hours recorded. This session was not measured.
 
 Execution notes stay in this file. The diagram and write-up path are under `Docs/`. Each **Notes** section is filled only after that step is finished.
@@ -624,7 +624,7 @@ The user records the outdoor seed walk. Inspect the derived events and save only
 **Branch:** `build/soundprint`
 **Window:** Build hours 11–15 (240 minutes)
 **Outcome:** Live Gemma and Eleven Music adapters, job controls, and one reviewed Studio result. Feature freeze is at the end of this phase.
-**Phase note:** P3.1 is commit `4e9e844`. P3.2 is committed on `build/soundprint`. The live Gemma Space is still unproved, so AC-04 stays blocked. P2.6 is still blocked on the outdoor walk. Generation uses the stage codes and error codes in `Docs/FRONTEND_EXPERIENCE.md`. Retry is explicit. The same idempotency key and body do not start a second piece. Transport paths now follow the locked `/api/v1` contract.
+**Phase note:** P3.1 is commit `4e9e844`. P3.2 is commit `d23b469`. P3.3 has one checked 60-second audio receipt. The live Gemma Space is still unproved, so AC-04 stays blocked. P2.6 is still blocked on the outdoor walk. Generation uses the stage codes and error codes in `Docs/FRONTEND_EXPERIENCE.md`. Retry is explicit. The same idempotency key and body do not start a second piece. Transport paths now follow the locked `/api/v1` contract. Job submission still does not call Gemma or Eleven.
 
 ### P3.1 — Add protected generation jobs and durable usage limits
 
@@ -654,7 +654,7 @@ Call Gemma with an anonymous event timeline and validate the arrangement. Allow 
 
 **Done when.** A valid plan is produced, and invalid output becomes an honest Route Sketch.
 
-**Notes.** Implemented on `build/soundprint` on October 10, 2026.
+**Notes.** Implemented on `build/soundprint` on October 10, 2026. Commit `d23b469`.
 
 `backend/app/arrange/gemma.py` builds an anonymous timeline from event id, type, and audio offset. It strips location fields before any call. A reply is accepted only when the mood is `warm_cinematic`, the style list is one to six words from the closed instrumental vocabulary and includes `instrumental`, and every event reference matches the timeline. A fenced JSON object is parsed locally. Schema-invalid output may be submitted once, with field codes only, when another Gemma attempt, 60 GPU seconds, and 90 seconds of deadline remain, and only after an optional reservation succeeds. A transport exception is not repeated. Failure returns `arrangement_unavailable` and `route_sketch` with no invented plan. `pace_change` ids that contain an underscore are renamed into the shared hyphen pattern. `SpaceArrangeClient` can call `/arrange`, and it was not used. The Space recorded in `Docs/evidence/gemma-access.md` is still `NO_APP_FILE`, so this step does not claim a live checkpoint result.
 
@@ -662,7 +662,7 @@ Call Gemma with an anonymous event timeline and validate the arrangement. Allow 
 
 ### P3.3 — Render validated arrangements with Eleven Music
 
-**Status:** Not started
+**Status:** Done
 **Kind:** Edit · 40 minutes · AC-05, AC-17
 **Commit subject:** Render validated arrangements with Eleven Music
 
@@ -670,7 +670,13 @@ Compile timed Music v2.5 chunks, call the Eleven Music API, and check the return
 
 **Done when.** A genuine audio receipt exists, and an ambiguous network failure is not retried automatically.
 
-**Notes.** Not implemented.
+**Notes.** Implemented on `build/soundprint` on October 10, 2026.
+
+`backend/app/music/render.py` compiles a validated arrangement into Music v2.5 chunks that total 60 seconds. Each chunk is at least 3 seconds. A turn at 12 seconds and a pause at 30 seconds become chunk boundaries, and the pause is a 10-second hold. Chunk text is a section label only. Vocals, lyrics, and speech are negative styles. The request sends `model_id` `music_v2_5` and a composition plan. It does not send a prompt or `force_instrumental`. The client is httpx. A timeout, a lost connection, an HTTP error, or audio outside 44.5–60.5 seconds is recorded once and is not sent again.
+
+One live compose returned HTTP 200 `audio/mpeg` on the first attempt. The request SHA-256 is `5100159eda409713310806b37b8199cbf25cbc3929a06bf56456407b08c84e19`. The provider song id is `6JZhKLyXn9BrPEPAnUQC`. The file is 960515 bytes and `ffprobe` measured 60.029375 seconds. It is stored at `artifacts/eleven-arrangement.mp3`, which git ignores. The API key is not recorded. Evidence is in `Docs/evidence/music-hosting.md`.
+
+`uv run --directory backend ruff check app/music tests/unit/test_music.py` passed. `uv run --directory backend ruff format --check` passed for those files. `uv run --directory backend pytest` passed, 57 tests. No new dependency. No active time was measured. AC-05 is covered by the receipt. AC-17 duration and decode checks passed. Headphone listening remains for P3.5. This renderer is not called by job submission yet.
 
 ### P3.4 — Connect recorded walks to live Soundprint generation
 
