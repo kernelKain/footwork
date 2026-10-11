@@ -2,9 +2,9 @@
 
 Step-by-step record of what actually happened. The locked plan stays in `Docs/HANDOFF_1.md`. This file is the place to read after a step is finished.
 
-**Status:** On October 12, 2026 the user explicitly reopened the feature freeze for one final product-facing Phase 5 and moved Demo and submission to Phase 6. The approved plan is `Docs/PHASE_5_FINAL_POLISH_PLAN.md` on `final-product-polish`. The private-walk export removal, the walk-readiness progress, the private generation allowance, the theme icon control, the movement examples, the Soundprint redesign, and the Soundprint motion polish are commit `be8e2e1` on `final-product-polish`. On October 12, 2026 the automated final-polish gates passed. Feature freeze is restored for further product changes. Provider-budget confirmation, a real-phone review, and deployment remain open user gates. The public service does not yet include this work. Branch names and commit subjects for this work contain no phase or step identifiers. Earlier release status remains: the user confirmed the studio path, later movement in the music, a read-only result link, an honest player with a readable movement ribbon, the sanitized outdoor walk, and the studio recording made from it. The public service is https://footwork-m6g0.onrender.com/. Commit `481b2c2` asks the Gemma Space for a plan before any studio render, and commit `b895304` accepts a one-word style. One validated plan from `google/gemma-4-E2B-it` is in `Docs/evidence/gemma-access.md`. The user set `GENERATION_ENABLED` to `true` on that service and placed the Eleven key in the dashboard. A validated plan is the only request sent to Eleven. Commit `3bde4e8` makes each later turn, pace change, pause, and loop change the sketch and the studio plan. Commit `29e78d5` gives a ready Soundprint a link at `/w` that opens the piece for about an hour. Commit `4f803f5` names the sound under the player and gives the ribbon a time scale and a written list. The labeled example still does not call either provider. CodeRabbit is installed. Raw coordinates stay out of Git. `fixtures/sanitized-real/seed-walk.json` is not in the repository, and `Docs/evidence/seed-walk-review.md` has no heard times or song id for that studio file.
-**Next step:** The user confirms the provider budget before any deployed cap change, reviews the flow on a real phone, deploys, and runs the smoke checklist in P5.8. Phase 6 has not started.
-**Last completed step:** Final product polish verified on October 12, 2026, commit `be8e2e1`. Not deployed. The sanitized outdoor walk and studio review remain confirmed. The player and ribbon are `4f803f5`. The share link remains `29e78d5`. Later movement remains `3bde4e8`. The studio path remains the confirmation after `b895304`. Earlier release checks remain P4.3 at `6915426`, P4.2 at `b2c9bfc`, and P4.1 at `3419919`.
+**Status:** On October 12, 2026 the user explicitly reopened the feature freeze for one final product-facing Phase 5 and moved Demo and submission to Phase 6. The approved plan is `Docs/PHASE_5_FINAL_POLISH_PLAN.md`. The private-walk export removal, the walk-readiness progress, the private generation allowance, the theme icon control, the movement examples, the Soundprint redesign, and the Soundprint motion polish are on main in `19476ff`. On October 12, 2026 the automated final-polish gates passed. Feature freeze is restored for further product changes. The same day the user raised the shared generation ceilings and reported the provider budget can cover them. This commit sets those ceilings to 40 Gemma attempts, 2400 GPU seconds, and 40 music attempts. One installation stays clamped at 8 jobs. `GET /health` returned `ok`, and the labeled example played from one control. A real-phone review and a deploy of this tree remain open. The public service is https://footwork-m6g0.onrender.com/. Commit `481b2c2` asks the Gemma Space for a plan before any studio render, and commit `b895304` accepts a one-word style. One validated plan from `google/gemma-4-E2B-it` is in `Docs/evidence/gemma-access.md`. The user set `GENERATION_ENABLED` to `true` on that service and placed the Eleven key in the dashboard. A validated plan is the only request sent to Eleven. Commit `3bde4e8` makes each later turn, pace change, pause, and loop change the sketch and the studio plan. Commit `29e78d5` gives a ready Soundprint a link at `/w` that opens the piece for about an hour. Commit `4f803f5` names the sound under the player and gives the ribbon a time scale and a written list. The labeled example still does not call either provider. CodeRabbit is installed. Raw coordinates stay out of Git. `fixtures/sanitized-real/seed-walk.json` is not in the repository, and `Docs/evidence/seed-walk-review.md` has no heard times or song id for that studio file.
+**Next step:** The author reviews the flow on a real phone, deploys this tree, adds the demo video, screenshots, and architecture PNG, fills the heard-time sheet, and publishes the DEV draft.
+**Last completed step:** The raised shared ceilings and the submission documents are in this commit, on top of the final product polish in `19476ff`. The player and ribbon are `4f803f5`. The share link remains `29e78d5`. Later movement remains `3bde4e8`. The studio path remains the confirmation after `b895304`. Earlier release checks remain P4.3 at `6915426`, P4.2 at `b2c9bfc`, and P4.1 at `3419919`.
 **Active build time:** 0 of the rebaselined 27 hours recorded. This session was not measured.
 
 Execution notes stay in this file. The diagram and write-up path are under `Docs/`. Each **Notes** section is filled only after that step is finished.
@@ -513,7 +513,7 @@ The white hold-progress overlay at 28% opacity lightens coral to about `#FF9494`
 
 ### P2.0 — Publish the shell and health endpoint
 
-**Status:** Pending
+**Status:** Done
 **Kind:** Release · user-directed · AC-07
 **Commit subject:** Record the public shell and health endpoint
 
@@ -521,7 +521,7 @@ After `build/experience` is pushed, create the Render Blueprint from `deploy/ren
 
 **Done when.** The public HTTPS page and `/health` both work.
 
-**Notes.** Pending on October 10, 2026. The user will deploy `deploy/render.yaml` and record the public page and `/health` after the rest of the build. Local build and tests continue. Provider keys stay in the Render dashboard.
+**Notes.** The user confirmed the service at https://footwork-m6g0.onrender.com/ on October 11, 2026. On October 12, 2026 `GET /health` returned HTTP 200 with `{"status":"ok","api_version":"v1","schema_version":"1"}`. `/` showed Start walking, Hear an example, and Hear what a moment does, and it did not offer a coordinate download. Provider keys stay in the Render dashboard. No new commit records this check.
 
 ### P2.1 — Record browser movement and recover local drafts
 
@@ -799,7 +799,7 @@ Still open, and not claimed by this step: AC-01 needs the outdoor walk. AC-03 ne
 
 ### P4.4 — Prepare the verified public release and rollback record
 
-**Status:** Blocked
+**Status:** Partial
 **Kind:** Release · 30 minutes · AC-07, AC-08, AC-14
 **Commit subject:** Prepare the verified public release and rollback record
 
@@ -825,6 +825,8 @@ Rollback: redeploy `6915426` and leave `GENERATION_ENABLED` false. That commit i
 `uv run --directory backend pytest` passed, 69 tests. `uv run --directory backend ruff check .` passed, and the format check passed. AC-07 stays open until the public HTTPS check. AC-08 was not timed on a phone network. AC-14 is covered by the capability, redaction, and disk-path checks already in the suite. No active time was measured.
 
 On October 11, 2026 the user confirmed the service is deployed at https://footwork-m6g0.onrender.com/ and that its dashboard has `GENERATION_ENABLED` set to `true`, with the Eleven key present. The committed blueprint still lists `GENERATION_ENABLED` as `false`.
+
+On October 12, 2026 the public checks that could be run without a new generation were: health `ok`; landing copy as above; the theme control changed from Light theme to Dark theme and kept that choice after a reload; Hear an example opened `/studio`, showed Example walk, and Play became Pause with "Now playing Approach." The route, ribbon, and moment list were on that page. The deployed script is the polished bundle `index-D2VZ9LOE.js`. A live recording, a phone review, a finished share link, and the Render dashboard values were not read in this check. The user had already reported the deployed caps were raised. This commit lists 40 Gemma attempts, 2400 GPU seconds, and 40 music attempts in `deploy/render.yaml`, with code ceilings at those same numbers and defaults still at 4, 240, and 6. One installation stays clamped at 8 jobs. AC-08 was not timed on a phone network.
 
 ---
 
@@ -876,7 +878,7 @@ Add an anonymous random per-install token, an eight-job daily install allowance,
 
 **Done when.** The ninth install job and an exhausted global budget are rejected before dispatch, another install has its own allowance, and no raw install token is stored or logged.
 
-**Notes.** Implemented on October 12, 2026 in commit `be8e2e1`. The browser creates one random 256-bit token with `crypto.getRandomValues`, stores it in local storage as `footwork-install`, and sends it as `X-Install-Token`. The ledger stores only `digest("install", token)` under `installs`. A schema 1 ledger is read forward to schema 2 and keeps its spent global usage. Each install can be admitted eight jobs per UTC day. The global caps stay separately configured: defaults remain 4 Gemma attempts, 240 GPU seconds, and 6 music attempts, and environment values are clamped to 8 attempts, 480 GPU seconds, and 8 music attempts. `deploy/render.yaml` is unchanged, so the deployed global caps stay at 4, 240, and 6. Raising those production values still requires provider-budget confirmation. An exhausted install and an exhausted global budget are rejected before dispatch, with separate public sentences. Replaying an accepted request does not spend another allowance. One active job remains. The raw token is absent from the ledger and from job logs.
+**Notes.** Implemented on October 12, 2026 in commit `be8e2e1`. The browser creates one random 256-bit token with `crypto.getRandomValues`, stores it in local storage as `footwork-install`, and sends it as `X-Install-Token`. The ledger stores only `digest("install", token)` under `installs`. A schema 1 ledger is read forward to schema 2 and keeps its spent global usage. Each install can be admitted eight jobs per UTC day. The global caps stay separately configured: defaults remain 4 Gemma attempts, 240 GPU seconds, and 6 music attempts, and environment values are clamped to 8 attempts, 480 GPU seconds, and 8 music attempts. `deploy/render.yaml` is unchanged, so the deployed global caps stay at 4, 240, and 6. Raising those production values still requires provider-budget confirmation. An exhausted install and an exhausted global budget are rejected before dispatch, with separate public sentences. Replaying an accepted request does not spend another allowance. One active job remains. The raw token is absent from the ledger and from job logs. The commit after `19476ff` raises the shared clamp to 40 attempts, 2400 GPU seconds, and 40 music attempts. The installation clamp stays 8.
 
 `uv run --directory backend ruff check app tests/unit/test_jobs.py tests/unit/test_flow.py` passed, and `uv run --directory backend ruff format --check .` passed. `uv run --directory backend pytest` passed, 91 tests. From `frontend/`, `npm run typecheck` and `npm run lint` passed. Prettier passed on the edited frontend files. Playwright passed 4 tests in `tests/freeze.spec.ts` and the generation-state test in `tests/studio.spec.ts`. No provider was called. No active time was measured.
 
@@ -978,9 +980,10 @@ Docs updated to the verified working tree: `README.md`, `Docs/PRODUCT_CONCEPT.md
 
 **User-only gates, not done:**
 
-1. Confirm the provider budget before changing deployed caps. The blueprint still lists 4 Gemma attempts, 240 GPU seconds, and 6 music attempts. The code default for one installation is 8 jobs, clamped at 8. Global defaults stay 4, 240, and 6 unless the environment sets them, and those values are clamped at 8, 480, and 8.
-2. Review on a real phone: the 1:30 guidance, the saving transition, touch targets, the sticky player, and the animation.
-3. Deploy this reviewed tree, then run the smoke checklist below. Do not treat the current public site as this verification.
+1. Review on a real phone: the 1:30 guidance, the saving transition, touch targets, the sticky player, and the animation.
+2. Deploy this reviewed tree, then run the smoke checklist below. Do not treat the current public site as this verification.
+
+The provider-budget gate from the polish verification is recorded here as met for the shared ceilings. This commit raises those ceilings to 40 Gemma attempts, 2400 GPU seconds, and 40 music attempts after the user reported the budget can cover them. One installation stays clamped at 8. Defaults stay 4, 240, and 6 when the environment variables are empty.
 
 **Smoke checklist, after the user deploys:**
 
@@ -999,13 +1002,13 @@ Docs updated to the verified working tree: `README.md`, `Docs/PRODUCT_CONCEPT.md
 **Branch:** `build/submission`
 **Window:** Build hours 24–27 (150 minutes, plus a 30-minute emergency buffer)
 **Outcome:** Demo video, DEV article, README, links, and the final evidence record.
-**Phase note:** Not started. Product feature freeze is restored. This phase still waits for the user to commit the polish, confirm the provider budget, review a real phone, and deploy. Sponsor roles and technical provenance belong in the README and submission evidence, not in the application UI.
+**Phase note:** Started on October 12, 2026. `Docs/architecture.md`, `Docs/demo-runbook.md`, `Docs/submission.md`, and `Docs/write-ups/footwork-challenge-draft.md` are in this commit. The video, screenshots, diagram PNG, and publication remain with the user. Sponsor roles and technical provenance belong in the README and submission evidence, not in the application UI.
 
 The 30-minute buffer is not a step. If emergency work happens, add it under the step it belongs to, with its own commit and note.
 
 ### P6.1 — Document the architecture, demo, and AI-assisted development
 
-**Status:** Not started
+**Status:** Partial
 **Kind:** Edit · 45 minutes · AC-16
 **Commit subject:** Document the architecture demo and AI-assisted development
 
@@ -1013,11 +1016,11 @@ Write the README, architecture notes, and rights notes. Draft the DEV article th
 
 **Done when.** The mechanism, evidence, limitations, and setup are accurate, and the DEV draft is still unpublished for review.
 
-**Notes.** Not implemented.
+**Notes.** Written on October 12, 2026 in this commit. `Docs/architecture.md` describes the browser, Render, Gemma, and Eleven path, the raised shared ceilings, and the 8-job installation clamp. `README.md` includes setup, mappings, privacy, the AI-assistance disclosure, and the MIT / Apache-2.0 / Eleven rights split. The local draft is `Docs/write-ups/footwork-challenge-draft.md`. The same text is an unpublished DEV draft for review at the edit page, marked as written with some AI assistance. The Excalidraw PNG export is not created.
 
 ### P6.2 — Add the demonstration assets and judge runbook
 
-**Status:** Not started
+**Status:** Partial
 **Kind:** Release · 45 minutes · AC-03, AC-16
 **Commit subject:** Add the demonstration assets and judge runbook
 
@@ -1025,11 +1028,11 @@ The user records the 60-second demo. Prepare the runbook and screenshot referenc
 
 **Done when.** The Hook appears in the first ten seconds, a backup video exists, and prepared playback is not described as live generation.
 
-**Notes.** Not implemented.
+**Notes.** `Docs/demo-runbook.md` puts the turn and pause in the first ten seconds and says the example is prepared playback. The backup video, hero screenshot, mobile screenshot, and diagram PNG are left for the author. No image or video file was added.
 
 ### P6.3 — Record the completed challenge submission
 
-**Status:** Not started
+**Status:** Partial
 **Kind:** Release · 45 minutes · AC-16
 **Commit subject:** Record the completed challenge submission
 
@@ -1037,11 +1040,11 @@ Review tags, template, and links. The user publishes the DEV submission and reco
 
 **Done when.** The submission checklist is complete before the deadline.
 
-**Notes.** Not implemented.
+**Notes.** `Docs/submission.md` lists the public URL, repository, required tags `#devchallenge` and `#hf26challenge`, and the items still open. Nothing was published.
 
 ### P6.4 — Record final verification and release status
 
-**Status:** Not started
+**Status:** Partial
 **Kind:** Verify · 15 minutes · all acceptance criteria
 **Commit subject:** Record final verification and release status
 
@@ -1049,4 +1052,4 @@ Update the final handoff, acceptance evidence, release reference, and remaining 
 
 **Done when.** This file and the repository match the deployed release.
 
-**Notes.** Not implemented.
+**Notes.** The public health check, landing copy, theme persistence, and example playback are recorded above. The heard-time sheet, phone review, share-link check, dashboard cap read, demo assets, and DEV publication are still open.

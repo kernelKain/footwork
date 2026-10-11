@@ -55,9 +55,9 @@ def test_render_blueprint_matches_the_locked_host() -> None:
     assert "mountPath: /var/footwork" in blueprint
     assert "/var/footwork/artifacts" in blueprint
     assert "/var/footwork/quota.json" in blueprint
-    assert "MAX_GEMMA_ATTEMPTS_PER_DAY" in blueprint and 'value: "4"' in blueprint
-    assert "MAX_GEMMA_GPU_SECONDS_PER_DAY" in blueprint and 'value: "240"' in blueprint
-    assert "MAX_MUSIC_ATTEMPTS_PER_DAY" in blueprint and 'value: "6"' in blueprint
+    assert "key: MAX_GEMMA_ATTEMPTS_PER_DAY\n        value: \"40\"" in blueprint
+    assert "key: MAX_GEMMA_GPU_SECONDS_PER_DAY\n        value: \"2400\"" in blueprint
+    assert "key: MAX_MUSIC_ATTEMPTS_PER_DAY\n        value: \"40\"" in blueprint
     assert GEMMA_ATTEMPT_LIMIT == 4
     assert GPU_SECOND_LIMIT == 240
     assert ELEVEN_ATTEMPT_LIMIT == 6

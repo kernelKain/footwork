@@ -13,6 +13,14 @@ from app.jobs.flow import WalkOutcome
 from app.jobs.ledger import Ledger, digest
 from app.jobs.privacy import LOG
 from app.jobs.service import (
+    _GEMMA_DEFAULT,
+    _GEMMA_MAX,
+    _GPU_DEFAULT,
+    _GPU_MAX,
+    _INSTALL_DEFAULT,
+    _INSTALL_MAX,
+    _MUSIC_DEFAULT,
+    _MUSIC_MAX,
     GPU_RESERVE_SECONDS,
     GPU_SECOND_LIMIT,
     JobService,
@@ -161,6 +169,41 @@ def test_quota_is_kept_after_delete_and_blocks_the_next_piece(tmp_path: Path) ->
         "gpu_seconds": GPU_SECOND_LIMIT,
         "eleven_attempts": 4,
     }
+
+
+def test_a_raised_daily_cap_admits_a_fifth_piece(
+    monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+) -> None:
+    monkeypatch.setattr("app.jobs.service.GEMMA_ATTEMPT_LIMIT", 5)
+    monkeypatch.setattr("app.jobs.service.GPU_SECOND_LIMIT", 5 * GPU_RESERVE_SECONDS)
+    monkeypatch.setattr("app.jobs.service.ELEVEN_ATTEMPT_LIMIT", 5)
+    data, _clock, spy, client = _app(tmp_path)
+    body = _walk()
+
+    for index in range(5):
+        key = token_hex(32)
+        created = client.post(
+            "/api/v1/soundprints",
+            content=body,
+            headers=_headers(f"idem-raised-{index}", key),
+        )
+        assert created.status_code == 202
+        deleted = client.delete(
+            f"/api/v1/jobs/{created.json()['job_id']}",
+            headers={"authorization": f"Bearer {key}"},
+        )
+        assert deleted.status_code == 204
+
+    blocked = client.post(
+        "/api/v1/soundprints",
+        content=body,
+        headers=_headers("idem-raised-sixth", token_hex(32)),
+    )
+
+    assert blocked.status_code == 429
+    assert blocked.json()["code"] == "generation_limit"
+    assert len(spy.job_ids) == 5
+    assert _usage(data)["gemma_attempts"] == 5
 
 
 def test_a_partial_gpu_remainder_is_refused_before_dispatch(tmp_path: Path) -> None:
@@ -760,13 +803,13 @@ def test_environment_caps_stay_inside_reviewed_maxima(monkeypatch: pytest.Monkey
     monkeypatch.setenv("MAX_INSTALL_JOBS_PER_DAY", "30")
     monkeypatch.setenv("MAX_GEMMA_ATTEMPTS_PER_DAY", "100")
     monkeypatch.setenv("MAX_GEMMA_GPU_SECONDS_PER_DAY", "99999")
-    monkeypatch.setenv("MAX_MUSIC_ATTEMPTS_PER_DAY", "40")
-    assert bounded_cap("MAX_INSTALL_JOBS_PER_DAY", 8, 8) == 8
-    assert bounded_cap("MAX_GEMMA_ATTEMPTS_PER_DAY", 4, 8) == 8
-    assert bounded_cap("MAX_GEMMA_GPU_SECONDS_PER_DAY", 240, 480) == 480
-    assert bounded_cap("MAX_MUSIC_ATTEMPTS_PER_DAY", 6, 8) == 8
+    monkeypatch.setenv("MAX_MUSIC_ATTEMPTS_PER_DAY", "80")
+    assert bounded_cap("MAX_INSTALL_JOBS_PER_DAY", _INSTALL_DEFAULT, _INSTALL_MAX) == 8
+    assert bounded_cap("MAX_GEMMA_ATTEMPTS_PER_DAY", _GEMMA_DEFAULT, _GEMMA_MAX) == 40
+    assert bounded_cap("MAX_GEMMA_GPU_SECONDS_PER_DAY", _GPU_DEFAULT, _GPU_MAX) == 2400
+    assert bounded_cap("MAX_MUSIC_ATTEMPTS_PER_DAY", _MUSIC_DEFAULT, _MUSIC_MAX) == 40
     monkeypatch.setenv("MAX_GEMMA_ATTEMPTS_PER_DAY", "nope")
-    assert bounded_cap("MAX_GEMMA_ATTEMPTS_PER_DAY", 4, 8) == 4
+    assert bounded_cap("MAX_GEMMA_ATTEMPTS_PER_DAY", _GEMMA_DEFAULT, _GEMMA_MAX) == 4
 
 
 def test_eight_jobs_are_admitted_and_the_ninth_is_refused_before_dispatch(
