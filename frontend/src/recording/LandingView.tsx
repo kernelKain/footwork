@@ -30,9 +30,11 @@ type Navigate = (event: { preventDefault: () => void; currentTarget: { href: str
 export function LandingView({
   onStart,
   onNavigate,
+  onDownloadWalk,
 }: {
   onStart: () => void;
   onNavigate: Navigate;
+  onDownloadWalk?: () => void;
 }) {
   const [moment, setMoment] = useState<MomentId>("turn");
   const current = MOMENTS[moment];
@@ -50,6 +52,17 @@ export function LandingView({
               Hear an example
             </a>
           </div>
+          {onDownloadWalk ? (
+            <div className="actions">
+              <Button variant="secondary" onClick={onDownloadWalk}>
+                Download the walk stored on this phone
+              </Button>
+              <p>
+                This file contains the location of that walk. Keep it in recordings/ on your
+                computer, and do not commit it.
+              </p>
+            </div>
+          ) : null}
         </div>
         <figure className="hero-figure">
           <svg viewBox="0 0 320 140" role="img" aria-label="A walk route becoming a short waveform">

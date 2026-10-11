@@ -46,5 +46,9 @@ def test_json_fixtures_are_labeled_and_contain_no_locations() -> None:
     for path in files:
         payload = json.loads(path.read_text(encoding="utf-8"))
         assert payload.get("schema_version") == "1"
-        assert payload.get("label") == "synthetic"
+        assert payload.get("label") in {"synthetic", "sanitized_real"}
+        if payload.get("label") == "sanitized_real":
+            manifest = payload["manifest"]
+            assert manifest["source_category"] == "sanitized_real"
+            assert manifest["verification"]["human_reviewed"] is False
         assert_no_forbidden_keys(payload)

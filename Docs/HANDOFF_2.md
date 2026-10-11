@@ -2,9 +2,9 @@
 
 Step-by-step record of what actually happened. The locked plan stays in `Docs/HANDOFF_1.md`. This file is the place to read after a step is finished.
 
-**Status:** The feature set is frozen. On October 11, 2026 the user confirmed the studio path, later movement in the music, a read-only result link, and an honest player with a readable movement ribbon. The public service is https://footwork-m6g0.onrender.com/. Commit `481b2c2` asks the Gemma Space for a plan before any studio render, and commit `b895304` accepts a one-word style. One validated plan from `google/gemma-4-E2B-it` is in `Docs/evidence/gemma-access.md`. The user set `GENERATION_ENABLED` to `true` on that service and placed the Eleven key in the dashboard. A validated plan is the only request sent to Eleven. Commit `3bde4e8` makes each later turn, pace change, pause, and loop change the sketch and the studio plan. Commit `29e78d5` gives a ready Soundprint a link at `/w` that opens the piece for about an hour. The player says the sound is a browser example, the simpler version from the walk, or a studio recording from the walk. The ribbon has a time scale and a written list of what each band and moment means. The labeled example still does not call either provider. The 20-hour ceiling is unchanged. CodeRabbit is installed. The outdoor walk is recorded.
-**Next step:** P3.5, listen to a studio track made from that walk. P5 has not started.
-**Last completed step:** Honest player label and readable movement ribbon, confirmed by the user on October 11, 2026. No commit hash is recorded for that confirmation. The share link remains `29e78d5`. Later movement remains `3bde4e8`. The studio path remains the confirmation after `b895304`. Earlier release checks remain P4.3 at `6915426`, P4.2 at `b2c9bfc`, and P4.1 at `3419919`.
+**Status:** The feature set is frozen. On October 11, 2026 the user confirmed the studio path, later movement in the music, a read-only result link, and an honest player with a readable movement ribbon. On October 12, 2026 the user confirmed the sanitized outdoor walk is saved and the studio recording made from that walk has been reviewed. The public service is https://footwork-m6g0.onrender.com/. Commit `481b2c2` asks the Gemma Space for a plan before any studio render, and commit `b895304` accepts a one-word style. One validated plan from `google/gemma-4-E2B-it` is in `Docs/evidence/gemma-access.md`. The user set `GENERATION_ENABLED` to `true` on that service and placed the Eleven key in the dashboard. A validated plan is the only request sent to Eleven. Commit `3bde4e8` makes each later turn, pace change, pause, and loop change the sketch and the studio plan. Commit `29e78d5` gives a ready Soundprint a link at `/w` that opens the piece for about an hour. Commit `4f803f5` names the sound under the player and gives the ribbon a time scale and a written list. The labeled example still does not call either provider. The 20-hour ceiling is unchanged. CodeRabbit is installed. Raw coordinates stay out of Git. `fixtures/sanitized-real/seed-walk.json` is not in the repository, and `Docs/evidence/seed-walk-review.md` has no heard times or song id for that studio file.
+**Next step:** P5 has not started.
+**Last completed step:** Sanitized outdoor walk and studio review confirmed by the user on October 12, 2026. The player and ribbon are `4f803f5`. The share link remains `29e78d5`. Later movement remains `3bde4e8`. The studio path remains the confirmation after `b895304`. Earlier release checks remain P4.3 at `6915426`, P4.2 at `b2c9bfc`, and P4.1 at `3419919`.
 **Active build time:** 0 of 20 hours recorded. This session was not measured.
 
 Execution notes stay in this file. The diagram and write-up path are under `Docs/`. Each **Notes** section is filled only after that step is finished.
@@ -509,7 +509,7 @@ The white hold-progress overlay at 28% opacity lightens coral to about `#FF9494`
 **Branch:** `build/movement`
 **Window:** Build hours 7–11 (240 minutes)
 **Outcome:** Real capture, four detectors, compression, and an exact Route Sketch Hook.
-**Phase note:** P2.1 through P2.5 are committed. P2.6 and P2.0 are pending. The user will record the outdoor walk and deploy to Render after the rest of the build. No events will be invented to fill that walk. On October 11, 2026 commit `3bde4e8` makes later turns, pace changes, pauses, and loops audible in the Route Sketch. The recording and generation seams are the practice port and `frontend/src/studio/generationContract.ts`. Use the public states in `Docs/FRONTEND_EXPERIENCE.md`. Do not restore sponsor, provenance, or fixture-picker sections.
+**Phase note:** P2.1 through P2.5 are committed. On October 12, 2026 the user confirmed P2.6: the outdoor walk is saved in sanitized form, and the raw coordinates stay out of Git. The sanitized fixture file is not in the repository. P2.0 was the public deploy at https://footwork-m6g0.onrender.com/. No events were invented to fill that walk. On October 11, 2026 commit `3bde4e8` makes later turns, pace changes, pauses, and loops audible in the Route Sketch. The recording and generation seams are the practice port and `frontend/src/studio/generationContract.ts`. Use the public states in `Docs/FRONTEND_EXPERIENCE.md`. Do not restore sponsor, provenance, or fixture-picker sections.
 
 ### P2.0 — Publish the shell and health endpoint
 
@@ -609,7 +609,7 @@ On October 11, 2026 the user confirmed later movement is audible. Commit `3bde4e
 
 ### P2.6 — Validate the movement pipeline with a real outdoor walk
 
-**Status:** Pending
+**Status:** Done
 **Kind:** Verify · 40 minutes · AC-01, AC-09, AC-14
 **Commit subject:** Validate the movement pipeline with a real outdoor walk
 
@@ -617,7 +617,7 @@ The user records the outdoor seed walk. Inspect the derived events and save only
 
 **Done when.** The real recording shows useful events, and the raw trace stays out of Git.
 
-**Notes.** Pending on October 10, 2026. The user will record one real outdoor walk after the rest of the build. A synthetic trace will not be saved as that walk. The raw coordinates stay out of Git.
+**Notes.** On October 12, 2026 the user confirmed this step. The outdoor walk was recorded, and the saved copy is the sanitized walk. A synthetic trace was not saved as that walk. Raw coordinates stay out of Git. `fixtures/sanitized-real/seed-walk.json` is not in the repository. No commit hash is recorded for the fixture. The review sheet is `Docs/evidence/seed-walk-review.md`.
 
 ---
 
@@ -626,7 +626,7 @@ The user records the outdoor seed walk. Inspect the derived events and save only
 **Branch:** `build/soundprint`
 **Window:** Build hours 11–15 (240 minutes)
 **Outcome:** Live Gemma and Eleven Music adapters, job controls, and one reviewed Studio result. Feature freeze is at the end of this phase.
-**Phase note:** P3.1 is commit `4e9e844`. P3.2 is commit `d23b469`. P3.3 is commit `ab02558`. P3.4 is commit `0f44b87`. P3.5 is commit `98081fb` and is pending: the listening review of a studio track from the outdoor walk is still open, so AC-03 is not claimed. On October 11, 2026 the user confirmed the studio path is on. Commit `481b2c2` asks the Gemma Space for a plan, commit `b895304` accepts a one-word style, and a validated plan can be sent to Eleven on https://footwork-m6g0.onrender.com/. Commit `3bde4e8` carries later turns, pace changes, pauses, and loops into that plan. A missing or refused plan stays a Route Sketch. P3.6 is commit `27ed855` and records the feature freeze. Generation uses the stage codes and error codes in `Docs/FRONTEND_EXPERIENCE.md`. Retry is explicit. The same idempotency key and body do not start a second piece. Transport paths now follow the locked `/api/v1` contract.
+**Phase note:** P3.1 is commit `4e9e844`. P3.2 is commit `d23b469`. P3.3 is commit `ab02558`. P3.4 is commit `0f44b87`. P3.5 was prepared as commit `98081fb`. On October 12, 2026 the user confirmed the studio recording of the outdoor walk has been reviewed. The heard times and song id are not in `Docs/evidence/seed-walk-review.md`, so this file does not carry the timestamped AC-03 rows. On October 11, 2026 the user confirmed the studio path is on. Commit `481b2c2` asks the Gemma Space for a plan, commit `b895304` accepts a one-word style, and a validated plan can be sent to Eleven on https://footwork-m6g0.onrender.com/. Commit `3bde4e8` carries later turns, pace changes, pauses, and loops into that plan. A missing or refused plan stays a Route Sketch. P3.6 is commit `27ed855` and records the feature freeze. Generation uses the stage codes and error codes in `Docs/FRONTEND_EXPERIENCE.md`. Retry is explicit. The same idempotency key and body do not start a second piece. Transport paths now follow the locked `/api/v1` contract.
 
 ### P3.1 — Add protected generation jobs and durable usage limits
 
@@ -706,7 +706,7 @@ A corner-shaped recording submitted through the API returned `route_sketch` with
 
 ### P3.5 — Verify and cache the real walk demonstration track
 
-**Status:** Pending
+**Status:** Done
 **Kind:** Verify · 40 minutes · AC-03, AC-05, AC-17
 **Commit subject:** Verify and cache the real walk demonstration track
 
@@ -714,9 +714,7 @@ Listen to the seed Studio track, timestamp three movement mappings, and store th
 
 **Done when.** The turn, the pause, and a third mapping are perceptible. If they are not, AC-03 is recorded as failed. Stay inside the attempt cap.
 
-**Notes.** Pending on October 10, 2026. Commit `98081fb`. The user will listen to the seed Studio track after the rest of the build. No listening review was recorded and no cached example was stored.
-
-P2.6 still has no outdoor walk. The live job path returns `route_sketch` because the Gemma Space is unproved, so a submitted walk does not become `studio_live`. The file `artifacts/eleven-arrangement.mp3` is the October 10 arrangement proof: 60.029375 seconds, song id `6JZhKLyXn9BrPEPAnUQC`. It was not made from a seed walk, and it has not been heard for the turn, the pause, and a third mapping. AC-03 needs that hearing. A waveform or duration check would not replace it. No music request was made for this step. The daily attempt cap is unchanged. AC-03 is not marked passed and is not marked failed.
+**Notes.** On October 12, 2026 the user confirmed this review. They listened to the studio recording made from the outdoor walk. The October 10 proof `artifacts/eleven-arrangement.mp3`, song id `6JZhKLyXn9BrPEPAnUQC`, is a different file and was not that walk. The heard times, the song id, and a cached example of the walk's studio file are not in the repository. `Docs/evidence/seed-walk-review.md` keeps the empty hearing table. This note records the user's confirmation and does not mark AC-03 passed from timestamps, because those timestamps are not written here. No new music request was made for this note.
 
 ### P3.6 — Verify provider fallbacks and freeze the feature set
 

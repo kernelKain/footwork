@@ -21,8 +21,9 @@ import {
   resumeLive,
   type LiveModel,
 } from "./liveCapture";
-import type { LocationSample } from "./movementDraft";
+import type { LocationSample, MovementDraft } from "./movementDraft";
 import type { RecordingPort } from "./practicePort";
+import { downloadPrivateWalk } from "./privateWalkFile";
 import { useRunningOffset } from "./useMonotonicClock";
 import { submitFinishedWalk } from "../studio/liveJob";
 
@@ -46,6 +47,7 @@ export function LiveWalk({
   const [settled, setSettled] = useState(false);
   const [sheetOpen, setSheetOpen] = useState(false);
   const [wakeHeld, setWakeHeld] = useState(false);
+  const [storedWalk, setStoredWalk] = useState<MovementDraft | null>(null);
   const modelRef = useRef(model);
   const sessionRef = useRef("");
   const sentRef = useRef(false);
@@ -61,6 +63,7 @@ export function LiveWalk({
     void store.read(Date.now()).then((saved) => {
       if (cancel) return;
       const recovered = recoverLive(saved);
+      if (saved?.status === "ended" && saved.samples.length > 0) setStoredWalk(saved);
       if (recovered.draft) sessionRef.current = recovered.draft.sessionId;
       setModel(recovered);
       setSettled(true);
@@ -257,6 +260,11 @@ export function LiveWalk({
             if (settled) setSheetOpen(true);
           }}
           onNavigate={onNavigate}
+          onDownloadWalk={
+            storedWalk && model.phase === "ready"
+              ? () => downloadPrivateWalk(storedWalk)
+              : undefined
+          }
         />
       ) : (
         <RecordingView
