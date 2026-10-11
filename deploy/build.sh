@@ -12,7 +12,7 @@ if ! command -v npm >/dev/null 2>&1; then
   export PATH="/tmp/node-v${NODE_VERSION}-linux-x64/bin:${PATH}"
 fi
 
-if ! command -v uv >/dev/null 2>&1; then
+if ! uv --version >/dev/null 2>&1; then
   curl -LsSf https://astral.sh/uv/0.12.5/install.sh | sh
   export PATH="${HOME}/.local/bin:${PATH}"
 fi
