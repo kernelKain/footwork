@@ -1,0 +1,5 @@
+Implement this from your side and tell me what i need to do here: An honest player label, and a ribbon that explains itself. The browser-example sentence should appear only for the example. A live sketch should say it is the simpler version. A studio file should say it was recorded from the walk. The ribbon needs a readable scale, not only colored bands.
+
+---
+
+commit and push all.
