@@ -1,8 +1,8 @@
 """Turn a cleaned walk into a Route Sketch or a Studio track.
 
-The arrangement space is still unproved, so the installed dispatcher does not
-call it. A validated plan is the only path that asks for music, and that call
-is not repeated.
+The installed dispatcher calls the configured Space. A missing Space, a refused
+plan, or a failed music call stays on the Route Sketch. A validated plan is the
+only path that asks for music, and that call is not repeated.
 """
 
 import os
@@ -10,7 +10,7 @@ from collections.abc import Callable, Mapping, Sequence
 from dataclasses import dataclass
 from datetime import UTC, datetime, timedelta
 
-from app.arrange.gemma import anonymous_timeline, generate_arrangement
+from app.arrange.gemma import anonymous_timeline, client_from_env, generate_arrangement
 from app.movement.clean import CleanTrace
 from app.movement.detect import detect_events
 from app.movement.sketch import RouteSketch, SketchEvent, compose_sketch
@@ -158,11 +158,27 @@ def generation_disabled(
     )
 
 
+def space_arrangement(events: Sequence[Mapping[str, object]]) -> object:
+    """Ask the configured Space for a plan. A missing Space fails closed."""
+    try:
+        client = client_from_env()
+    except RuntimeError:
+        client = _BlockedSpace()
+    return generate_arrangement(
+        events,
+        client,
+        attempts_used=1,
+        gpu_seconds_used=60,
+        now=lambda: datetime.now(UTC),
+        deadline=datetime.now(UTC) + timedelta(seconds=180),
+    )
+
+
 def live_dispatch() -> WalkDispatch:
     """Build the production WalkDispatch, enabling music rendering per the environment."""
     enabled = os.environ.get("GENERATION_ENABLED", "").strip().lower() == "true"
     music = render_with_key if enabled else generation_disabled
-    return WalkDispatch(blocked_arrangement, music)
+    return WalkDispatch(space_arrangement, music)
 
 
 class _BlockedSpace:

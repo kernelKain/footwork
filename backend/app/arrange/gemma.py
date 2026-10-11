@@ -78,11 +78,48 @@ class SpaceArrangeClient:
         return f"SpaceArrangeClient(space_url={self.space_url!r})"
 
     def arrange(self, timeline: dict[str, object]) -> object:
-        """Call the Space's `/arrange` endpoint with the given timeline."""
+        """Call `/arrange` with JSON text and return a plan, or raise when none exists."""
         from gradio_client import Client
 
         client = Client(self.space_url, token=self._token)
-        return client.predict(timeline, api_name="/arrange")
+        raw = client.predict(json.dumps(timeline, separators=(",", ":")), api_name="/arrange")
+        return unwrap_space_reply(raw)
+
+
+def unwrap_space_reply(raw: object) -> object:
+    """Return a plan object, the model text for one repair, or raise when the Space refused."""
+    loaded = _load_space_reply(raw)
+    if not isinstance(loaded, dict):
+        return raw
+    status = loaded.get("status")
+    arrangement = loaded.get("arrangement")
+    if status == "valid" and isinstance(arrangement, dict):
+        return arrangement
+    if {"mood", "style", "event_refs"} <= set(loaded):
+        return loaded
+    if status == "invalid" and loaded.get("code") == "plan_invalid":
+        model_text = loaded.get("model_text")
+        if isinstance(model_text, str) and model_text.strip():
+            return model_text
+        return raw
+    if status in {"blocked", "invalid"}:
+        code = loaded.get("code")
+        raise RuntimeError(
+            str(code) if isinstance(code, str) and code else "arrangement unavailable"
+        )
+    return raw
+
+
+def _load_space_reply(raw: object) -> object:
+    """Parse a Space text reply when it is JSON."""
+    if isinstance(raw, dict):
+        return raw
+    if not isinstance(raw, str):
+        return raw
+    try:
+        return json.loads(raw)
+    except json.JSONDecodeError:
+        return raw
 
 
 def client_from_env() -> SpaceArrangeClient:

@@ -1,9 +1,12 @@
+import json
 from datetime import UTC, datetime, timedelta
 
 from app.arrange.gemma import (
     MODEL_ID,
+    SpaceArrangeClient,
     generate_arrangement,
     parse_arrangement,
+    unwrap_space_reply,
 )
 
 START = datetime(2026, 10, 10, 12, 0, tzinfo=UTC)
@@ -139,6 +142,65 @@ def test_a_fenced_plan_is_validated_locally() -> None:
         "style": ["instrumental"],
         "event_refs": ["turn-corner"],
     }
+
+
+def test_a_valid_space_envelope_becomes_the_plan() -> None:
+    raw = json.dumps(
+        {
+            "status": "valid",
+            "arrangement": _plan(),
+        }
+    )
+
+    assert unwrap_space_reply(raw) == _plan()
+
+
+def test_a_blocked_space_reply_is_not_a_repairable_plan() -> None:
+    raw = json.dumps({"status": "blocked", "code": "gemma_not_proved", "arrangement": None})
+
+    try:
+        unwrap_space_reply(raw)
+    except RuntimeError as error:
+        assert str(error) == "gemma_not_proved"
+    else:
+        raise AssertionError("blocked reply should fail closed")
+
+
+def test_an_invalid_space_reply_returns_the_model_text() -> None:
+    raw = json.dumps(
+        {
+            "status": "invalid",
+            "code": "plan_invalid",
+            "arrangement": None,
+            "model_text": "not a plan",
+        }
+    )
+
+    assert unwrap_space_reply(raw) == "not a plan"
+
+
+def test_space_client_sends_json_and_unwraps_the_plan(monkeypatch) -> None:
+    captured: dict[str, object] = {}
+
+    class FakeClient:
+        def __init__(self, space_url: str, token: str | None = None) -> None:
+            captured["url"] = space_url
+            captured["token"] = token
+
+        def predict(self, payload: str, api_name: str) -> str:
+            captured["payload"] = payload
+            captured["api"] = api_name
+            return json.dumps({"status": "valid", "arrangement": _plan()})
+
+    import gradio_client
+
+    monkeypatch.setattr(gradio_client, "Client", FakeClient)
+    client = SpaceArrangeClient("https://example.invalid", token="hf_secret")
+
+    assert client.arrange({"schema_version": "1", "events": []}) == _plan()
+    assert json.loads(str(captured["payload"]))["schema_version"] == "1"
+    assert captured["api"] == "/arrange"
+    assert "hf_secret" not in repr(client)
 
 
 def test_pace_ids_are_renamed_into_the_shared_pattern() -> None:

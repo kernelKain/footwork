@@ -1,7 +1,7 @@
 from pathlib import Path
 
 import pytest
-from app.jobs.flow import generation_disabled, live_dispatch
+from app.jobs.flow import generation_disabled, live_dispatch, space_arrangement
 from app.jobs.service import ELEVEN_ATTEMPT_LIMIT, GEMMA_ATTEMPT_LIMIT, GPU_SECOND_LIMIT
 from app.main import create_app, store_paths
 from fastapi.testclient import TestClient
@@ -100,3 +100,36 @@ def test_live_generation_stays_off(monkeypatch: pytest.MonkeyPatch) -> None:
     monkeypatch.setenv("GENERATION_ENABLED", "true")
 
     assert live_dispatch().render is not generation_disabled
+    assert live_dispatch().arrange is space_arrangement
+
+
+def test_a_missing_space_fails_closed(monkeypatch: pytest.MonkeyPatch) -> None:
+    monkeypatch.delenv("HF_SPACE_URL", raising=False)
+
+    outcome = space_arrangement(({"id": "turn-1", "type": "turn", "audio_offset_ms": 12_000},))
+
+    assert outcome.status == "degraded"
+    assert outcome.reason == "provider_failed"
+    assert outcome.arrangement is None
+
+
+def test_a_configured_space_plan_is_accepted_without_a_network_call(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    monkeypatch.setenv("HF_SPACE_URL", "https://example.invalid")
+
+    class Stub:
+        def arrange(self, timeline: dict[str, object]) -> dict[str, object]:
+            assert "latitude" not in str(timeline)
+            return {
+                "mood": "warm_cinematic",
+                "style": ["instrumental"],
+                "event_refs": ["turn-1"],
+            }
+
+    monkeypatch.setattr("app.jobs.flow.client_from_env", lambda: Stub())
+    outcome = space_arrangement(({"id": "turn-1", "type": "turn", "audio_offset_ms": 12_000},))
+
+    assert outcome.status == "valid"
+    assert outcome.arrangement is not None
+    assert outcome.arrangement["event_refs"] == ["turn-1"]
