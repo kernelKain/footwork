@@ -1,8 +1,9 @@
 """Compress a cleaned walk into a 60-second Route Sketch.
 
-The melody falls until the first turn, rises after it, and stays silent through
-the pause. Display points are translated, rotated, and scaled. They are not
-geographic coordinates.
+The line falls until the first turn and rises after it. Each later turn flips
+that direction. Every pause is silence. A pace change plays louder and adds a
+brighter fifth. A loop replays the opening descending line. Display points are
+translated, rotated, and scaled. They are not geographic coordinates.
 """
 
 import array
@@ -10,7 +11,7 @@ import struct
 import sys
 from collections.abc import Sequence
 from dataclasses import dataclass
-from math import atan2, cos, sin
+from math import atan2, cos, pi, sin
 
 from app.movement.clean import CleanTrace, ProjectedSample
 from app.movement.detect import MovementEvent
@@ -20,7 +21,14 @@ MIN_CHAPTER_MS = 3_000
 MAX_ANCHORS = 8
 MIN_CHAPTERS = 3
 PAUSE_HOLD_MS = 10_000
+LOOP_HOLD_MS = 6_000
 SAMPLE_RATE = 16_000
+_HIGH_HZ = 523.0
+_LOW_HZ = 330.0
+_BASE_AMP = 0.35
+_PACE_GAIN = 1.4
+_MAX_AMP = 0.72
+_FIFTH = 0.28
 TRIM_FRACTION = 0.02
 _SUMMARY = (
     "This sketch follows the walk in order. The displayed route is rotated and scaled. "
@@ -132,8 +140,6 @@ def compose_sketch(trace: CleanTrace, events: Sequence[MovementEvent]) -> RouteS
     chapters = _chapters(bounds, anchors)
     sync = _sync(bounds, anchors, t0, span)
     route = _route(trace.samples, t0, t1, span)
-    turn_ms = next((event.audio_offset_ms for event in sketched if event.type == "turn"), TARGET_MS)
-    pause_start, pause_end = _pause_window(sketched)
     return RouteSketch(
         TARGET_MS,
         route,
@@ -141,8 +147,34 @@ def compose_sketch(trace: CleanTrace, events: Sequence[MovementEvent]) -> RouteS
         tuple(chapters),
         tuple(sync),
         _SUMMARY,
-        _wav(_tone(turn_ms, pause_start, pause_end)),
+        _wav(_tone(sketched)),
     )
+
+
+def melody_at(
+    time_ms: float,
+    events: Sequence[tuple[int, str]],
+    duration_ms: int = TARGET_MS,
+) -> tuple[float, float, float]:
+    """Return Hz, amplitude, and fifth mix for one moment of the sketch.
+
+    The first turn still turns a falling line upward. Each later turn flips that
+    direction. Every pause is silence. A pace change raises the level and adds a
+    brighter fifth. A loop replays the opening descending line.
+    """
+    ordered = sorted(events, key=lambda item: (item[0], _PRIORITY.get(item[1], 9)))
+    for start_ms, end_ms in _silence_windows(ordered, duration_ms):
+        if start_ms <= time_ms < end_ms:
+            return (0.0, 0.0, 0.0)
+    amplitude = _energy(time_ms, ordered)
+    harmonic = _FIFTH if _pace_count(time_ms, ordered) else 0.0
+    loop = _loop_window(time_ms, ordered, duration_ms)
+    if loop is not None:
+        start_ms, end_ms = loop
+        span = max(end_ms - start_ms, 1)
+        progress = 0.0 if end_ms <= start_ms else min((time_ms - start_ms) / span, 1.0)
+        return (_HIGH_HZ - progress * (_HIGH_HZ - _LOW_HZ), amplitude, harmonic)
+    return (_pitch(time_ms, ordered, duration_ms), amplitude, harmonic)
 
 
 def frequency_hz(time_ms: float, turn_ms: int, pause_start_ms: int, pause_end_ms: int) -> float:
@@ -315,31 +347,92 @@ def _normalize(points: Sequence[tuple[float, float]]) -> list[tuple[float, float
     ]
 
 
-def _pause_window(events: Sequence[SketchEvent]) -> tuple[int, int]:
-    """Return the (start, end) audio offsets during which the melody should stay silent."""
-    pause = next((event for event in events if event.type == "pause"), None)
-    if pause is None:
-        return (TARGET_MS, TARGET_MS)
-    later = [
-        event.audio_offset_ms for event in events if event.audio_offset_ms > pause.audio_offset_ms
-    ]
-    end_ms = min(TARGET_MS, min(later) if later else pause.audio_offset_ms + PAUSE_HOLD_MS)
-    if end_ms <= pause.audio_offset_ms:
-        return (TARGET_MS, TARGET_MS)
-    return (pause.audio_offset_ms, end_ms)
+def _silence_windows(events: Sequence[tuple[int, str]], duration_ms: int) -> list[tuple[int, int]]:
+    """Return every pause as a silent window, ending at the next event or after ten seconds."""
+    windows: list[tuple[int, int]] = []
+    for time_ms, kind in events:
+        if kind != "pause":
+            continue
+        later = [mark for mark, _kind in events if mark > time_ms]
+        end_ms = min(duration_ms, min(later) if later else time_ms + PAUSE_HOLD_MS)
+        if end_ms > time_ms:
+            windows.append((time_ms, end_ms))
+    return windows
 
 
-def _tone(turn_ms: int, pause_start_ms: int, pause_end_ms: int) -> array.array:
+def _loop_window(
+    time_ms: float, events: Sequence[tuple[int, str]], duration_ms: int
+) -> tuple[int, int] | None:
+    """Return the active loop window, which replays the opening line for up to six seconds."""
+    started = [mark for mark, kind in events if kind == "loop" and mark <= time_ms]
+    if not started:
+        return None
+    start_ms = started[-1]
+    later = [mark for mark, _kind in events if mark > start_ms]
+    end_ms = min(duration_ms, start_ms + LOOP_HOLD_MS)
+    if later:
+        end_ms = min(end_ms, min(later))
+    if end_ms <= start_ms or time_ms >= end_ms:
+        return None
+    return (start_ms, end_ms)
+
+
+def _pace_count(time_ms: float, events: Sequence[tuple[int, str]]) -> int:
+    """Return how many pace changes have already occurred."""
+    return sum(1 for mark, kind in events if kind == "pace_change" and mark <= time_ms)
+
+
+def _energy(time_ms: float, events: Sequence[tuple[int, str]]) -> float:
+    """Raise the sketch level once for each pace change, up to a safe peak."""
+    return min(_MAX_AMP, _BASE_AMP * (_PACE_GAIN ** _pace_count(time_ms, events)))
+
+
+def _pitch(time_ms: float, events: Sequence[tuple[int, str]], duration_ms: int) -> float:
+    """Glide through the turns. The first turn uses the original falling-then-rising line."""
+    turns = [mark for mark, kind in events if kind == "turn"]
+    pauses = [mark for mark, kind in events if kind == "pause"]
+    first_turn = turns[0] if turns else duration_ms
+    first_pause = pauses[0] if pauses else duration_ms
+    later_marks = [mark for mark, _kind in events if pauses and mark > pauses[0]]
+    if not pauses:
+        first_pause_end = duration_ms
+    else:
+        first_pause_end = min(
+            duration_ms,
+            min(later_marks) if later_marks else pauses[0] + PAUSE_HOLD_MS,
+        )
+        if first_pause_end <= pauses[0]:
+            first_pause_end = duration_ms
+    later_turns = [mark for mark in turns if mark > first_turn and mark <= time_ms]
+    if not later_turns:
+        return frequency_hz(time_ms, first_turn, first_pause, first_pause_end)
+    start_ms = later_turns[-1]
+    following = [mark for mark, _kind in events if mark > start_ms]
+    end_ms = min(following) if following else duration_ms
+    progress = min((time_ms - start_ms) / max(end_ms - start_ms, 1), 1.0)
+    falling = (len(later_turns) - 1) % 2 == 0
+    if falling:
+        return _HIGH_HZ - progress * (_HIGH_HZ - _LOW_HZ)
+    return _LOW_HZ + progress * (_HIGH_HZ - _LOW_HZ)
+
+
+def _tone(events: Sequence[SketchEvent]) -> array.array:
     """Synthesize the 60-second mono PCM tone for the sketch melody."""
+    marks = [(event.audio_offset_ms, event.type) for event in events]
     count = SAMPLE_RATE * TARGET_MS // 1000
     samples = array.array("h")
     phase = 0.0
+    fifth = 0.0
     for index in range(count):
         time_ms = index * 1000.0 / SAMPLE_RATE
-        hz = frequency_hz(time_ms, turn_ms, pause_start_ms, pause_end_ms)
-        amplitude = 0.0 if hz == 0.0 else sin(phase) * 0.35
-        phase += 2.0 * 3.141592653589793 * hz / SAMPLE_RATE
-        samples.append(round(amplitude * 32767))
+        hz, amplitude, harmonic = melody_at(time_ms, marks)
+        if hz == 0.0 or amplitude == 0.0:
+            sample = 0.0
+        else:
+            sample = sin(phase) * amplitude + sin(fifth) * amplitude * harmonic
+            phase += 2.0 * pi * hz / SAMPLE_RATE
+            fifth += 2.0 * pi * hz * 1.5 / SAMPLE_RATE
+        samples.append(round(max(-1.0, min(1.0, sample)) * 32767))
     return samples
 
 

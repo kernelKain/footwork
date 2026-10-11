@@ -1,7 +1,9 @@
 """Compile a 60-second instrumental plan and render it once.
 
 Composition-plan mode is sent without ``force_instrumental`` and without a
-text prompt. A timeout or lost response is not sent again.
+text prompt. A timeout or lost response is not sent again. Each turn flips the
+melodic direction, each pace change keeps a brighter pulse, each pause is a
+hold, and each loop brings the opening line back.
 """
 
 import array
@@ -35,12 +37,8 @@ _LABEL = {
     "loop": "[Return]",
     "continue": "[Continue]",
 }
-_MOVEMENT = {
-    "turn": ("rising",),
-    "pause": ("held", "quieter", "sparse"),
-    "pace_change": ("pulse",),
-    "loop": ("repeating motif",),
-}
+_HOLD = ("held", "quieter", "sparse")
+_ENERGY = ("pulse", "brighter")
 _BASE_STYLES = (
     "instrumental",
     "warm cinematic",
@@ -84,19 +82,25 @@ def compile_chunks(
     """Build the composition-plan chunks for the events and requested styles."""
     edges, kinds = _edges(events)
     chunks: list[dict[str, object]] = []
-    turn_at = _first_time(events, "turn")
+    direction = "falling"
+    energy = False
+    motif = False
+    turns = 0
     for index, start in enumerate(edges[:-1]):
-        end = edges[index + 1]
         kind = kinds.get(start, "continue")
-        movement = list(_MOVEMENT.get(kind, ()))
-        if turn_at is not None and end <= turn_at and "falling" not in movement:
-            movement.append("falling")
-        if turn_at is not None and start <= turn_at < end and "rising" not in movement:
-            movement.append("rising")
+        if kind == "turn":
+            direction = "rising" if direction == "falling" else "falling"
+            motif = False
+            turns += 1
+        elif kind == "pace_change":
+            energy = True
+        elif kind == "loop":
+            motif = True
+        movement, text = _movement(kind, direction, energy, motif, turns)
         chunks.append(
             {
-                "text": _LABEL.get(kind, "[Continue]"),
-                "duration_ms": end - start,
+                "text": text,
+                "duration_ms": edges[index + 1] - start,
                 "positive_styles": _styles(styles, movement, leading=index == 0),
                 "negative_styles": list(_NEGATIVE),
                 "context_adherence": "high",
@@ -190,27 +194,58 @@ def _failed(digest: str, code: str, size: int, song_id: str | None) -> MusicRece
     return MusicReceipt("degraded", code, MODEL_ID, digest, song_id, size, None, 1, None)
 
 
+def _movement(
+    kind: str, direction: str, energy: bool, motif: bool, turns: int
+) -> tuple[list[str], str]:
+    """Return the styles and section label for one chunk, carrying earlier changes forward."""
+    if kind == "pause":
+        return (list(_HOLD), "[Hold]")
+    if motif and kind != "turn":
+        movement = ["falling", "opening motif"]
+        if energy:
+            movement.extend(_ENERGY)
+        text = "[Motif returns]" if kind == "loop" else "[Motif continues]"
+        return (movement, text)
+    movement = [direction]
+    if energy:
+        movement.extend(_ENERGY)
+    return (movement, _section_text(kind, direction, turns))
+
+
+def _section_text(kind: str, direction: str, turns: int) -> str:
+    """Name a section. The first turn keeps the original label."""
+    if kind == "opening":
+        return "[Opening]"
+    if kind == "turn" and turns == 1:
+        return "[Turn]"
+    if kind == "turn":
+        return "[Turn rising]" if direction == "rising" else "[Turn falling]"
+    if kind == "pace_change":
+        return "[Pace brighter]"
+    return _LABEL.get(kind, "[Continue]")
+
+
 def _edges(events: Sequence[Mapping[str, object]]) -> tuple[list[int], dict[int, str]]:
     """Compute chunk boundary times and their event kinds from the timeline's events."""
     edges = [0, TARGET_MS]
     kinds = {0: "opening"}
     ordered = sorted(
         (_event(event) for event in events),
-        key=lambda item: (_PRIORITY.get(item[1], 9), item[0]),
+        key=lambda item: (item[0], _PRIORITY.get(item[1], 9)),
     )
     for time_ms, kind in ordered:
-        if kind not in _PRIORITY or not _can_split(edges, time_ms):
+        if len(edges) - 1 >= MAX_CHUNKS or kind not in _PRIORITY or not _can_split(edges, time_ms):
             continue
         edges.append(time_ms)
         edges.sort()
         kinds[time_ms] = kind
-        if kind == "pause":
+        if kind == "pause" and len(edges) - 1 < MAX_CHUNKS:
             hold_end = time_ms + PAUSE_MS
             if _can_split(edges, hold_end):
                 edges.append(hold_end)
                 edges.sort()
                 kinds[hold_end] = "continue"
-    while len(edges) - 1 < MIN_CHUNKS:
+    while len(edges) - 1 < MIN_CHUNKS and len(edges) - 1 < MAX_CHUNKS:
         index = max(range(len(edges) - 1), key=lambda item: edges[item + 1] - edges[item])
         if edges[index + 1] - edges[index] < MIN_CHUNK_MS * 2:
             break
@@ -252,12 +287,6 @@ def _styles(styles: Sequence[str], movement: Sequence[str], *, leading: bool) ->
         if cleaned and cleaned not in chosen and "http" not in cleaned and "://" not in cleaned:
             chosen.append(cleaned)
     return chosen[:12]
-
-
-def _first_time(events: Sequence[Mapping[str, object]], kind: str) -> int | None:
-    """Return the earliest audio offset among events of the given kind, if any."""
-    times = [_event(event)[0] for event in events if _event(event)[1] == kind]
-    return min(times) if times else None
 
 
 def _song_id(headers: Mapping[str, str]) -> str | None:

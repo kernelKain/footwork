@@ -49,6 +49,41 @@ def test_chunks_follow_the_turn_and_the_pause() -> None:
     assert MODEL_ID in encoded
 
 
+def test_later_events_keep_their_musical_change() -> None:
+    chunks = compile_chunks(
+        (
+            {"id": "turn-1", "type": "turn", "audio_offset_ms": 12_000},
+            {"id": "pace-1", "type": "pace_change", "audio_offset_ms": 20_000},
+            {"id": "pause-1", "type": "pause", "audio_offset_ms": 30_000},
+            {"id": "turn-2", "type": "turn", "audio_offset_ms": 48_000},
+            {"id": "loop-1", "type": "loop", "audio_offset_ms": 55_000},
+        ),
+        STYLES,
+    )
+    texts = [chunk["text"] for chunk in chunks]
+    styles = {chunk["text"]: chunk["positive_styles"] for chunk in chunks}
+
+    assert sum(chunk["duration_ms"] for chunk in chunks) == 60_000
+    assert texts[0] == "[Opening]"
+    assert "falling" in styles["[Opening]"]
+    assert "[Turn]" in texts
+    assert "rising" in styles["[Turn]"]
+    assert "[Pace brighter]" in texts
+    assert "pulse" in styles["[Pace brighter]"]
+    assert "brighter" in styles["[Pace brighter]"]
+    assert "[Hold]" in texts
+    assert "quieter" in styles["[Hold]"]
+    assert "pulse" not in styles["[Hold]"]
+    assert "[Turn falling]" in texts
+    assert "falling" in styles["[Turn falling]"]
+    assert "[Motif returns]" in texts
+    assert "opening motif" in styles["[Motif returns]"]
+    assert "falling" in styles["[Motif returns]"]
+    held = chunks[texts.index("[Hold]") + 1]
+    assert "pulse" in held["positive_styles"]
+    assert "brighter" in held["positive_styles"]
+
+
 def test_a_timeout_is_not_sent_again() -> None:
     post = FakePost(HttpResult("timeout", None, b"", {}))
 

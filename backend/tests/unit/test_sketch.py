@@ -1,6 +1,6 @@
 from app.movement.clean import CleanTrace, ProjectedSample
 from app.movement.detect import MovementEvent
-from app.movement.sketch import compose_sketch, frequency_hz, mean_abs_sample
+from app.movement.sketch import compose_sketch, frequency_hz, mean_abs_sample, melody_at
 
 TURN_SOURCE_MS = 27_000
 PAUSE_SOURCE_MS = 54_000
@@ -92,6 +92,40 @@ def test_extra_events_stay_in_metadata_without_extra_chapters() -> None:
     assert len(sketch.chapters) <= 10
     anchored = {chapter.start_ms for chapter in sketch.chapters}
     assert sum(event.audio_offset_ms in anchored for event in sketch.events) <= 8
+
+
+def test_later_turns_pace_and_loops_change_the_tone() -> None:
+    sketch = compose_sketch(
+        _trace(),
+        [
+            _event("turn-1", "turn", 15_000),
+            _event("pace-1", "pace_change", 30_000),
+            _event("turn-2", "turn", 45_000),
+            _event("pause-1", "pause", 54_000),
+            _event("loop-1", "loop", 72_000),
+            _event("pause-2", "pause", 84_000),
+        ],
+    )
+    marks = [(event.audio_offset_ms, event.type) for event in sketch.events]
+    first_turn, second_turn = _times(marks, "turn")
+    pace = _times(marks, "pace_change")[0]
+    first_pause, second_pause = _times(marks, "pause")
+    loop = _times(marks, "loop")[0]
+
+    assert melody_at(first_turn + 4_000, marks)[0] > melody_at(first_turn + 2_000, marks)[0]
+    assert melody_at(second_turn + 3_000, marks)[0] < melody_at(second_turn + 500, marks)[0]
+    assert (
+        mean_abs_sample(sketch.wav, pace + 500, second_turn - 500)
+        > mean_abs_sample(sketch.wav, first_turn + 1_000, pace - 1_000)
+        > 1000
+    )
+    assert mean_abs_sample(sketch.wav, first_pause + 1_000, loop - 1_000) < 20
+    assert mean_abs_sample(sketch.wav, second_pause + 500, second_pause + 3_000) < 20
+    assert melody_at(loop + 2_000, marks)[0] < melody_at(loop + 400, marks)[0]
+
+
+def _times(marks: list[tuple[int, str]], kind: str) -> list[int]:
+    return [mark for mark, event_type in marks if event_type == kind]
 
 
 def test_an_unusable_trace_does_not_invent_a_musical_turn() -> None:
