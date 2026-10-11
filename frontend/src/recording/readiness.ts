@@ -10,16 +10,19 @@ export const SUBMITTING_STATUS = "Walk saved. Turning your movement into musicâ€
 
 export const SHORT_WALK_WARNING = "This recording may be too short for a reliable Soundprint.";
 
+/** Return whether active time is below the minimum, treating negative time as zero. */
 export function activeWalkIsShort(activeMs: number): boolean {
   return Math.max(0, activeMs) < MIN_ACTIVE_WALK_MS;
 }
 
+/** Format active-time progress or report that the walking minimum has been reached. */
 export function readinessProgress(activeMs: number): string {
   const elapsed = Math.max(0, activeMs);
   if (elapsed >= MIN_ACTIVE_WALK_MS) return "Minimum time reached.";
   return `${clock(elapsed)} of ${clock(MIN_ACTIVE_WALK_MS)} minimum.`;
 }
 
+/** Format milliseconds as minutes and zero-padded seconds, discarding partial seconds. */
 function clock(ms: number): string {
   const total = Math.floor(ms / 1000);
   const minutes = Math.floor(total / 60);

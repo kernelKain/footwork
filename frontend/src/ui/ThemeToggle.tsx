@@ -16,6 +16,7 @@ function storedTheme(): ThemeName | null {
   return value === "light" || value === "dark" ? value : null;
 }
 
+/** Read the theme already applied to the document, defaulting to dark for unknown values. */
 function paintedTheme(): ThemeName {
   const value = document.documentElement.getAttribute("data-theme");
   return value === "light" || value === "dark" ? value : "dark";
@@ -27,6 +28,7 @@ function paintThemeColor(theme: ThemeName) {
     ?.setAttribute("content", theme === "light" ? LIGHT : DARK);
 }
 
+/** Render the theme switch and synchronize the document, saved preference, and theme color. */
 export function ThemeToggle() {
   const [theme, setTheme] = useState<ThemeName>(paintedTheme);
 
@@ -61,6 +63,7 @@ export function ThemeToggle() {
   );
 }
 
+/** Render the decorative sun icon for switching to the light theme. */
 function SunIcon() {
   return (
     <svg
@@ -83,6 +86,7 @@ function SunIcon() {
   );
 }
 
+/** Render the decorative moon icon for switching to the dark theme. */
 function MoonIcon() {
   return (
     <svg

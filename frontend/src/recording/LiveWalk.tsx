@@ -35,6 +35,7 @@ const WATCH_OPTIONS: PositionOptions = {
   timeout: 20000,
 };
 
+/** Coordinate live location capture, draft persistence, and submission after saving. */
 export function LiveWalk({
   onNavigate,
   onGo,
@@ -262,6 +263,7 @@ export function LiveWalk({
     setModel(next);
   };
 
+  /** Reset recording and confirmation state, then request deletion of the saved draft. */
   const reset = () => {
     sessionRef.current = "";
     endingRef.current = false;
@@ -272,6 +274,7 @@ export function LiveWalk({
     void store.clear();
   };
 
+  /** End the current walk once and close any short-walk confirmation. */
   const finishWalk = () => {
     if (endingRef.current) return;
     const current = modelRef.current;
@@ -282,6 +285,7 @@ export function LiveWalk({
     apply(endLive(current, readActiveRef.current(), Date.now()));
   };
 
+  /** Ask for confirmation below the active-time minimum; otherwise finish the walk. */
   const requestEnd = () => {
     if (endingRef.current || shortConfirmRef.current) return;
     const current = modelRef.current;
@@ -294,11 +298,13 @@ export function LiveWalk({
     finishWalk();
   };
 
+  /** Dismiss the short-walk confirmation without ending the recording. */
   const keepWalking = () => {
     shortConfirmRef.current = false;
     setShortConfirm(false);
   };
 
+  /** Delete the ended draft and hide its deletion control after storage succeeds. */
   const discardEndedWalk = () => {
     void store.clear().then(() => setEndedDraftSaved(false));
   };

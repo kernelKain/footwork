@@ -222,6 +222,7 @@ def _corner_body() -> bytes:
 
 
 def _headers(idempotency_key: str, job_key: str) -> dict[str, str]:
+    """Build submission headers with idempotency, job capability, and install credentials."""
     return {
         "content-type": "application/json",
         "x-idempotency-key": idempotency_key,

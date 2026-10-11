@@ -125,12 +125,14 @@ export function isCurrentChapter(
   return timeMs === durationMs && endMs === durationMs;
 }
 
+/** Classify accepted moment counts as none, few (one or two), or several. */
 export function momentPresence(count: number): "none" | "few" | "several" {
   if (count <= 0) return "none";
   if (count <= 2) return "few";
   return "several";
 }
 
+/** Describe the current chapter and first active event, falling back to a generic chapter label. */
 export function nowPlayingLine(
   chapters: Chapter[],
   events: MovementEvent[],

@@ -90,6 +90,7 @@ export const momentExamples: readonly MomentExample[] = [
   },
 ];
 
+/** Return the sketch events for a turn or pace preview; pause uses no timed events. */
 export function momentEvents(id: MomentExampleId): TimedEvent[] {
   if (id === "turn") return TURN_EVENTS;
   if (id === "pace") return PACE_EVENTS;
@@ -108,6 +109,7 @@ export function momentPreviewWav(id: MomentExampleId): ArrayBuffer {
   return synthesizeSketchWav(PREVIEW_MS, momentEvents(id));
 }
 
+/** Copy a mono 16-bit PCM WAV and zero samples in the requested millisecond interval. */
 function silenceGap(wav: ArrayBuffer, startMs: number, endMs: number): ArrayBuffer {
   const copy = wav.slice(0);
   const view = new DataView(copy);

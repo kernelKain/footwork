@@ -4,6 +4,9 @@ const INSTALL_TOKEN = /^[0-9a-f]{64}$/;
 
 let pageToken: string | null = null;
 
+/**
+ * Reuse or create a stored install token, falling back to a page token on storage failure.
+ */
 export function installToken(storage: Pick<Storage, "getItem" | "setItem"> = localStorage): string {
   try {
     const existing = storage.getItem(INSTALL_STORAGE_KEY);
@@ -18,6 +21,7 @@ export function installToken(storage: Pick<Storage, "getItem" | "setItem"> = loc
   return pageToken;
 }
 
+/** Generate a cryptographically random 256-bit install token as lowercase hexadecimal. */
 function randomInstallToken(): string {
   const bytes = new Uint8Array(32);
   crypto.getRandomValues(bytes);

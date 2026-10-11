@@ -170,6 +170,7 @@ export function LiveJobPanel({
   );
 }
 
+/** Show generation failure guidance with retry, example, and optional draft deletion. */
 export function GenerationRecovery({
   code,
   onExample,

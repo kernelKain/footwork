@@ -37,6 +37,7 @@ export type WalkClocks = {
   elapsedMs: number;
 };
 
+/** Render phase-specific recording controls, recovery actions, and active-time guidance. */
 export function RecordingView({
   phase,
   clocks,
@@ -332,6 +333,7 @@ function headingFor(
   return mode === "live" ? "Recording" : "Practice walk";
 }
 
+/** Show active-time readiness, the optional break clock, and accessible elapsed time. */
 function WalkClocks({
   clocks,
   showBreak,
@@ -439,6 +441,7 @@ function ExampleLink({ onNavigate }: { onNavigate: Navigate }) {
   );
 }
 
+/** Render a recording alert with optional recovery and end-walk actions. */
 function Recovery({
   title,
   children,

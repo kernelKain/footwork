@@ -1,10 +1,12 @@
 import { expect, type Page } from "@playwright/test";
 import { test } from "./practicePage";
 
+/** Read the computed body background color for theme assertions. */
 async function background(page: Page) {
   return page.evaluate(() => getComputedStyle(document.body).backgroundColor);
 }
 
+/** Check the theme switch label, decorative icon, and minimum touch-target size. */
 async function expectThemeControl(page: Page, name: "Light theme" | "Dark theme") {
   const button = page.getByRole("button", { name });
   await expect(button).toBeVisible();

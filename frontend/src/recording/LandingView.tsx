@@ -4,6 +4,7 @@ import { MomentExamples } from "./MomentExamples";
 
 type Navigate = (event: { preventDefault: () => void; currentTarget: { href: string } }) => void;
 
+/** Render the walking introduction, moment previews, and optional saved-draft deletion. */
 export function LandingView({
   onStart,
   onNavigate,

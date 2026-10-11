@@ -54,6 +54,7 @@ class Spy:
 
 
 def test_a_retry_returns_the_same_job_and_reserves_once(tmp_path: Path) -> None:
+    """Verify idempotent retries reuse a job and spend global and install allowance only once."""
     data, _clock, spy, client = _app(tmp_path)
     body = _walk()
     key = token_hex(32)
@@ -127,6 +128,7 @@ def test_one_active_job_blocks_a_different_request(tmp_path: Path) -> None:
 
 
 def test_quota_is_kept_after_delete_and_blocks_the_next_piece(tmp_path: Path) -> None:
+    """Verify deleting jobs preserves spent quota and the global limit blocks further dispatch."""
     data, _clock, spy, client = _app(tmp_path)
     body = _walk()
 
@@ -193,6 +195,7 @@ def test_a_partial_gpu_remainder_is_refused_before_dispatch(tmp_path: Path) -> N
 
 
 def test_restart_interrupts_the_job_and_keeps_the_reservation(tmp_path: Path) -> None:
+    """Verify restart preserves quota and a new attempt spends another install reservation."""
     data, clock, spy, client = _app(tmp_path)
     body = _walk()
     key = token_hex(32)
@@ -261,6 +264,7 @@ def test_an_unknown_provider_outcome_keeps_the_reservation(tmp_path: Path) -> No
 
 
 def test_overlapping_retries_create_one_job(tmp_path: Path) -> None:
+    """Verify concurrent identical submissions dispatch once and reserve allowance once."""
     data = tmp_path / "jobs"
     clock = Clock()
     spy = Spy(data / "quota-ledger.json")
@@ -271,6 +275,7 @@ def test_overlapping_retries_create_one_job(tmp_path: Path) -> None:
     found: list[str] = []
 
     def submit() -> None:
+        """Synchronize competing submissions and collect the job IDs returned by the service."""
         barrier.wait()
         found.append(service.submit(body, "idem-race-0001", key, INSTALL_TOKEN).job_id)
         time.sleep(0.05)
@@ -600,6 +605,7 @@ def test_a_located_result_is_not_stored(tmp_path: Path) -> None:
 def test_job_log_omits_locations_capabilities_and_keys(
     tmp_path: Path, caplog: pytest.LogCaptureFixture
 ) -> None:
+    """Verify logs omit sensitive values and the ledger stores only the install token digest."""
     caplog.set_level(logging.INFO, logger="footwork.jobs")
     data = tmp_path / "jobs"
     client = TestClient(
@@ -748,6 +754,7 @@ def _dump(body: dict[str, object]) -> bytes:
 def _headers(
     idempotency_key: str, job_key: str, install_token: str = INSTALL_TOKEN
 ) -> dict[str, str]:
+    """Build submission headers with idempotency, job capability, and install credentials."""
     return {
         "content-type": "application/json",
         "x-idempotency-key": idempotency_key,
@@ -757,6 +764,7 @@ def _headers(
 
 
 def test_environment_caps_stay_inside_reviewed_maxima(monkeypatch: pytest.MonkeyPatch) -> None:
+    """Verify configured caps are bounded and invalid values fall back to defaults."""
     monkeypatch.setenv("MAX_INSTALL_JOBS_PER_DAY", "30")
     monkeypatch.setenv("MAX_GEMMA_ATTEMPTS_PER_DAY", "100")
     monkeypatch.setenv("MAX_GEMMA_GPU_SECONDS_PER_DAY", "99999")
@@ -772,6 +780,7 @@ def test_environment_caps_stay_inside_reviewed_maxima(monkeypatch: pytest.Monkey
 def test_eight_jobs_are_admitted_and_the_ninth_is_refused_before_dispatch(
     monkeypatch: pytest.MonkeyPatch, tmp_path: Path
 ) -> None:
+    """Verify an install can submit eight jobs before its allowance blocks dispatch."""
     _open_global_budget(monkeypatch, 8)
     data, _clock, spy, client = _app(tmp_path)
     body = _walk()
@@ -797,6 +806,7 @@ def test_eight_jobs_are_admitted_and_the_ninth_is_refused_before_dispatch(
 def test_another_install_has_its_own_allowance(
     monkeypatch: pytest.MonkeyPatch, tmp_path: Path
 ) -> None:
+    """Verify an exhausted install does not consume another install's daily allowance."""
     _open_global_budget(monkeypatch, 9)
     data, _clock, spy, client = _app(tmp_path)
     body = _walk()
@@ -823,11 +833,13 @@ def test_another_install_has_its_own_allowance(
 
 
 def test_global_budget_blocks_a_fresh_install_before_dispatch(tmp_path: Path) -> None:
+    """Verify an exhausted global budget rejects even an install with no prior jobs."""
     data = tmp_path / "jobs"
     clock = Clock()
     ledger = Ledger(data / "quota-ledger.json", clock)
 
     def seed(payload: dict[str, object]) -> None:
+        """Seed exhausted global usage for the test day without adding install usage."""
         payload["usage"] = {DAY: {"gemma_attempts": 4, "gpu_seconds": 240, "eleven_attempts": 4}}
 
     ledger.transact(seed)
@@ -850,6 +862,7 @@ def test_global_budget_blocks_a_fresh_install_before_dispatch(tmp_path: Path) ->
 
 
 def test_a_schema_one_ledger_keeps_spent_global_usage(tmp_path: Path) -> None:
+    """Verify ledger migration preserves spent quota and initializes install accounting."""
     data = tmp_path / "jobs"
     data.mkdir()
     legacy = {
@@ -881,6 +894,7 @@ def test_a_schema_one_ledger_keeps_spent_global_usage(tmp_path: Path) -> None:
 
 
 def test_a_missing_install_token_is_refused_before_dispatch(tmp_path: Path) -> None:
+    """Verify requests without an install token are rejected before dispatch or ledger creation."""
     data, _clock, spy, client = _app(tmp_path)
     headers = _headers("idem-missing-token", token_hex(32))
     del headers["x-install-token"]
@@ -893,6 +907,7 @@ def test_a_missing_install_token_is_refused_before_dispatch(tmp_path: Path) -> N
 
 
 def _open_global_budget(monkeypatch: pytest.MonkeyPatch, jobs: int) -> None:
+    """Raise global limits for a test so the requested number of jobs fits all provider budgets."""
     monkeypatch.setattr("app.jobs.service.GEMMA_ATTEMPT_LIMIT", jobs)
     monkeypatch.setattr("app.jobs.service.GPU_SECOND_LIMIT", jobs * GPU_RESERVE_SECONDS)
     monkeypatch.setattr("app.jobs.service.ELEVEN_ATTEMPT_LIMIT", jobs)
@@ -901,6 +916,7 @@ def _open_global_budget(monkeypatch: pytest.MonkeyPatch, jobs: int) -> None:
 def _admit(
     client: TestClient, body: bytes, idempotency_key: str, install_token: str = INSTALL_TOKEN
 ):
+    """Submit and delete a job, retaining its spent allowance, and return the creation response."""
     key = token_hex(32)
     created = client.post(
         "/api/v1/soundprints",
@@ -917,6 +933,7 @@ def _admit(
 
 
 def _install_jobs(data: Path, token: str) -> int:
+    """Read and validate the test-day job count for the hashed install token."""
     payload = json.loads((data / "quota-ledger.json").read_text(encoding="utf-8"))
     bucket = payload["installs"][digest("install", token.lower().encode())][DAY]
     assert isinstance(bucket, dict)

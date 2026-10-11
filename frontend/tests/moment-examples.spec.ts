@@ -61,6 +61,7 @@ test("the three figures show different mappings", () => {
   }
   const slow = pace.samples.filter((x) => x < pace.align);
   const fast = pace.samples.filter((x) => x > pace.align);
+  /** Return the mean adjacent sample distance for comparing pace illustration spacing. */
   const spacing = (points: number[]) =>
     points.slice(1).reduce((total, point, index) => total + point - points[index], 0) /
     (points.length - 1);
@@ -202,6 +203,7 @@ test("moment examples have no serious accessibility violations", async ({ page }
   expect(blocking).toEqual([]);
 });
 
+/** Read the current audio source, returning an empty string while playback is paused. */
 function playingSrc(audio: ReturnType<Page["locator"]>) {
   return audio.evaluate((element) => {
     const player = element as HTMLAudioElement;

@@ -2,6 +2,7 @@ import type { Chapter, MovementEvent, MovementSummary, RoutePoint } from "../con
 import { nowPlayingLine } from "./journeyModel";
 import { RouteFigure } from "./RouteFigure";
 
+/** Render the route and current musical moment using the shared playback time. */
 export function JourneyStage({
   points,
   events,

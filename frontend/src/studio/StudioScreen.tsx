@@ -65,6 +65,7 @@ function clearGenerationRequest(): void {
   }
 }
 
+/** Manage generation and recovery views, then synchronize the result around one audio clock. */
 export function StudioScreen({ fixture, onNavigate, opened }: StudioScreenProps) {
   const { result } = fixture;
   const [view, setView] = useState<StudioView>(() =>
@@ -126,6 +127,7 @@ export function StudioScreen({ fixture, onNavigate, opened }: StudioScreenProps)
       cancel = true;
     };
   }, [drafts, view.name]);
+  /** Clear the saved draft and hide the recovery deletion action after storage succeeds. */
   const deleteSavedWalk = useCallback(() => {
     void drafts.clear().then(() => setEndedDraftSaved(false));
   }, [drafts]);

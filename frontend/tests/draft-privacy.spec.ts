@@ -129,6 +129,7 @@ test("a walk refused before acceptance stays saved until it is deleted", async (
   await expectNoExport(page);
 });
 
+/** Assert that raw-walk download, upload, and legacy export messaging are absent. */
 async function expectNoExport(page: Page): Promise<void> {
   await expect(
     page.getByRole("button", { name: "Download the walk stored on this phone" }),
@@ -140,6 +141,7 @@ async function expectNoExport(page: Page): Promise<void> {
   await expect(page.locator('input[type="file"]')).toHaveCount(0);
 }
 
+/** Create an ended draft with one synthetic location sample for privacy tests. */
 function endedDraft(sessionId: string): MovementDraft {
   const now = Date.now();
   return {
@@ -150,6 +152,7 @@ function endedDraft(sessionId: string): MovementDraft {
   };
 }
 
+/** Install a geolocation stub that emits two synthetic samples and supports clearing watches. */
 async function installWatch(page: Page): Promise<void> {
   await page.addInitScript(() => {
     const timers = new Map<number, number>();
@@ -199,6 +202,7 @@ async function installWatch(page: Page): Promise<void> {
   });
 }
 
+/** Read the saved draft from browser IndexedDB, returning null when no draft is stored. */
 async function readDraft(page: Page): Promise<MovementDraft | null> {
   return page.evaluate(
     async ({ dbName, store, key }) => {
@@ -224,6 +228,7 @@ async function readDraft(page: Page): Promise<MovementDraft | null> {
   );
 }
 
+/** Seed the browser draft store and wait for the IndexedDB transaction to complete. */
 async function writeDraft(page: Page, draft: MovementDraft): Promise<void> {
   await page.evaluate(
     async ({ dbName, store, key, value }) => {

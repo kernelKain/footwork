@@ -177,6 +177,7 @@ test("an early ending warns once, then submits one job after saving", async ({ p
   await page.evaluate(() => {
     const seen: string[] = [];
     Object.assign(window, { __footworkStatusLog: seen });
+    /** Append current status text to the test log, suppressing consecutive duplicate messages. */
     const remember = () => {
       for (const node of document.querySelectorAll("[role='status']")) {
         const text = node.textContent?.trim() ?? "";
@@ -217,6 +218,7 @@ test("an early ending warns once, then submits one job after saving", async ({ p
   expect(posts).toBe(1);
 });
 
+/** Create a synthetic draft with the requested recording status and active duration. */
 function walkDraft(
   sessionId: string,
   status: MovementDraft["status"],
@@ -232,6 +234,7 @@ function walkDraft(
   };
 }
 
+/** Seed the browser draft store and wait for the IndexedDB transaction to complete. */
 async function writeDraft(page: Page, draft: MovementDraft): Promise<void> {
   await page.evaluate(
     async ({ dbName, store, key, value }) => {
@@ -257,6 +260,7 @@ async function writeDraft(page: Page, draft: MovementDraft): Promise<void> {
   );
 }
 
+/** Read the browser status-message log installed by the readiness test. */
 async function statusLog(page: Page): Promise<string[]> {
   return page.evaluate(
     () => (window as unknown as { __footworkStatusLog: string[] }).__footworkStatusLog,

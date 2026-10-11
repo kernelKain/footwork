@@ -67,6 +67,7 @@ export function SoundprintPlayer({
   );
 }
 
+/** Render compact playback controls driven by the parent player state and clock. */
 export function MiniPlayer({
   timeMs,
   durationMs,

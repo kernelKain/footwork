@@ -211,6 +211,7 @@ export function resumeLive(state: LiveModel, online: boolean): LiveModel {
   return { ...state, phase: "resuming", watching: true, resumeNote: null };
 }
 
+/** Stop capture and mark an eligible draft ended for saving; finish directly if no draft exists. */
 export function endLive(state: LiveModel, activeMs: number, nowMs: number): LiveModel {
   if (!state.draft) return { ...state, watching: false, phase: "finished" };
   if (

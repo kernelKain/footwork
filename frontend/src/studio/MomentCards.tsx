@@ -14,6 +14,7 @@ const PRESENCE = {
   several: "Choose a moment to hear where it sits in the piece.",
 };
 
+/** Render movement-to-music cards that select moments and seek the shared player. */
 export function MomentCards({
   events,
   summary,

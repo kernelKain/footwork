@@ -2,12 +2,14 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { Button } from "../ui/Button";
 import { momentExamples, momentPreviewWav, type MomentExampleId } from "./momentExamples";
 
+/** Render illustrated movement previews with one shared audio element and URL cleanup. */
 export function MomentExamples() {
   const audioRef = useRef<HTMLAudioElement>(null);
   const urlRef = useRef<string | null>(null);
   const tokenRef = useRef(0);
   const [active, setActive] = useState<MomentExampleId | null>(null);
 
+  /** Pause preview audio, detach its source, and revoke the current object URL. */
   const release = useCallback(() => {
     const audio = audioRef.current;
     if (audio) {
@@ -20,6 +22,7 @@ export function MomentExamples() {
     }
   }, []);
 
+  /** Invalidate pending playback, release preview resources, and clear the active selection. */
   const stop = useCallback(() => {
     tokenRef.current += 1;
     release();
@@ -27,6 +30,7 @@ export function MomentExamples() {
   }, [release]);
 
   useEffect(() => {
+    /** Stop the preview when the document becomes hidden. */
     const onVisibility = () => {
       if (document.hidden || document.visibilityState === "hidden") stop();
     };
@@ -38,6 +42,7 @@ export function MomentExamples() {
     };
   }, [release, stop]);
 
+  /** Toggle a preview while invalidating playback callbacks from earlier selections. */
   const toggle = (id: MomentExampleId) => {
     const audio = audioRef.current;
     if (!audio) return;

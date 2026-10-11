@@ -36,6 +36,9 @@ export function readStoredJob(): StoredJob | null {
   }
 }
 
+/**
+ * Submit a draft with install and job credentials, storing an accepted job or an API error code.
+ */
 export async function submitFinishedWalk(
   draft: MovementDraft,
 ): Promise<"live" | GenerationErrorCode> {

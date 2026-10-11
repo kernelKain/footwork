@@ -14,6 +14,7 @@ import { Surface } from "../ui/Surface";
 import { ThemeToggle } from "../ui/ThemeToggle";
 import { TimerDisplay } from "../ui/TimerDisplay";
 
+/** Render the internal UI catalog with interactive theme, confirmation, and sheet examples. */
 export function SystemScreen() {
   const [open, setOpen] = useState(false);
   const [confirmed, setConfirmed] = useState(false);

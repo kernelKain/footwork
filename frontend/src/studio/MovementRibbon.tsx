@@ -8,6 +8,7 @@ const MARKS: Record<MovementEvent["type"], string> = {
   loop: "Loop",
 };
 
+/** Render movement bands, event markers, and a playhead from the shared audio time. */
 export function MovementRibbon({
   summary,
   chapters,

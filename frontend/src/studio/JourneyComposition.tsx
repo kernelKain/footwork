@@ -1,6 +1,7 @@
 import type { MovementSummary } from "../contracts/types";
 import { compositionRows, momentCount } from "./journeyModel";
 
+/** Render accepted moment counts with bars scaled to the most frequent moment type. */
 export function JourneyComposition({ summary }: { summary: MovementSummary }) {
   const rows = compositionRows(summary);
   const total = momentCount(summary);

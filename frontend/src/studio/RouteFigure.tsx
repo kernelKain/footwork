@@ -10,6 +10,7 @@ const MARKER_LABELS: Record<MovementEvent["type"], string> = {
   loop: "Loop marker",
 };
 
+/** Draw separate route segments, selectable moments, and the audio-driven position. */
 export function RouteFigure({
   points,
   events,
@@ -118,6 +119,7 @@ export function RouteFigure({
   );
 }
 
+/** Render a focusable route event that seeks playback on click, Enter, or Space. */
 function Marker({
   event,
   points,
