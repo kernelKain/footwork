@@ -1441,7 +1441,7 @@ Active-work ceiling: 27 hours after the approved seven-hour extension
 Feature freeze: restored for product changes on October 12, 2026 after automated P5 verification. Provider budget, real-phone review, and deployment remain user gates.
 Autonomy: A1 — agent edits; user runs commands and controls Git/deployment
 Status: PRODUCT FREEZE RESTORED; release gates still open
-Last completed: Automated final-polish verification on October 12, 2026. Not deployed.
+Last completed: Final product polish, commit `be8e2e1`, on October 12, 2026. Not deployed.
 Next step: User confirms the provider budget, reviews a real phone, deploys, and runs the smoke checklist.
 Active phase: P5 verification recorded; P6 has not started
 Branch: final-product-polish

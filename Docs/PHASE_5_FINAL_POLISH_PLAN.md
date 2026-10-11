@@ -222,7 +222,7 @@ Recorded on October 12, 2026 on `final-product-polish`. The branch was not deplo
 
 | Gate | Result |
 | --- | --- |
-| All eight product slices implemented | Present on `final-product-polish`. P5.8 stays partial until the user smoke checklist passes. |
+| All eight product slices implemented | Commit `be8e2e1` on `final-product-polish`. P5.8 stays partial until the user smoke checklist passes. |
 | Backend suite, Ruff check, and Ruff format | Passed. 91 tests. |
 | Frontend typecheck, lint, Prettier, and production build | Passed after formatting `frontend/tests/fixtures/route-sketch-result.json`. |
 | Complete Playwright suite | Passed. 133 tests. |
