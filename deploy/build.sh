@@ -19,5 +19,4 @@ fi
 
 npm ci --prefix frontend
 npm run build --prefix frontend
-uv python install 3.12.12
 uv sync --project backend --frozen --no-dev
