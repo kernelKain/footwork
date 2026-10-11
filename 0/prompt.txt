@@ -1,0 +1,13 @@
+switch to main and pull latest changes from remote repo
+
+---
+
+What has not been implemented yet, what is yet to be done?
+
+---
+
+Pull the latest changes from remote repo. What else is there left to be implemented? These are implemented: doen with render deploy: https://footwork-m6g0.onrender.com/; I rreecorded the real walk of 5 min and took serval truns and gap, pace chanegs, ect but teh auido resutlt came out to be same auido can't see the differencce ,c an't feel any diference, the audio sound is also quite annoying. the route tracing was good though, i can't uderstand movement ribbon, below the soud it shows"this sound is an example made in the browser, it is not a studio recording", so we need an actual stuido recording of the path i made; also i dont have option to share my result to someone else or see it in a browser; i headr the aritifact clip but it felt too artifical, but there were soem changes i could obsereve but not many ; code rabbit is already isnatlled;
+
+---
+
+1 is done, just note it and update docs
