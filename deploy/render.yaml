@@ -23,12 +23,14 @@ services:
         value: /var/footwork/artifacts
       - key: LEDGER_PATH
         value: /var/footwork/quota.json
+      - key: MAX_INSTALL_JOBS_PER_DAY
+        value: "20"
       - key: MAX_GEMMA_ATTEMPTS_PER_DAY
-        value: "4"
+        value: "40"
       - key: MAX_GEMMA_GPU_SECONDS_PER_DAY
-        value: "240"
+        value: "2400"
       - key: MAX_MUSIC_ATTEMPTS_PER_DAY
-        value: "6"
+        value: "40"
       - key: PUBLIC_BASE_URL
         sync: false
       - key: HF_SPACE_URL

@@ -13,6 +13,14 @@ from app.jobs.flow import WalkOutcome
 from app.jobs.ledger import Ledger, digest
 from app.jobs.privacy import LOG
 from app.jobs.service import (
+    _GEMMA_DEFAULT,
+    _GEMMA_MAX,
+    _GPU_DEFAULT,
+    _GPU_MAX,
+    _INSTALL_DEFAULT,
+    _INSTALL_MAX,
+    _MUSIC_DEFAULT,
+    _MUSIC_MAX,
     GPU_RESERVE_SECONDS,
     GPU_SECOND_LIMIT,
     JobService,
@@ -768,13 +776,13 @@ def test_environment_caps_stay_inside_reviewed_maxima(monkeypatch: pytest.Monkey
     monkeypatch.setenv("MAX_INSTALL_JOBS_PER_DAY", "30")
     monkeypatch.setenv("MAX_GEMMA_ATTEMPTS_PER_DAY", "100")
     monkeypatch.setenv("MAX_GEMMA_GPU_SECONDS_PER_DAY", "99999")
-    monkeypatch.setenv("MAX_MUSIC_ATTEMPTS_PER_DAY", "40")
-    assert bounded_cap("MAX_INSTALL_JOBS_PER_DAY", 8, 8) == 8
-    assert bounded_cap("MAX_GEMMA_ATTEMPTS_PER_DAY", 4, 8) == 8
-    assert bounded_cap("MAX_GEMMA_GPU_SECONDS_PER_DAY", 240, 480) == 480
-    assert bounded_cap("MAX_MUSIC_ATTEMPTS_PER_DAY", 6, 8) == 8
+    monkeypatch.setenv("MAX_MUSIC_ATTEMPTS_PER_DAY", "80")
+    assert bounded_cap("MAX_INSTALL_JOBS_PER_DAY", _INSTALL_DEFAULT, _INSTALL_MAX) == 20
+    assert bounded_cap("MAX_GEMMA_ATTEMPTS_PER_DAY", _GEMMA_DEFAULT, _GEMMA_MAX) == 40
+    assert bounded_cap("MAX_GEMMA_GPU_SECONDS_PER_DAY", _GPU_DEFAULT, _GPU_MAX) == 2400
+    assert bounded_cap("MAX_MUSIC_ATTEMPTS_PER_DAY", _MUSIC_DEFAULT, _MUSIC_MAX) == 40
     monkeypatch.setenv("MAX_GEMMA_ATTEMPTS_PER_DAY", "nope")
-    assert bounded_cap("MAX_GEMMA_ATTEMPTS_PER_DAY", 4, 8) == 4
+    assert bounded_cap("MAX_GEMMA_ATTEMPTS_PER_DAY", _GEMMA_DEFAULT, _GEMMA_MAX) == 4
 
 
 def test_eight_jobs_are_admitted_and_the_ninth_is_refused_before_dispatch(
@@ -801,6 +809,31 @@ def test_eight_jobs_are_admitted_and_the_ninth_is_refused_before_dispatch(
     assert len(spy.job_ids) == 8
     assert _install_jobs(data, INSTALL_TOKEN) == 8
     assert INSTALL_TOKEN not in (data / "quota-ledger.json").read_text(encoding="utf-8")
+
+
+def test_twenty_jobs_are_admitted_and_the_twenty_first_is_refused_before_dispatch(
+    monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+) -> None:
+    monkeypatch.setattr("app.jobs.service.INSTALL_JOB_LIMIT", 20)
+    _open_global_budget(monkeypatch, 21)
+    data, _clock, spy, client = _app(tmp_path)
+    body = _walk()
+
+    for index in range(20):
+        _admit(client, body, f"idem-raised-{index}")
+
+    blocked = client.post(
+        "/api/v1/soundprints",
+        content=body,
+        headers=_headers("idem-raised-twenty-first", token_hex(32)),
+    )
+
+    assert blocked.status_code == 429
+    assert blocked.json()["code"] == "install_allowance"
+    assert blocked.json()["message"] == INSTALL_LIMIT
+    assert blocked.json()["retryable"] is False
+    assert len(spy.job_ids) == 20
+    assert _install_jobs(data, INSTALL_TOKEN) == 20
 
 
 def test_another_install_has_its_own_allowance(

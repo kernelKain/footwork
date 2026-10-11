@@ -30,13 +30,13 @@ from app.movement.clean import RawGap, RawSample, clean_trace
 MAX_BODY_BYTES = 1_048_576
 MAX_SAMPLES = 3000
 _INSTALL_DEFAULT = 8
-_INSTALL_MAX = 8
+_INSTALL_MAX = 20
 _GEMMA_DEFAULT = 4
-_GEMMA_MAX = 8
+_GEMMA_MAX = 40
 _GPU_DEFAULT = 240
-_GPU_MAX = 8 * 60
+_GPU_MAX = 40 * 60
 _MUSIC_DEFAULT = 6
-_MUSIC_MAX = 8
+_MUSIC_MAX = 40
 
 
 def bounded_cap(name: str, default: int, maximum: int) -> int:
