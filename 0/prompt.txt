@@ -1,0 +1,17 @@
+Work in /home/kernel-kain/Documents/Github/footwork on the existing branch final-product-polish. Read Docs/PHASE_5_FINAL_POLISH_PLAN.md, Docs/HANDOFF_1.md, Docs/HANDOFF_2.md, and Docs/FRONTEND_EXPERIENCE.md before editing.
+
+Implement only the sensitive-walk-export removal and local-draft cleanup work. Do not begin recording guidance, quota, theme, landing visual, result redesign, or animation work.
+
+Required changes:
+- Remove “Download the walk stored on this phone” and its location-file warning from the landing page.
+- Remove the footer sentence “Footwork practice. A real walk is not saved on this page.”
+- Delete frontend/src/recording/privateWalkFile.ts and the obsolete private-walk download test.
+- Remove the obsolete LandingView prop, LiveWalk import, ended-walk download state, and download callback while preserving in-progress and paused draft recovery.
+- After the server accepts a finished walk, clear the ended raw-coordinate draft from IndexedDB.
+- If submission fails before acceptance, preserve only the bounded recovery behavior specified by the plan and expose a clear Delete saved walk action where appropriate.
+- Add focused tests proving there is no coordinate-export control and that an accepted job clears the ended raw draft.
+- Update only the relevant implementation notes.
+
+Use apply_patch for edits and deletions. Run the relevant frontend typecheck, lint, formatting check, and focused Playwright tests. Do not commit.
+
+Suggested commit subject: Remove the private walk export and clear accepted drafts
