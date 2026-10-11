@@ -1,6 +1,6 @@
 # Music and hosting access
 
-Recorded October 9, 2026. One short Eleven Music generation succeeded. No Render service was created.
+Recorded October 9, 2026. One short Eleven Music generation succeeded. No Render service existed on that date. The public service confirmed on October 11, 2026 is in the Public service section below.
 
 | Check | Result |
 |---|---|
@@ -24,6 +24,10 @@ Recorded October 9, 2026. One short Eleven Music generation succeeded. No Render
 | New spend | No new purchase and no new Render service. One minimum-length music request used the existing key. |
 
 Studio generation is possible with this key. A Route Sketch remains the fallback when a later Studio request fails. This 3-second file is an access proof, not the 45–60 second demonstration track.
+
+## Public service
+
+On October 11, 2026 the user confirmed the studio path is on. The Render service is https://footwork-m6g0.onrender.com/. Its dashboard has `GENERATION_ENABLED` set to `true`, and the Eleven key is present there. A validated Gemma plan is the only request sent to Eleven. The committed blueprint still lists `GENERATION_ENABLED` as `false`. No new song id was recorded for this confirmation.
 
 ## Timed arrangement render
 

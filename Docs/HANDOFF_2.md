@@ -2,9 +2,9 @@
 
 Step-by-step record of what actually happened. The locked plan stays in `Docs/HANDOFF_1.md`. This file is the place to read after a step is finished.
 
-**Status:** The feature set is frozen on `build/soundprint`. Later phases are fixes and release checks. The user will record the outdoor walk, review the seed Studio track, and deploy to Render after the rest of the build. The 20-hour ceiling is unchanged. CodeRabbit GitHub App install is still unconfirmed.
-**Next step:** P4.4 is blocked on the user deploying the reviewed release. P2.0, P2.6, and P3.5 stay pending until that later pass.
-**Last completed step:** P4.3, verify the release journey and synchronization contracts, on `build/release` at `6915426`. P4.2 is `b2c9bfc`. P4.1 is `3419919`. P3.6 is `27ed855`. P3.5 is `98081fb`. P3.4 is `0f44b87`. P3.3 is `ab02558`. P3.2 is `d23b469`. P3.1 remains `4e9e844`.
+**Status:** The feature set is frozen. On October 11, 2026 the user confirmed the studio path is on. The public service is https://footwork-m6g0.onrender.com/. Commit `481b2c2` asks the Gemma Space for a plan before any studio render, and commit `b895304` accepts a one-word style. One validated plan from `google/gemma-4-E2B-it` is in `Docs/evidence/gemma-access.md`. The user set `GENERATION_ENABLED` to `true` on that service and placed the Eleven key in the dashboard. A validated plan is the only request sent to Eleven. The labeled example still does not call either provider. The 20-hour ceiling is unchanged. CodeRabbit is installed. The outdoor walk is recorded.
+**Next step:** P3.5, listen to a studio track made from that walk. P5 has not started.
+**Last completed step:** Studio path confirmed by the user on October 11, 2026, after `b895304`. Earlier release checks remain P4.3 at `6915426`, P4.2 at `b2c9bfc`, and P4.1 at `3419919`.
 **Active build time:** 0 of 20 hours recorded. This session was not measured.
 
 Execution notes stay in this file. The diagram and write-up path are under `Docs/`. Each **Notes** section is filled only after that step is finished.
@@ -624,7 +624,7 @@ The user records the outdoor seed walk. Inspect the derived events and save only
 **Branch:** `build/soundprint`
 **Window:** Build hours 11–15 (240 minutes)
 **Outcome:** Live Gemma and Eleven Music adapters, job controls, and one reviewed Studio result. Feature freeze is at the end of this phase.
-**Phase note:** P3.1 is commit `4e9e844`. P3.2 is commit `d23b469`. P3.3 is commit `ab02558`. P3.4 is commit `0f44b87`. P3.5 is commit `98081fb` and is pending: the user will review the seed Studio track after the rest of the build, so AC-03 is not claimed. A finished walk returns Route Sketch while the Gemma Space is unproved. AC-04 stays blocked. P2.6 and P2.0 are pending. P3.6 is commit `27ed855` and records the feature freeze. Generation uses the stage codes and error codes in `Docs/FRONTEND_EXPERIENCE.md`. Retry is explicit. The same idempotency key and body do not start a second piece. Transport paths now follow the locked `/api/v1` contract.
+**Phase note:** P3.1 is commit `4e9e844`. P3.2 is commit `d23b469`. P3.3 is commit `ab02558`. P3.4 is commit `0f44b87`. P3.5 is commit `98081fb` and is pending: the listening review of a studio track from the outdoor walk is still open, so AC-03 is not claimed. On October 11, 2026 the user confirmed the studio path is on. Commit `481b2c2` asks the Gemma Space for a plan, commit `b895304` accepts a one-word style, and a validated plan can be sent to Eleven on https://footwork-m6g0.onrender.com/. A missing or refused plan stays a Route Sketch. P3.6 is commit `27ed855` and records the feature freeze. Generation uses the stage codes and error codes in `Docs/FRONTEND_EXPERIENCE.md`. Retry is explicit. The same idempotency key and body do not start a second piece. Transport paths now follow the locked `/api/v1` contract.
 
 ### P3.1 — Add protected generation jobs and durable usage limits
 
@@ -658,7 +658,9 @@ Call Gemma with an anonymous event timeline and validate the arrangement. Allow 
 
 `backend/app/arrange/gemma.py` builds an anonymous timeline from event id, type, and audio offset. It strips location fields before any call. A reply is accepted only when the mood is `warm_cinematic`, the style list is one to six words from the closed instrumental vocabulary and includes `instrumental`, and every event reference matches the timeline. A fenced JSON object is parsed locally. Schema-invalid output may be submitted once, with field codes only, when another Gemma attempt, 60 GPU seconds, and 90 seconds of deadline remain, and only after an optional reservation succeeds. A transport exception is not repeated. Failure returns `arrangement_unavailable` and `route_sketch` with no invented plan. `pace_change` ids that contain an underscore are renamed into the shared hyphen pattern. `SpaceArrangeClient` can call `/arrange`, and it was not used. The Space recorded in `Docs/evidence/gemma-access.md` is still `NO_APP_FILE`, so this step does not claim a live checkpoint result.
 
-`uv run --directory backend ruff check app/arrange tests/unit/test_arrange.py` passed. `uv run --directory backend ruff format --check` passed for those files. `uv run --directory backend pytest` passed, 52 tests. No new dependency. No active time was measured. AC-06 is covered by the invalid-plan and transport tests. AC-04 remains blocked until a named Gemma call returns a validated arrangement.
+`uv run --directory backend ruff check app/arrange tests/unit/test_arrange.py` passed. `uv run --directory backend ruff format --check` passed for those files. `uv run --directory backend pytest` passed, 52 tests. No new dependency. No active time was measured. AC-06 is covered by the invalid-plan and transport tests. AC-04 remained blocked at this commit.
+
+On October 11, 2026 the user confirmed the studio path is on. Commit `481b2c2` calls the configured Space before a studio render. Commit `b895304` accepts a one-word style list. `Docs/evidence/gemma-access.md` records one validated plan from `google/gemma-4-E2B-it` at revision `3e22461f65e89153144f8adb70e3b8c2cc9845a7`. The user set `GENERATION_ENABLED` to `true` on https://footwork-m6g0.onrender.com/ and placed the Eleven key in that dashboard. A validated plan is the only request sent to Eleven. The checked plan in the evidence file was not itself sent to Eleven. Latency, quota, and an arrangement hash are still unrecorded.
 
 ### P3.3 — Render validated arrangements with Eleven Music
 
@@ -815,6 +817,8 @@ Smoke check, after the user deploys this reviewed commit manually with `autoDepl
 Rollback: redeploy `6915426` and leave `GENERATION_ENABLED` false. That commit is the last verified application commit. It does not read the disk paths, so use it only to restore the previous process. No earlier Render deploy exists to restore.
 
 `uv run --directory backend pytest` passed, 69 tests. `uv run --directory backend ruff check .` passed, and the format check passed. AC-07 stays open until the public HTTPS check. AC-08 was not timed on a phone network. AC-14 is covered by the capability, redaction, and disk-path checks already in the suite. No active time was measured.
+
+On October 11, 2026 the user confirmed the service is deployed at https://footwork-m6g0.onrender.com/ and that its dashboard has `GENERATION_ENABLED` set to `true`, with the Eleven key present. The committed blueprint still lists `GENERATION_ENABLED` as `false`.
 
 ---
 
