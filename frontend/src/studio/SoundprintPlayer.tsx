@@ -1,4 +1,21 @@
+import type { GenerationMode } from "../contracts/types";
 import { formatTime } from "./formatTime";
+
+export type PlayerSound = "example" | "sketch" | "studio";
+
+export function playerSound(generated: boolean, mode: GenerationMode): PlayerSound {
+  if (!generated) return "example";
+  if (mode === "studio_live") return "studio";
+  return "sketch";
+}
+
+export function playerCaption(sound: PlayerSound): string {
+  if (sound === "studio") return "This sound was recorded from your walk.";
+  if (sound === "sketch") {
+    return "This sound is the simpler version made from your walk. It is not a studio recording.";
+  }
+  return "This sound is an example made in the browser. It is not a studio recording.";
+}
 
 export function SoundprintPlayer({
   durationMs,
@@ -8,7 +25,7 @@ export function SoundprintPlayer({
   onToggle,
   onSeek,
   onReplay,
-  browserSketch = true,
+  sound = "example",
 }: {
   durationMs: number;
   timeMs: number;
@@ -17,7 +34,7 @@ export function SoundprintPlayer({
   onToggle: () => void;
   onSeek: (timeMs: number) => void;
   onReplay: () => void;
-  browserSketch?: boolean;
+  sound?: PlayerSound;
 }) {
   return (
     <div className="player">
@@ -44,9 +61,7 @@ export function SoundprintPlayer({
         onChange={(event) => onSeek(Number(event.currentTarget.value))}
         onInput={(event) => onSeek(Number(event.currentTarget.value))}
       />
-      {browserSketch ? (
-        <p>This sound is an example made in the browser. It is not a studio recording.</p>
-      ) : null}
+      <p>{playerCaption(sound)}</p>
       {playbackError ? <p role="alert">{playbackError}</p> : null}
     </div>
   );

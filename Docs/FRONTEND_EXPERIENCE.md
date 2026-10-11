@@ -19,6 +19,7 @@ One page introduces the product and holds the walk. A second page is the Soundpr
 | `/` is the landing and the recording entry | The person understands Footwork and starts, records, and ends a walk here. |
 | `/studio` is the Soundprint | Generation, then the result: hero, route, timeline, a short story, and optional details. Hear an example opens the same result, labeled as an example. |
 | `/about` redirects to `/#how-it-works` | How it works is a section on `/`, not a third destination. |
+| `/w` opens a shared Soundprint | A finished result can be opened from its link. The token is the URL fragment. The page plays that piece and does not offer deletion. |
 | No global Walk / Soundprint / How it works navigation | Movement through the product is the flow above, plus Start another walk from the Soundprint. |
 | Sponsors and Provenance are not public sections | The application does not show those headings. |
 | Technical provenance stays internal | Fixture files, developer docs, and submission evidence keep source, mode, model identity, and rights notes. |
@@ -33,7 +34,7 @@ The Hook is unchanged: a sharp turn is meant to change the melody's direction, a
 
 ## What the built shell does
 
-`/` and `/studio` follow this contract. `/about` redirects to `/#how-it-works`. The public pages do not show a state picker, a fixture banner, Sponsors, or Provenance. Pause and resume, the visual recap, and the walker are on these pages. A light device opens Daylight. A dark device opens Nocturne Pulse. The header button stores `light` or `dark` in `localStorage` under `footwork-theme` and that choice wins on the next visit.
+`/` and `/studio` follow this contract. `/about` redirects to `/#how-it-works`. `/w` opens a finished Soundprint for someone who has the link. The public pages do not show a state picker, a fixture banner, Sponsors, or Provenance. Pause and resume, the visual recap, and the walker are on these pages. A light device opens Daylight. A dark device opens Nocturne Pulse. The header button stores `light` or `dark` in `localStorage` under `footwork-theme` and that choice wins on the next visit.
 
 Phase 1 generation is still practice. Ending a practice walk opens the generation screen, but nothing is sent to a model or a music studio. The result that follows is the example, labeled Example walk. A real walk is not called "Generated from your walk" until a later phase returns a non-example result.
 
@@ -59,7 +60,7 @@ On a phone the page is one reading order. At desktop width the player and route 
 1. Soundprint hero: track title, a short walk summary, a cover, the primary audio controls, and one honest label. The label is Example walk or Generated from your walk. Phase 1's example uses Example walk.
 2. Journey at a glance: active time, elapsed time, distance, and meaningful-moment count as large values with compact visual marks.
 3. Route fingerprint: a segmented, privacy-safe route with relative pace color, playback position, a clear start and end, and markers for a turn, detected pause, loop, and change in pace. Manual breaks and uncertain gaps are visibly disconnected.
-4. Movement ribbon: a visual intensity timeline with manual-break and uncertain-gap treatments, chapter boundaries, musical influence, and the shared playback cursor.
+4. Movement ribbon: a visual intensity timeline with manual-break and uncertain-gap treatments, chapter boundaries, musical influence, and the shared playback cursor. A Song time list marks the start, quarter, half, three-quarter point, and end. A second list names each stretch, break, uncertain gap, and moment in words.
 5. Movement-to-music moments: three to five visual event cards. Choosing or focusing a moment seeks the shared audio clock. The route, ribbon, cards, and story stay within 500 ms of that clock.
 6. Journey composition: a compact count/distribution visual for turns, detected pauses, loops, and pace changes. It is not a quality score.
 7. Short walk story: one plain summary of the shape of the walk. It does not repeat the charts.
@@ -197,7 +198,7 @@ No account balance is shown. No stack trace, coordinate, or secret is shown.
 - The person sees the Soundprint in the order above. The label is Example walk for an example, or Generated from your walk for a later non-example result.
 - Actions: Play, Pause, Replay, scrub, choose a moment, Start another walk. About this example can be opened.
 - Data: the result contract in `frontend/src/contracts/types.ts` includes `movement_summary`. The Soundprint page renders those published totals and withholds a speed or pace when the summary leaves it empty. Provenance stays off the public page.
-- Phase 1 target: the synthetic fixtures carry recording segments, manual breaks, uncertain gaps, pace buckets, event counts, and limited-quality states. The example shown on the page is one continuous constructed route, so it does not draw a line across a gap. Its sound remains the browser sketch. The page says it is an example and not a studio recording. Planned musical changes stay planned.
+- Phase 1 target: the synthetic fixtures carry recording segments, manual breaks, uncertain gaps, pace buckets, event counts, and limited-quality states. The example shown on the page is one continuous constructed route, so it does not draw a line across a gap. Its sound remains the browser sketch. Under the player, an example says it was made in the browser and is not a studio recording. A simpler version made from a walk says that, and a studio recording says it was recorded from the walk. Planned musical changes stay planned for the example.
 - Real behavior: Phase 3 fills the same screen from a real walk. A simpler version and a cached example stay labeled Example walk when their mode is an example mode.
 - Accessibility: one audio clock drives the route, timeline, and story. At chosen moments they stay within 500 ms. The active moment is named, not only colored. Playback time is visible and is not announced on every tick. Reduced motion still shows the place in the piece as text.
 

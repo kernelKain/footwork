@@ -1,6 +1,7 @@
 import { readFileSync } from "node:fs";
 import { expect, test } from "@playwright/test";
 import { validateSoundprintResult } from "../src/contracts/validate";
+import { playerCaption, playerSound } from "../src/studio/SoundprintPlayer";
 import { synthesizeSketchWav, type TimedEvent } from "../src/studio/sketchAudio";
 
 const sketch = JSON.parse(
@@ -14,6 +15,21 @@ const sketch = JSON.parse(
 };
 
 const sketchAudio = Buffer.from(synthesizeSketchWav(sketch.duration_ms, sketch.events));
+
+test("the player names the sound that is actually playing", () => {
+  expect(playerCaption(playerSound(false, "synthetic_fixture"))).toBe(
+    "This sound is an example made in the browser. It is not a studio recording.",
+  );
+  expect(playerCaption(playerSound(true, "route_sketch"))).toBe(
+    "This sound is the simpler version made from your walk. It is not a studio recording.",
+  );
+  expect(playerCaption(playerSound(true, "studio_live"))).toBe(
+    "This sound was recorded from your walk.",
+  );
+  expect(playerCaption(playerSound(true, "route_sketch"))).not.toContain(
+    "example made in the browser",
+  );
+});
 
 test("a recorded walk result matches the shared contract", () => {
   const checked = validateSoundprintResult(sketch);
@@ -75,6 +91,14 @@ test("a live job shows the server stage and then the sketch", async ({ page }) =
   await expect(page.locator(".generation-stage")).toHaveText("Finding meaningful moments.");
   await expect(page.getByText("Generated from your walk")).toBeVisible({ timeout: 8000 });
   await expect(page.getByText("This is a simpler version made from your walk.")).toBeVisible();
+  await expect(
+    page.getByText(
+      "This sound is the simpler version made from your walk. It is not a studio recording.",
+    ),
+  ).toBeVisible();
+  await expect(page.getByText("example made in the browser")).toHaveCount(0);
+  await expect(page.getByRole("list", { name: "Song time" })).toBeVisible();
+  await expect(page.getByRole("list", { name: "What the ribbon shows" })).toBeVisible();
   await expect(page.getByText("This is an example, not a recorded walk.")).toHaveCount(0);
 
   const turn = sketch.events.find((event) => event.type === "turn");

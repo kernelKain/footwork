@@ -16,7 +16,7 @@ import { MomentCards } from "./MomentCards";
 import { MovementRibbon } from "./MovementRibbon";
 import { MovementStory } from "./MovementStory";
 import { RouteFigure } from "./RouteFigure";
-import { SoundprintPlayer } from "./SoundprintPlayer";
+import { playerSound, SoundprintPlayer } from "./SoundprintPlayer";
 import { shareUrl } from "./liveJob";
 import { synthesizeSketchWav } from "./sketchAudio";
 import { useAudioClock } from "./useAudioClock";
@@ -184,7 +184,7 @@ export function StudioScreen({ fixture, onNavigate, opened }: StudioScreenProps)
                 onToggle={clock.toggle}
                 onSeek={clock.seek}
                 onReplay={clock.replay}
-                browserSketch={!generated}
+                sound={playerSound(generated, displayed.mode)}
               />
               {shareToken && !opened ? <ShareLink token={shareToken} /> : null}
             </section>

@@ -10,6 +10,8 @@ import {
   formatDistance,
   playbackPoint,
   ribbonBands,
+  ribbonLines,
+  ribbonTicks,
   speedLine,
 } from "../src/studio/journeyModel";
 
@@ -28,6 +30,18 @@ async function expectNoHorizontalOverflow(page: Page): Promise<void> {
   );
   expect(overflow).toBe(true);
 }
+
+test("the ribbon names its time scale and each gap", () => {
+  const fixture = loadMixed();
+  const summary = fixture.result.movement_summary;
+  const ticks = ribbonTicks(fixture.result.duration_ms);
+  const lines = ribbonLines(summary, fixture.result.duration_ms, fixture.result.events);
+
+  expect(ticks.map((tick) => tick.label)).toEqual(["0:00", "0:12", "0:24", "0:36", "0:48"]);
+  expect(lines.some((line) => line.includes("0:24 to 0:30. Manual break."))).toBe(true);
+  expect(lines.some((line) => line.includes("Uncertain interval."))).toBe(true);
+  expect(lines.some((line) => line.includes("Accepted movement."))).toBe(true);
+});
 
 test("movement spans keep manual breaks and uncertain intervals disconnected", () => {
   const fixture = loadMixed();

@@ -17,7 +17,7 @@ This is what the application shows now.
 - There is no global Walk / Soundprint / How it works navigation, no Sponsors section, and no Provenance section. Sponsor roles and technical provenance stay in this file, `Docs/HANDOFF_1.md`, and `README.md`.
 - The pages use two themes with the same roles. Nocturne Pulse is the dark theme: midnight and cobalt surfaces, cyan for the route, violet for music and playback, amber for movement moments, blue for a pause, and coral only for ending a walk. Daylight is the light theme: warm paper surfaces and deeper versions of those same colors so text and controls stay readable. The header switches them. The device choice is the default.
 
-Mood choice, Pocket Mode, a public share link, and a desktop QR code are later product ideas. They are not controls on these pages.
+Mood choice, Pocket Mode, and a desktop QR code are later product ideas. They are not controls on these pages. A finished Soundprint shows a copyable link. Anyone with it can open that result at `/w` for about an hour. The link does not contain a location, and it cannot delete the walk.
 
 ## Planned Phase 1 experience extension
 
@@ -322,13 +322,13 @@ These appear as the story behind the composition rather than fitness analytics.
 
 Footwork is mobile-first. The current recording screen uses large labeled controls, a sticky end action above the device safe area, and one column on a phone. At a wide desktop width the Soundprint can keep the player and route beside the timeline.
 
-Pocket Mode, pinch zoom, a copied result link, sharing, and a desktop QR code are not part of the current pages.
+Pocket Mode, pinch zoom, and a desktop QR code are not part of the current pages. A finished Soundprint does include a copied result link.
 
 ---
 
 ## Public Sharing and Privacy
 
-Results remain private until the user selects **Create Public Link**.
+A ready Soundprint mints a read-only link and shows it to the person who made the walk. The link is `https://<host>/w#<token>`. It lasts about an hour, which is the same lifetime as the stored audio. Deleting the walk removes the link.
 
 Anyone with the public link can:
 
@@ -349,7 +349,7 @@ The public result never contains:
 - Device data
 - User identity
 
-Before publishing, Footwork:
+The result opened by the link already has these privacy steps:
 
 - Removes beginning and ending portions
 - Converts coordinates into relative points
@@ -359,7 +359,7 @@ Before publishing, Footwork:
 - Removes maps and street labels
 - Publishes only derived movement information
 
-These steps substantially reduce location-reidentification risk, although no transformation can guarantee that a distinctive route will be impossible to recognize. Users preview the sanitized route before publishing.
+These steps substantially reduce location-reidentification risk, although no transformation can guarantee that a distinctive route will be impossible to recognize. The owner sees that route before copying the link.
 
 ---
 

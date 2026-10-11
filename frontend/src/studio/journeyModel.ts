@@ -168,6 +168,67 @@ export function drawnSpans(points: RoutePoint[], summary: MovementSummary): Draw
   return spans;
 }
 
+export type RibbonTick = {
+  id: string;
+  label: string;
+  at: number;
+};
+
+export function ribbonTicks(durationMs: number): RibbonTick[] {
+  if (durationMs <= 0) return [];
+  return [0, 0.25, 0.5, 0.75, 1].map((fraction) => ({
+    id: `tick-${fraction}`,
+    label: formatTime(Math.round(durationMs * fraction)),
+    at: fraction * 100,
+  }));
+}
+
+export function ribbonLines(
+  summary: MovementSummary,
+  durationMs: number,
+  events: MovementEvent[],
+): string[] {
+  if (durationMs <= 0) return [];
+  const lines: Array<{ at: number; text: string }> = [];
+  for (const segment of summary.recording_segments) {
+    const pace = intensityFor(summary.pace_series, segment);
+    const paceText =
+      pace === null
+        ? "Relative pace is not clear."
+        : `Relative pace is ${formatDistance(pace)} on a scale from 0 to 1.`;
+    lines.push({
+      at: segment.start_ms,
+      text: `${formatTime(segment.start_ms)} to ${formatTime(segment.end_ms)}. Accepted movement. ${paceText} Taller means faster.`,
+    });
+  }
+  for (const gap of summary.break_intervals) {
+    lines.push({
+      at: gap.start_ms,
+      text: `${formatTime(gap.start_ms)} to ${formatTime(gap.end_ms)}. Manual break. This gap is not movement.`,
+    });
+  }
+  for (const gap of summary.uncertain_intervals) {
+    lines.push({
+      at: gap.start_ms,
+      text: `${formatTime(gap.start_ms)} to ${formatTime(gap.end_ms)}. Uncertain interval. Missing positions were not filled in.`,
+    });
+  }
+  for (const event of events) {
+    lines.push({
+      at: event.audio_offset_ms,
+      text: `${formatTime(event.audio_offset_ms)}. ${eventLabel(event.type)}.`,
+    });
+  }
+  return lines.sort((left, right) => left.at - right.at).map((line) => line.text);
+}
+
+function eventLabel(type: MovementEvent["type"]): string {
+  if (type === "turn") return "Turn. The melody changes direction";
+  if (type === "pause") return "Detected pause. The sound holds";
+  if (type === "pace_change") return "Pace change. The sound gets brighter";
+  return "Loop. The opening line returns";
+}
+
 export function ribbonBands(summary: MovementSummary, durationMs: number): RibbonBand[] {
   if (durationMs <= 0) return [];
   const bands: RibbonBand[] = summary.recording_segments.map((segment) => ({

@@ -152,6 +152,28 @@
   outline-offset: 2px;
 }
 
+.ribbon-scale,
+.ribbon-readout {
+  margin: var(--space-1) 0 0;
+  padding: 0;
+  color: var(--color-text);
+  font-size: var(--font-size-1);
+  font-variant-numeric: tabular-nums;
+}
+
+.ribbon-scale {
+  display: flex;
+  justify-content: space-between;
+  list-style: none;
+  gap: var(--space-1);
+}
+
+.ribbon-readout {
+  display: grid;
+  gap: var(--space-1);
+  padding-left: 1.2rem;
+}
+
 .mapping-list button.moment-card {
   display: grid;
   grid-template-columns: auto minmax(0, 1fr) auto;

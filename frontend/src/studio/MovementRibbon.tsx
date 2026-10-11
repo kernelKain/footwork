@@ -1,5 +1,5 @@
 import type { Chapter, MovementEvent, MovementSummary } from "../contracts/types";
-import { eventIsCurrent, ribbonBands } from "./journeyModel";
+import { eventIsCurrent, ribbonBands, ribbonLines, ribbonTicks } from "./journeyModel";
 
 const MARKS: Record<MovementEvent["type"], string> = {
   turn: "Turn",
@@ -22,13 +22,16 @@ export function MovementRibbon({
   timeMs: number;
 }) {
   const bands = ribbonBands(summary, durationMs);
+  const ticks = ribbonTicks(durationMs);
+  const lines = ribbonLines(summary, durationMs, events);
   const playhead = durationMs <= 0 ? 0 : Math.min(100, Math.max(0, (timeMs / durationMs) * 100));
   return (
     <section className="stack" aria-labelledby="ribbon-title">
       <h2 id="ribbon-title">Movement ribbon</h2>
       <p>
-        Cyan bands are accepted movement. Blue gaps are manual breaks. Hatched gaps are uncertain
-        intervals. Amber marks show where a moment meets the music.
+        The bar is the song, from the start of the walk to the end. Taller cyan means a faster
+        stretch. Blue is a manual break. Hatching is a gap where the location was uncertain. Amber
+        marks are moments in the music. The times and the list below name the same scale.
       </p>
       <div className="ribbon" aria-hidden="true">
         {bands.map((band) => (
@@ -64,6 +67,16 @@ export function MovementRibbon({
           data-time-ms={Math.round(timeMs)}
         />
       </div>
+      <ol className="ribbon-scale" aria-label="Song time">
+        {ticks.map((tick) => (
+          <li key={tick.id}>{tick.label}</li>
+        ))}
+      </ol>
+      <ul className="ribbon-readout" aria-label="What the ribbon shows">
+        {lines.map((line) => (
+          <li key={line}>{line}</li>
+        ))}
+      </ul>
     </section>
   );
 }
