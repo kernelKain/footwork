@@ -174,3 +174,19 @@
 .mono {
   font-family: var(--font-mono);
 }
+
+.share-link {
+  display: grid;
+  gap: var(--space-2);
+}
+
+.share-link input {
+  width: 100%;
+  min-height: 44px;
+  padding: var(--space-2);
+  border: var(--border-width) solid var(--color-line);
+  border-radius: var(--radius-2);
+  background: var(--color-surface);
+  color: var(--color-ink);
+  font: inherit;
+}

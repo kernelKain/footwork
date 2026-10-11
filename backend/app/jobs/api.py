@@ -77,6 +77,28 @@ def read_job(job_id: str, request: Request) -> dict[str, object]:
     return _jobs(request).get(job_id, _bearer(request)).public()
 
 
+_SHARE_HEADERS = {
+    "Cache-Control": "private, no-store",
+    "Referrer-Policy": "no-referrer",
+}
+
+
+@router.get("/api/v1/shared")
+def read_shared(request: Request) -> JSONResponse:
+    """Return a finished Soundprint for a read-only share token."""
+    return JSONResponse(_jobs(request).shared(_share_token(request)), headers=_SHARE_HEADERS)
+
+
+@router.get("/api/v1/shared/audio")
+def read_shared_audio(request: Request) -> FileResponse:
+    """Stream the audio for a read-only share token."""
+    return FileResponse(
+        _jobs(request).shared_audio(_share_token(request)),
+        media_type="application/octet-stream",
+        headers=_SHARE_HEADERS,
+    )
+
+
 @router.get("/api/v1/jobs/{job_id}/audio")
 def read_audio(job_id: str, request: Request) -> FileResponse:
     """Stream the job's generated audio file."""
@@ -96,6 +118,14 @@ def delete_job(job_id: str, request: Request) -> Response:
 def _media_type(request: Request) -> str:
     """Return the request's content-type, without parameters, lowercased."""
     return request.headers.get("content-type", "").split(";", 1)[0].strip().lower()
+
+
+def _share_token(request: Request) -> str:
+    """Return a share token, or raise not-found when the header is absent."""
+    token = _optional_bearer(request)
+    if token is None or token == "":
+        raise JobError("not_found")
+    return token
 
 
 def _bearer(request: Request) -> str:

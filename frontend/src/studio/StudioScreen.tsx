@@ -17,6 +17,7 @@ import { MovementRibbon } from "./MovementRibbon";
 import { MovementStory } from "./MovementStory";
 import { RouteFigure } from "./RouteFigure";
 import { SoundprintPlayer } from "./SoundprintPlayer";
+import { shareUrl } from "./liveJob";
 import { synthesizeSketchWav } from "./sketchAudio";
 import { useAudioClock } from "./useAudioClock";
 
@@ -26,13 +27,22 @@ type StudioView =
   | { name: "example"; note: "direct" | "practice" | "repeat" }
   | { name: "piece"; result: SoundprintResult; audioUrl: string | null };
 
+type OpenedPiece = { result: SoundprintResult; audioUrl: string | null };
+
 type StudioScreenProps = {
   fixture: DemoFixture;
   onNavigate: (event: { preventDefault: () => void; currentTarget: { href: string } }) => void;
+  opened?: OpenedPiece;
 };
 
 const STORY =
   "The path goes forward, waits, and then continues. The music is meant to follow that shape.";
+
+function studioTitle(shared: boolean, generated: boolean): string {
+  if (shared) return "Shared Soundprint";
+  if (generated) return "Your Soundprint";
+  return "Corner and pause";
+}
 
 export function resultLabel(mode: GenerationMode): "Example walk" | "Generated from your walk" {
   if (mode === "synthetic_fixture" || mode === "cached_example") return "Example walk";
@@ -55,9 +65,12 @@ function clearGenerationRequest(): void {
   }
 }
 
-export function StudioScreen({ fixture, onNavigate }: StudioScreenProps) {
+export function StudioScreen({ fixture, onNavigate, opened }: StudioScreenProps) {
   const { result } = fixture;
-  const [view, setView] = useState<StudioView>(initialView);
+  const [view, setView] = useState<StudioView>(() =>
+    opened ? { name: "piece", result: opened.result, audioUrl: opened.audioUrl } : initialView(),
+  );
+  const [shareToken, setShareToken] = useState<string | null>(null);
   const displayed = view.name === "piece" ? view.result : result;
   const sketchUrl = useMemo(() => {
     const wav = synthesizeSketchWav(displayed.duration_ms, displayed.events);
@@ -84,10 +97,14 @@ export function StudioScreen({ fixture, onNavigate }: StudioScreenProps) {
     requestGenerationRetry();
     setView({ name: "running", forcedTimeout: false, live: false });
   }, []);
-  const showPiece = useCallback((piece: SoundprintResult, audioUrl: string | null) => {
-    markGenerationFinished();
-    setView({ name: "piece", result: piece, audioUrl });
-  }, []);
+  const showPiece = useCallback(
+    (piece: SoundprintResult, audioUrl: string | null, token: string | null) => {
+      markGenerationFinished();
+      setShareToken(token);
+      setView({ name: "piece", result: piece, audioUrl });
+    },
+    [],
+  );
   const failLive = useCallback((code: GenerationErrorCode) => {
     setView({ name: "error", code });
   }, []);
@@ -134,7 +151,7 @@ export function StudioScreen({ fixture, onNavigate }: StudioScreenProps) {
                   )}
                 </svg>
               </div>
-              <h1 id="studio-title">{generated ? "Your Soundprint" : "Corner and pause"}</h1>
+              <h1 id="studio-title">{studioTitle(Boolean(opened), generated)}</h1>
               {generated ? (
                 <p>
                   {displayed.mode === "studio_live"
@@ -147,6 +164,12 @@ export function StudioScreen({ fixture, onNavigate }: StudioScreenProps) {
                   <p>This is an example, not a recorded walk.</p>
                 </>
               )}
+              {opened ? (
+                <p>
+                  Someone sent you this Soundprint. The link does not contain the walk&apos;s
+                  location.
+                </p>
+              ) : null}
               {view.name === "example" && view.note === "practice" ? (
                 <p>This practice did not make a new track. You are hearing the example.</p>
               ) : null}
@@ -161,7 +184,9 @@ export function StudioScreen({ fixture, onNavigate }: StudioScreenProps) {
                 onToggle={clock.toggle}
                 onSeek={clock.seek}
                 onReplay={clock.replay}
+                browserSketch={!generated}
               />
+              {shareToken && !opened ? <ShareLink token={shareToken} /> : null}
             </section>
             <JourneyGlance summary={displayed.movement_summary} />
             <RouteFigure
@@ -218,6 +243,37 @@ export function StudioScreen({ fixture, onNavigate }: StudioScreenProps) {
           Start another walk
         </a>
       </p>
+    </div>
+  );
+}
+
+function ShareLink({ token }: { token: string }) {
+  const url = shareUrl(token);
+  const [copied, setCopied] = useState(false);
+  return (
+    <div className="share-link">
+      <p>
+        Anyone with this link can open this Soundprint for about an hour. It does not contain your
+        location, and it cannot delete the walk.
+      </p>
+      <input
+        readOnly
+        value={url}
+        aria-label="Share link"
+        onFocus={(event) => event.currentTarget.select()}
+      />
+      <button
+        type="button"
+        className="ui-button ui-button-secondary"
+        onClick={() => {
+          void navigator.clipboard.writeText(url).then(
+            () => setCopied(true),
+            () => setCopied(false),
+          );
+        }}
+      >
+        {copied ? "Link copied" : "Copy link"}
+      </button>
     </div>
   );
 }

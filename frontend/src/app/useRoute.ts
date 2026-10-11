@@ -3,6 +3,7 @@ import { useCallback, useEffect, useState } from "react";
 const TITLES: Record<string, string> = {
   "/": "Footwork",
   "/studio": "Soundprint · Footwork",
+  "/w": "Shared Soundprint · Footwork",
   "/about": "How it works · Footwork",
   "/system": "Design system · Footwork",
 };

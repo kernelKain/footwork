@@ -98,7 +98,7 @@ export function LiveJobPanel({
   onError,
   onExample,
 }: {
-  onPiece: (result: SoundprintResult, audioUrl: string | null) => void;
+  onPiece: (result: SoundprintResult, audioUrl: string | null, shareToken: string | null) => void;
   onError: (code: GenerationErrorCode) => void;
   onExample: () => void;
 }) {
@@ -142,7 +142,7 @@ export function LiveJobPanel({
               return;
             }
             const audioUrl = await readLiveAudio(job, snapshot.result.audio_format ?? "audio/wav");
-            if (!cancel) onPiece(snapshot.result, audioUrl);
+            if (!cancel) onPiece(snapshot.result, audioUrl, snapshot.shareToken);
             return;
           }
           window.setTimeout(poll, 2000);

@@ -2,9 +2,9 @@
 
 Step-by-step record of what actually happened. The locked plan stays in `Docs/HANDOFF_1.md`. This file is the place to read after a step is finished.
 
-**Status:** The feature set is frozen. On October 11, 2026 the user confirmed the studio path is on. The public service is https://footwork-m6g0.onrender.com/. Commit `481b2c2` asks the Gemma Space for a plan before any studio render, and commit `b895304` accepts a one-word style. One validated plan from `google/gemma-4-E2B-it` is in `Docs/evidence/gemma-access.md`. The user set `GENERATION_ENABLED` to `true` on that service and placed the Eleven key in the dashboard. A validated plan is the only request sent to Eleven. The labeled example still does not call either provider. The 20-hour ceiling is unchanged. CodeRabbit is installed. The outdoor walk is recorded.
+**Status:** The feature set is frozen. On October 11, 2026 the user confirmed the studio path is on, and then confirmed that later movement is audible. The public service is https://footwork-m6g0.onrender.com/. Commit `481b2c2` asks the Gemma Space for a plan before any studio render, and commit `b895304` accepts a one-word style. One validated plan from `google/gemma-4-E2B-it` is in `Docs/evidence/gemma-access.md`. The user set `GENERATION_ENABLED` to `true` on that service and placed the Eleven key in the dashboard. A validated plan is the only request sent to Eleven. Commit `3bde4e8` makes each later turn, pace change, pause, and loop change the sketch and the studio plan. The labeled example still does not call either provider. The 20-hour ceiling is unchanged. CodeRabbit is installed. The outdoor walk is recorded.
 **Next step:** P3.5, listen to a studio track made from that walk. P5 has not started.
-**Last completed step:** Studio path confirmed by the user on October 11, 2026, after `b895304`. Earlier release checks remain P4.3 at `6915426`, P4.2 at `b2c9bfc`, and P4.1 at `3419919`.
+**Last completed step:** Later movement made audible at `3bde4e8` on October 11, 2026. The studio path remains the confirmation after `b895304`. Earlier release checks remain P4.3 at `6915426`, P4.2 at `b2c9bfc`, and P4.1 at `3419919`.
 **Active build time:** 0 of 20 hours recorded. This session was not measured.
 
 Execution notes stay in this file. The diagram and write-up path are under `Docs/`. Each **Notes** section is filled only after that step is finished.
@@ -509,7 +509,7 @@ The white hold-progress overlay at 28% opacity lightens coral to about `#FF9494`
 **Branch:** `build/movement`
 **Window:** Build hours 7–11 (240 minutes)
 **Outcome:** Real capture, four detectors, compression, and an exact Route Sketch Hook.
-**Phase note:** P2.1 through P2.5 are committed. P2.6 and P2.0 are pending. The user will record the outdoor walk and deploy to Render after the rest of the build. No events will be invented to fill that walk. The recording and generation seams are the practice port and `frontend/src/studio/generationContract.ts`. Use the public states in `Docs/FRONTEND_EXPERIENCE.md`. Do not restore sponsor, provenance, or fixture-picker sections.
+**Phase note:** P2.1 through P2.5 are committed. P2.6 and P2.0 are pending. The user will record the outdoor walk and deploy to Render after the rest of the build. No events will be invented to fill that walk. On October 11, 2026 commit `3bde4e8` makes later turns, pace changes, pauses, and loops audible in the Route Sketch. The recording and generation seams are the practice port and `frontend/src/studio/generationContract.ts`. Use the public states in `Docs/FRONTEND_EXPERIENCE.md`. Do not restore sponsor, provenance, or fixture-picker sections.
 
 ### P2.0 — Publish the shell and health endpoint
 
@@ -605,6 +605,8 @@ Compress the journey, transform the route for display, and synthesize the determ
 
 `uv run ruff check .` and `uv run ruff format --check .` passed. `uv run pytest` passed, 33 tests, including six sketch tests. No new dependency. No active time was measured. Headphones listening is still outstanding for AC-17.
 
+On October 11, 2026 the user confirmed later movement is audible. Commit `3bde4e8`. The first turn still turns a falling line upward. Each later turn flips that direction. Every pause is silence until the next event, or for 10 seconds. A pace change raises the level and adds a brighter fifth, and that level stays. A loop replays the opening descending line for up to 6 seconds. The browser sketch in `frontend/src/studio/sketchAudio.ts` uses the same rules. `test_later_turns_pace_and_loops_change_the_tone` covers the sketch.
+
 ### P2.6 — Validate the movement pipeline with a real outdoor walk
 
 **Status:** Pending
@@ -624,7 +626,7 @@ The user records the outdoor seed walk. Inspect the derived events and save only
 **Branch:** `build/soundprint`
 **Window:** Build hours 11–15 (240 minutes)
 **Outcome:** Live Gemma and Eleven Music adapters, job controls, and one reviewed Studio result. Feature freeze is at the end of this phase.
-**Phase note:** P3.1 is commit `4e9e844`. P3.2 is commit `d23b469`. P3.3 is commit `ab02558`. P3.4 is commit `0f44b87`. P3.5 is commit `98081fb` and is pending: the listening review of a studio track from the outdoor walk is still open, so AC-03 is not claimed. On October 11, 2026 the user confirmed the studio path is on. Commit `481b2c2` asks the Gemma Space for a plan, commit `b895304` accepts a one-word style, and a validated plan can be sent to Eleven on https://footwork-m6g0.onrender.com/. A missing or refused plan stays a Route Sketch. P3.6 is commit `27ed855` and records the feature freeze. Generation uses the stage codes and error codes in `Docs/FRONTEND_EXPERIENCE.md`. Retry is explicit. The same idempotency key and body do not start a second piece. Transport paths now follow the locked `/api/v1` contract.
+**Phase note:** P3.1 is commit `4e9e844`. P3.2 is commit `d23b469`. P3.3 is commit `ab02558`. P3.4 is commit `0f44b87`. P3.5 is commit `98081fb` and is pending: the listening review of a studio track from the outdoor walk is still open, so AC-03 is not claimed. On October 11, 2026 the user confirmed the studio path is on. Commit `481b2c2` asks the Gemma Space for a plan, commit `b895304` accepts a one-word style, and a validated plan can be sent to Eleven on https://footwork-m6g0.onrender.com/. Commit `3bde4e8` carries later turns, pace changes, pauses, and loops into that plan. A missing or refused plan stays a Route Sketch. P3.6 is commit `27ed855` and records the feature freeze. Generation uses the stage codes and error codes in `Docs/FRONTEND_EXPERIENCE.md`. Retry is explicit. The same idempotency key and body do not start a second piece. Transport paths now follow the locked `/api/v1` contract.
 
 ### P3.1 — Add protected generation jobs and durable usage limits
 
@@ -679,6 +681,8 @@ Compile timed Music v2.5 chunks, call the Eleven Music API, and check the return
 One live compose returned HTTP 200 `audio/mpeg` on the first attempt. The request SHA-256 is `5100159eda409713310806b37b8199cbf25cbc3929a06bf56456407b08c84e19`. The provider song id is `6JZhKLyXn9BrPEPAnUQC`. The file is 960515 bytes and `ffprobe` measured 60.029375 seconds. It is stored at `artifacts/eleven-arrangement.mp3`, which git ignores. The API key is not recorded. Evidence is in `Docs/evidence/music-hosting.md`.
 
 `uv run --directory backend ruff check app/music tests/unit/test_music.py` passed. `uv run --directory backend ruff format --check` passed for those files. `uv run --directory backend pytest` passed, 57 tests. No new dependency. No active time was measured. AC-05 is covered by the receipt. AC-17 duration and decode checks passed. Headphone listening remains for P3.5. This renderer is not called by job submission yet.
+
+On October 11, 2026 commit `3bde4e8` changes the studio plan. Each turn flips the melodic direction. A pace change keeps a brighter pulse. A pause is a quiet hold. A loop brings the opening motif back, and a later turn clears that return. Chunk boundaries follow the events in time, up to the existing chunk cap. `test_later_events_keep_their_musical_change` covers those labels. The October 10 receipt `6JZhKLyXn9BrPEPAnUQC` was made before this plan.
 
 ### P3.4 — Connect recorded walks to live Soundprint generation
 

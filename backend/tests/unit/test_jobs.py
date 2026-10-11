@@ -1,6 +1,7 @@
 import json
 import logging
 import math
+import re
 import threading
 import time
 from datetime import UTC, datetime, timedelta
@@ -19,6 +20,7 @@ from app.jobs.service import (
 from app.main import create_app
 from fastapi.testclient import TestClient
 
+_SHARE = re.compile(r"[0-9a-f]{64}")
 ORIGIN_LAT = 12.9716
 ORIGIN_LON = 77.5946
 T0 = 1_700_000_000_000.0
@@ -603,7 +605,8 @@ def test_job_log_omits_locations_capabilities_and_keys(
         headers=_headers("idem-log-00001", key),
     )
     job_id = created.json()["job_id"]
-    client.get(f"/api/v1/jobs/{job_id}", headers={"authorization": f"Bearer {key}"})
+    owned = client.get(f"/api/v1/jobs/{job_id}", headers={"authorization": f"Bearer {key}"})
+    share_token = owned.json()["share_token"]
     client.get(f"/api/v1/jobs/{job_id}", headers={"authorization": f"Bearer {token_hex(32)}"})
     LOG.info("latitude 12.9716 authorization Bearer %s sk-live-secret", key)
 
@@ -614,10 +617,69 @@ def test_job_log_omits_locations_capabilities_and_keys(
     assert "12.9716" not in text
     assert "latitude" not in text
     assert key not in text
+    assert share_token not in text
     assert "idem-log-00001" not in text
     assert "Bearer" not in text
     assert "authorization" not in text.lower()
     assert "sk-live-secret" not in text
+
+
+def test_a_share_link_opens_the_piece_without_the_job_key(tmp_path: Path) -> None:
+    data = tmp_path / "jobs"
+    clock = Clock()
+    client = TestClient(
+        create_app(
+            tmp_path / "missing", data_dir=data, now=clock, dispatch=_Finishing(b"shared-audio")
+        )
+    )
+    key = token_hex(32)
+    created = client.post(
+        "/api/v1/soundprints",
+        content=_walk(),
+        headers=_headers("idem-share-0001", key),
+    )
+    job_id = created.json()["job_id"]
+    owned = client.get(f"/api/v1/jobs/{job_id}", headers={"authorization": f"Bearer {key}"})
+    token = owned.json()["share_token"]
+    ledger = (data / "quota-ledger.json").read_text(encoding="utf-8")
+    share_file = data / "artifacts" / job_id / "share"
+
+    opened = client.get("/api/v1/shared", headers={"authorization": f"Bearer {token}"})
+    audio = client.get("/api/v1/shared/audio", headers={"authorization": f"Bearer {token}"})
+    with_job_key = client.get("/api/v1/shared", headers={"authorization": f"Bearer {key}"})
+    as_job = client.get(f"/api/v1/jobs/{job_id}", headers={"authorization": f"Bearer {token}"})
+    missing = client.get("/api/v1/shared")
+
+    assert owned.status_code == 200
+    assert _SHARE.fullmatch(token)
+    assert token not in ledger
+    assert key not in ledger
+    assert "12.9716" not in ledger
+    assert "latitude" not in ledger
+    assert "12.9716" not in token
+    assert share_file.read_text(encoding="utf-8") == token
+    assert share_file.stat().st_mode & 0o777 == 0o600
+    assert opened.status_code == 200
+    assert opened.headers["referrer-policy"] == "no-referrer"
+    assert opened.json()["status"] == "ready"
+    assert opened.json()["result"]["mode"] == "route_sketch"
+    assert "job_id" not in opened.json()
+    assert "share_token" not in opened.json()
+    assert "12.9716" not in opened.text
+    assert "latitude" not in opened.text
+    assert audio.status_code == 200
+    assert audio.content == b"shared-audio"
+    assert with_job_key.status_code == 404
+    assert as_job.status_code == 401
+    assert missing.status_code == 404
+    assert missing.json()["code"] == "not_found"
+
+    removed = client.delete(f"/api/v1/jobs/{job_id}", headers={"authorization": f"Bearer {key}"})
+    gone = client.get("/api/v1/shared", headers={"authorization": f"Bearer {token}"})
+
+    assert removed.status_code == 204
+    assert not share_file.exists()
+    assert gone.status_code == 404
 
 
 def test_a_corrupt_ledger_stays_generic(tmp_path: Path) -> None:

@@ -57,6 +57,7 @@ ELEVEN_RESERVE_ATTEMPTS = 1
 
 _IDEMPOTENCY = re.compile(r"[A-Za-z0-9._:-]{8,128}")
 _CAPABILITY = re.compile(r"[0-9a-fA-F]{64}")
+_SHARE = re.compile(r"[0-9a-f]{64}")
 _JOB_ID = re.compile(r"[0-9a-f]{32}")
 
 _ERRORS: dict[str, tuple[int, str, bool, str]] = {
@@ -162,7 +163,9 @@ class NoProviderDispatch:
 
 
 class JobView:
-    def __init__(self, job: dict[str, object], now: datetime) -> None:
+    def __init__(
+        self, job: dict[str, object], now: datetime, share_token: str | None = None
+    ) -> None:
         """Build a read-only view of the stored job, computing elapsed time against now."""
         created = parse_stamp(str(job["created_at"]))
         elapsed = int((now - created).total_seconds() * 1000)
@@ -175,10 +178,11 @@ class JobView:
         self.error = error if isinstance(error, dict) else None
         stored = job.get("result")
         self.result = stored if isinstance(stored, dict) else None
+        self.share_token = share_token
 
     def public(self) -> dict[str, object]:
         """Return the job's public, client-facing representation."""
-        return {
+        body: dict[str, object] = {
             "schema_version": "1",
             "job_id": self.job_id,
             "status": self.status,
@@ -188,6 +192,9 @@ class JobView:
             "error": self.error,
             "result": self.result,
         }
+        if self.share_token is not None:
+            body["share_token"] = self.share_token
+        return body
 
 
 class JobService:
@@ -320,11 +327,12 @@ class JobService:
             raise RuntimeError("private result refused")
         audio = outcome.audio
         result = outcome.result
+        share_token = token_hex(32)
         root = self.artifacts / job_id
         root.mkdir(parents=True, exist_ok=True)
-        handle = os.open(root / "audio", os.O_WRONLY | os.O_CREAT | os.O_TRUNC, 0o600)
-        with os.fdopen(handle, "wb") as stored:
-            stored.write(audio)
+        _write_private(root / "audio", audio)
+        _write_private(root / "share", share_token.encode())
+        share_hash = digest("share", share_token.encode())
 
         def mark(data: dict[str, object]) -> None:
             """Mark the dispatching job as ready with its final result."""
@@ -337,13 +345,34 @@ class JobService:
             job["error"] = None
             job["provider_outcome"] = job["mode"]
             job["result"] = result
+            job["share_hash"] = share_hash
 
         self._run(mark)
 
     def get(self, job_id: str, job_key: str) -> JobView:
         """Return the view of the job if job_key authorizes access to it."""
-        job = self._authorized(job_id, job_key)
-        return self._recorded(JobView(job, self.now()))
+        self._authorized(job_id, job_key)
+        return self._recorded(self._view(job_id))
+
+    def shared(self, token: str) -> dict[str, object]:
+        """Return the sanitized result for a read-only share token."""
+        job = self._job_for_share(token)
+        result = job.get("result")
+        if contains_location(result):
+            raise JobError("not_found")
+        mode = job.get("mode") if isinstance(job.get("mode"), str) else None
+        access_event(job_id=str(job["job_id"]), status="shared", mode=mode)
+        return {
+            "schema_version": "1",
+            "status": "ready",
+            "mode": mode,
+            "result": result if isinstance(result, dict) else None,
+        }
+
+    def shared_audio(self, token: str) -> Path:
+        """Return the audio file for a read-only share token."""
+        job = self._job_for_share(token)
+        return self._audio_path(str(job["job_id"]))
 
     def delete(self, job_id: str, job_key: str | None) -> None:
         """Mark the job deleted if job_key authorizes it; silently no-op if unknown."""
@@ -371,11 +400,7 @@ class JobService:
     def audio_file(self, job_id: str, job_key: str) -> Path:
         """Return the path to the job's audio file, if job_key authorizes access."""
         self._authorized(job_id, job_key)
-        root = (self.artifacts / job_id).resolve()
-        audio = (root / "audio").resolve()
-        if audio.parent != root or not audio.is_file():
-            raise JobError("not_found")
-        return audio
+        return self._audio_path(job_id)
 
     def _accepting(self) -> bool:
         """Return True when there is no active job and usage still fits today's limits."""
@@ -428,7 +453,82 @@ class JobService:
             raise JobError("not_found")
         if job.get("status") == "expired":
             raise JobError("expired")
-        return JobView(job, self.now())
+        token = self._ensure_share(job_id) if job.get("status") == "ready" else None
+        return JobView(job, self.now(), share_token=token)
+
+    def _ensure_share(self, job_id: str) -> str:
+        """Return the read-only share token, minting one when the ready job has none."""
+        job = self._load(job_id)
+        if job is None or job.get("status") != "ready":
+            raise JobError("not_found")
+        current = self._read_share(job_id)
+        stored = job.get("share_hash")
+        if (
+            current is not None
+            and isinstance(stored, str)
+            and _same(stored, digest("share", current.encode()))
+        ):
+            return current
+        token = token_hex(32)
+        root = self.artifacts / job_id
+        root.mkdir(parents=True, exist_ok=True)
+        _write_private(root / "share", token.encode())
+        share_hash = digest("share", token.encode())
+
+        def mark(data: dict[str, object]) -> None:
+            """Store the hash of the new share token on the ready job."""
+            current_job = _jobs(data).get(job_id)
+            if isinstance(current_job, dict) and current_job.get("status") == "ready":
+                current_job["share_hash"] = share_hash
+
+        self._run(mark)
+        return token
+
+    def _read_share(self, job_id: str) -> str | None:
+        """Return the stored share token when the artifact file is a 64-hex secret."""
+        root = (self.artifacts / job_id).resolve()
+        path = (root / "share").resolve()
+        if path.parent != root or not path.is_file():
+            return None
+        try:
+            text = path.read_text(encoding="utf-8").strip().lower()
+        except OSError:
+            return None
+        if not _SHARE.fullmatch(text):
+            return None
+        return text
+
+    def _job_for_share(self, token: str) -> dict[str, object]:
+        """Return the ready job opened by this share token."""
+        normalized = token.strip().lower()
+        if not _SHARE.fullmatch(normalized):
+            raise JobError("not_found")
+        presented = digest("share", normalized.encode())
+        found: dict[str, object | None] = {"job": None}
+
+        def read(data: dict[str, object]) -> None:
+            """Find the ready job whose share hash matches the presented token."""
+            for job in _jobs(data).values():
+                if not isinstance(job, dict) or job.get("status") != "ready":
+                    continue
+                stored = job.get("share_hash")
+                if isinstance(stored, str) and _same(stored, presented):
+                    found["job"] = job
+                    return
+
+        self._run(read)
+        job = found["job"]
+        if not isinstance(job, dict):
+            raise JobError("not_found")
+        return job
+
+    def _audio_path(self, job_id: str) -> Path:
+        """Return the job audio path when it stays inside that job's artifact directory."""
+        root = (self.artifacts / job_id).resolve()
+        audio = (root / "audio").resolve()
+        if audio.parent != root or not audio.is_file():
+            raise JobError("not_found")
+        return audio
 
     def _settle(self, job_id: str, outcome: str) -> None:
         """Resolve a dispatching job's status based on whether the provider outcome is known."""
@@ -496,10 +596,11 @@ class JobService:
             root = child.resolve()
             if not root.is_dir() or root.parent != base:
                 continue
-            audio = root / "audio"
             try:
-                if os.path.lexists(audio):
-                    audio.unlink()
+                for name in ("audio", "share"):
+                    item = root / name
+                    if os.path.lexists(item):
+                        item.unlink()
                 if not any(root.iterdir()):
                     root.rmdir()
             except OSError:
@@ -618,6 +719,13 @@ def _new_job_id(data: dict[str, object]) -> str:
         if job_id not in jobs:
             return job_id
     raise LedgerError
+
+
+def _write_private(path: Path, payload: bytes) -> None:
+    """Write payload to path with owner-only permissions."""
+    handle = os.open(path, os.O_WRONLY | os.O_CREAT | os.O_TRUNC, 0o600)
+    with os.fdopen(handle, "wb") as stored:
+        stored.write(payload)
 
 
 def _same(stored: str, presented: str) -> bool:

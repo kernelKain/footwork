@@ -18,7 +18,10 @@ export type LiveSnapshot = {
   mode: string | null;
   errorCode: GenerationErrorCode | null;
   result: SoundprintResult | null;
+  shareToken: string | null;
 };
+
+const SHARE_TOKEN = /^[0-9a-f]{64}$/;
 
 export function readStoredJob(): StoredJob | null {
   try {
@@ -69,6 +72,7 @@ export async function readLiveJob(job: StoredJob): Promise<LiveSnapshot> {
     mode?: string | null;
     error?: { code?: string } | null;
     result?: unknown;
+    share_token?: string;
   };
   const checked = validateSoundprintResult(payload.result);
   const code = knownCode(payload.error?.code);
@@ -79,7 +83,37 @@ export async function readLiveJob(job: StoredJob): Promise<LiveSnapshot> {
     mode: typeof payload.mode === "string" ? payload.mode : null,
     errorCode: code,
     result: checked.ok ? checked.value : null,
+    shareToken: shareToken(payload.share_token),
   };
+}
+
+export function readShareToken(hash = window.location.hash): string | null {
+  const token = (hash.startsWith("#") ? hash.slice(1) : hash).trim().toLowerCase();
+  return shareToken(token);
+}
+
+export function shareUrl(token: string): string {
+  return `${window.location.origin}/w#${token}`;
+}
+
+export async function readSharedPiece(
+  token: string,
+): Promise<{ result: SoundprintResult; audioUrl: string | null } | null> {
+  const response = await fetch("/api/v1/shared", {
+    headers: { authorization: `Bearer ${token}` },
+  });
+  if (!response.ok) return null;
+  const payload = (await response.json()) as { result?: unknown };
+  const checked = validateSoundprintResult(payload.result);
+  if (!checked.ok) return null;
+  const audio = await fetch("/api/v1/shared/audio", {
+    headers: { authorization: `Bearer ${token}` },
+  });
+  if (!audio.ok) return { result: checked.value, audioUrl: null };
+  const blob = new Blob([await audio.arrayBuffer()], {
+    type: checked.value.audio_format ?? "audio/wav",
+  });
+  return { result: checked.value, audioUrl: URL.createObjectURL(blob) };
 }
 
 export async function readLiveAudio(job: StoredJob, format: string): Promise<string | null> {
@@ -150,7 +184,13 @@ function emptySnapshot(code: GenerationErrorCode): LiveSnapshot {
     mode: null,
     errorCode: code,
     result: null,
+    shareToken: null,
   };
+}
+
+function shareToken(value: string | undefined): string | null {
+  if (!value || !SHARE_TOKEN.test(value)) return null;
+  return value;
 }
 
 function idempotencyKey(sessionId: string): string {

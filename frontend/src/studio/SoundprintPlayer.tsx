@@ -8,6 +8,7 @@ export function SoundprintPlayer({
   onToggle,
   onSeek,
   onReplay,
+  browserSketch = true,
 }: {
   durationMs: number;
   timeMs: number;
@@ -16,6 +17,7 @@ export function SoundprintPlayer({
   onToggle: () => void;
   onSeek: (timeMs: number) => void;
   onReplay: () => void;
+  browserSketch?: boolean;
 }) {
   return (
     <div className="player">
@@ -42,7 +44,9 @@ export function SoundprintPlayer({
         onChange={(event) => onSeek(Number(event.currentTarget.value))}
         onInput={(event) => onSeek(Number(event.currentTarget.value))}
       />
-      <p>This sound is an example made in the browser. It is not a studio recording.</p>
+      {browserSketch ? (
+        <p>This sound is an example made in the browser. It is not a studio recording.</p>
+      ) : null}
       {playbackError ? <p role="alert">{playbackError}</p> : null}
     </div>
   );

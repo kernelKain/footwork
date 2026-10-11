@@ -29,6 +29,8 @@ Studio generation is possible with this key. A Route Sketch remains the fallback
 
 On October 11, 2026 the user confirmed the studio path is on. The Render service is https://footwork-m6g0.onrender.com/. Its dashboard has `GENERATION_ENABLED` set to `true`, and the Eleven key is present there. A validated Gemma plan is the only request sent to Eleven. The committed blueprint still lists `GENERATION_ENABLED` as `false`. No new song id was recorded for this confirmation.
 
+The same day, commit `3bde4e8` makes later movement part of the plan sent to Eleven. Each turn flips the melodic direction. A pace change keeps a brighter pulse. A pause is a quiet hold. A loop brings the opening motif back. The October 10 song `6JZhKLyXn9BrPEPAnUQC` was rendered before this plan. No new song id was recorded for the new plan.
+
 ## Timed arrangement render
 
 Recorded October 10, 2026. One 60-second composition-plan render succeeded on the first attempt. No second request was made.

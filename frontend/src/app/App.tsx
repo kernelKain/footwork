@@ -4,6 +4,7 @@ import { useRoute } from "./useRoute";
 import { AppHeader } from "../components/AppHeader";
 import { Notice } from "../components/Notice";
 import { WalkScreen } from "../recording/WalkScreen";
+import { SharedScreen } from "../studio/SharedScreen";
 import { StudioScreen } from "../studio/StudioScreen";
 import { SystemScreen } from "../ui/SystemScreen";
 
@@ -23,6 +24,8 @@ export function App() {
   if (path === "/") screen = <WalkScreen onNavigate={navigate} onGo={go} />;
   if (path === "/studio" && fixture.ok)
     screen = <StudioScreen fixture={fixture.value} onNavigate={navigate} />;
+  if (path === "/w" && fixture.ok)
+    screen = <SharedScreen fixture={fixture.value} onNavigate={navigate} />;
   if (path === "/about") screen = <WalkScreen onNavigate={navigate} onGo={go} />;
   if (path === "/system") screen = <SystemScreen />;
 
