@@ -1,0 +1,24 @@
+Work in /home/kernel-kain/Documents/Github/footwork on the existing branch final-product-polish. Do not add product features. Read the release gates and test matrix in Docs/PHASE_5_FINAL_POLISH_PLAN.md, then audit all completed final-polish changes.
+
+Perform only verification, required defect fixes within the approved behavior, and documentation alignment.
+
+Required work:
+- Run the complete backend test suite and formatting and lint checks.
+- Run frontend typecheck, lint, formatting checks, production build, and the complete Playwright suite.
+- Verify privacy: no route export, no raw installation token in ledgers or logs, no coordinates in result or share URLs, and no ended raw draft after accepted submission.
+- Verify accessibility: axe serious and critical findings, keyboard-only flow, 200% zoom, icon names, status announcements, focus, contrast, and reduced motion.
+- Verify responsive behavior at 360, 390, 430, 768, and 1280 pixels with no horizontal overflow.
+- Verify audio synchronization within 500 milliseconds and the use of one audio element and shared clock.
+- Record production bundle and performance changes.
+- Update README, product concept, frontend experience, handoffs, environment and deployment notes, and the final release checklist so they describe verified behavior rather than plans.
+- Do not deploy or alter production settings.
+- Prepare the smoke checklist and clearly identify provider-budget confirmation, real-phone review, and deployment as user-controlled gates.
+- Restore the feature freeze in documentation only after every automated gate passes and all remaining human gates are explicitly recorded.
+
+Do not commit. Report every command and result, changed file, unresolved limitation, and user-only action.
+
+Suggested commit subject: Verify and document the final product experience
+
+---
+
+Update docs, commit, push and Create PR.
