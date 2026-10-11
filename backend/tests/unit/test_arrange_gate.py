@@ -85,6 +85,17 @@ def test_a_model_failure_does_not_invent_a_plan() -> None:
     assert "weights unavailable" in result["message"]
 
 
+def test_a_single_style_word_becomes_a_valid_plan() -> None:
+    reply = """```json
+{"mood":"warm_cinematic","style":"cinematic","event_refs":["turn-1"]}
+```"""
+    result = arrange(_timeline(), complete=lambda _timeline: reply)
+
+    assert result["status"] == "valid"
+    assert result["arrangement"]["style"] == ["instrumental", "cinematic"]
+    assert result["arrangement"]["event_refs"] == ["turn-1"]
+
+
 def test_a_bad_model_reply_is_not_treated_as_a_plan() -> None:
     result = arrange(_timeline(), complete=lambda _timeline: "hf_secretvalue walking")
 

@@ -1,3 +1,15 @@
+---
+title: Footwork
+emoji: 👟
+colorFrom: blue
+colorTo: purple
+sdk: gradio
+sdk_version: 6.29.1
+python_version: "3.12.12"
+app_file: app.py
+pinned: false
+---
+
 # Footwork arrangement service
 
 This directory is the Hugging Face Space at `kernelKain/footwork`.

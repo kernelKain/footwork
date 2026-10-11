@@ -15,7 +15,8 @@ _SYSTEM = (
     "mood must be warm_cinematic. "
     "style is 1 to 6 unique words chosen from: instrumental, sparse, warm, cinematic, "
     "rising, falling, held, brighter, quieter, pulse. "
-    "style must include instrumental. "
+    "style must be a JSON array and must include instrumental, "
+    "for example [\"instrumental\", \"cinematic\"]. Never return style as one word. "
     "event_refs lists event ids from the timeline, each id at most once. "
     "Do not include coordinates, timestamps, or an explanation."
 )

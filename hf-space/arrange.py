@@ -102,8 +102,8 @@ def _parse_plan(raw: str, event_ids: set[str]) -> dict | None:
     allowed = {"mood", "style", "event_refs"}
     if set(loaded) != allowed or loaded.get("mood") != "warm_cinematic":
         return None
-    style = loaded.get("style")
-    refs = loaded.get("event_refs")
+    style = _normalize_style(loaded.get("style"))
+    refs = _normalize_refs(loaded.get("event_refs"))
     if not _valid_style(style) or not _valid_refs(refs, event_ids):
         return None
     return {"mood": "warm_cinematic", "style": list(style), "event_refs": list(refs)}
@@ -116,6 +116,37 @@ def _event_ids(events: list) -> set[str]:
         if isinstance(event, dict) and isinstance(event.get("id"), str):
             found.add(event["id"])
     return found
+
+
+def _normalize_style(value: object) -> list[str] | None:
+    """Turn one style word, or a list, into the closed vocabulary. Require instrumental."""
+    if isinstance(value, str):
+        parts = [item.strip() for item in re.split(r"[,/\s]+", value) if item.strip()]
+    elif isinstance(value, list):
+        parts = [item.strip() for item in value if isinstance(item, str)]
+    else:
+        return None
+    kept: list[str] = []
+    for item in parts:
+        if item in STYLES and item not in kept:
+            kept.append(item)
+    if not kept:
+        return None
+    if "instrumental" not in kept:
+        kept.insert(0, "instrumental")
+    if len(kept) > 6:
+        others = [item for item in kept if item != "instrumental"][:5]
+        kept = ["instrumental", *others]
+    return kept
+
+
+def _normalize_refs(value: object) -> list[str] | None:
+    """Accept one event id or a list of event ids."""
+    if isinstance(value, str):
+        return [value]
+    if isinstance(value, list) and all(isinstance(item, str) for item in value):
+        return list(value)
+    return None
 
 
 def _valid_style(value: object) -> bool:
