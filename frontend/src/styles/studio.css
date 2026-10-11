@@ -134,6 +134,14 @@ html.is-background .scrubber {
   transition: none;
 }
 
+@media (prefers-reduced-motion: reduce) {
+  .studio-cover,
+  .moment-wave,
+  .scrubber {
+    transition: none;
+  }
+}
+
 @media (prefers-reduced-motion: no-preference) {
   .generation-stage {
     animation: stage-enter var(--duration-fast) var(--ease-standard);

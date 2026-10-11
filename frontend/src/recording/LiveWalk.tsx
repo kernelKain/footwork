@@ -49,6 +49,7 @@ export function LiveWalk({
   const [sheetOpen, setSheetOpen] = useState(false);
   const [wakeHeld, setWakeHeld] = useState(false);
   const [endedDraftSaved, setEndedDraftSaved] = useState(false);
+  const [deleteSavedWalkError, setDeleteSavedWalkError] = useState<string | null>(null);
   const [shortConfirm, setShortConfirm] = useState(false);
   const modelRef = useRef(model);
   const sessionRef = useRef("");
@@ -306,7 +307,13 @@ export function LiveWalk({
 
   /** Delete the ended draft and hide its deletion control after storage succeeds. */
   const discardEndedWalk = () => {
-    void store.clear().then(() => setEndedDraftSaved(false));
+    void store.clear().then(
+      () => {
+        setEndedDraftSaved(false);
+        setDeleteSavedWalkError(null);
+      },
+      () => setDeleteSavedWalkError("The saved walk could not be deleted. Please try again."),
+    );
   };
 
   const begin = () => {
@@ -328,6 +335,7 @@ export function LiveWalk({
           onDeleteSavedWalk={
             settled && endedDraftSaved && model.phase === "ready" ? discardEndedWalk : undefined
           }
+          deleteSavedWalkError={deleteSavedWalkError}
         />
       ) : (
         <RecordingView

@@ -999,7 +999,7 @@ Docs updated to the verified working tree: `README.md`, `Docs/PRODUCT_CONCEPT.md
 **Branch:** `build/submission`
 **Window:** Build hours 24–27 (150 minutes, plus a 30-minute emergency buffer)
 **Outcome:** Demo video, DEV article, README, links, and the final evidence record.
-**Phase note:** Not started. Product feature freeze is restored. This phase still waits for the user to commit the polish, confirm the provider budget, review a real phone, and deploy. Sponsor roles and technical provenance belong in the README and submission evidence, not in the application UI.
+**Phase note:** Not started. Product feature freeze is restored. This phase still waits for the user to confirm the provider budget, review a real phone, and deploy. Sponsor roles and technical provenance belong in the README and submission evidence, not in the application UI.
 
 The 30-minute buffer is not a step. If emergency work happens, add it under the step it belongs to, with its own commit and note.
 

@@ -1,10 +1,22 @@
 import { expect, test } from "./practicePage";
 
 test("playback motion follows the clock and stays synchronized", async ({ page }) => {
+  await page.emulateMedia({ reducedMotion: "no-preference" });
   await page.goto("/studio");
   const cover = page.locator(".studio-cover .cover-signature");
   const journey = page.locator(".route-figure .route-path").first();
   const leg = page.locator(".route-cursor .walker-leg").first();
+  expect(
+    await page
+      .locator(".studio-cover")
+      .evaluate((element) => getComputedStyle(element).transitionProperty),
+  ).toBe("box-shadow");
+  expect(
+    await page
+      .locator(".moment-wave")
+      .first()
+      .evaluate((element) => getComputedStyle(element).transitionProperty),
+  ).toBe("transform");
 
   await expect
     .poll(async () => cover.evaluate((element) => getComputedStyle(element).animationName))
@@ -86,6 +98,14 @@ test("reduced motion keeps the finished route, marker, progress, and text", asyn
   await page.emulateMedia({ reducedMotion: "reduce" });
   await page.goto("/studio");
   await expect(page.locator(".now-playing")).toBeVisible();
+  for (const selector of [".studio-cover", ".moment-wave", ".scrubber"]) {
+    expect(
+      await page
+        .locator(selector)
+        .first()
+        .evaluate((element) => getComputedStyle(element).transitionProperty),
+    ).toBe("none");
+  }
   const opacity = await page.locator(".now-playing").evaluate((element) => {
     return Number(getComputedStyle(element).opacity);
   });
@@ -106,6 +126,8 @@ test("reduced motion keeps the finished route, marker, progress, and text", asyn
       .locator(".studio-result")
       .evaluate((element) => getComputedStyle(element).animationName),
   ).toBe("none");
+  await page.getByRole("button", { name: "Play", exact: true }).click();
+  await expect(page.locator(".studio")).toHaveClass(/is-playing/);
   await page.getByRole("button", { name: /Melody changed direction/ }).click();
   const live = page.locator(".route-marker.is-live");
   await expect(live).toHaveCount(1);

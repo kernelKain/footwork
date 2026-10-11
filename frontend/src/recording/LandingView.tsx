@@ -9,10 +9,12 @@ export function LandingView({
   onStart,
   onNavigate,
   onDeleteSavedWalk,
+  deleteSavedWalkError,
 }: {
   onStart: () => void;
   onNavigate: Navigate;
   onDeleteSavedWalk?: () => void;
+  deleteSavedWalkError?: string | null;
 }) {
   return (
     <div className="journey">
@@ -35,6 +37,7 @@ export function LandingView({
               </Button>
             </div>
           ) : null}
+          {deleteSavedWalkError ? <p role="alert">{deleteSavedWalkError}</p> : null}
         </div>
         <figure className="hero-figure">
           <svg viewBox="0 0 320 140" role="img" aria-label="A walk route becoming a short waveform">

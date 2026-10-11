@@ -73,6 +73,7 @@ export function StudioScreen({ fixture, onNavigate, opened }: StudioScreenProps)
   );
   const [shareToken, setShareToken] = useState<string | null>(null);
   const [endedDraftSaved, setEndedDraftSaved] = useState(false);
+  const [deleteSavedWalkError, setDeleteSavedWalkError] = useState<string | null>(null);
   const [selectedEventId, setSelectedEventId] = useState<string | null>(null);
   const [heroAway, setHeroAway] = useState(false);
   const heroPlayerRef = useRef<HTMLDivElement>(null);
@@ -129,7 +130,13 @@ export function StudioScreen({ fixture, onNavigate, opened }: StudioScreenProps)
   }, [drafts, view.name]);
   /** Clear the saved draft and hide the recovery deletion action after storage succeeds. */
   const deleteSavedWalk = useCallback(() => {
-    void drafts.clear().then(() => setEndedDraftSaved(false));
+    void drafts.clear().then(
+      () => {
+        setEndedDraftSaved(false);
+        setDeleteSavedWalkError(null);
+      },
+      () => setDeleteSavedWalkError("The saved walk could not be deleted. Please try again."),
+    );
   }, [drafts]);
   const generated = view.name === "piece";
   const label = resultLabel(displayed.mode);
@@ -172,6 +179,7 @@ export function StudioScreen({ fixture, onNavigate, opened }: StudioScreenProps)
           onExample={showExample}
           onRetry={retry}
           onDeleteSavedWalk={endedDraftSaved ? deleteSavedWalk : undefined}
+          deleteSavedWalkError={deleteSavedWalkError}
         />
       ) : null}
       {showingResult ? (

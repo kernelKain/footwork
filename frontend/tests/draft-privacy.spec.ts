@@ -2,6 +2,50 @@ import { expect, test, type Page } from "@playwright/test";
 import { DRAFT_DB, DRAFT_KEY, DRAFT_STORE } from "../src/recording/draftStore";
 import { createMovementDraft, type MovementDraft } from "../src/recording/movementDraft";
 
+for (const pathname of ["/", "/studio"]) {
+  test(`a failed saved walk deletion on ${pathname} keeps the draft and can be retried`, async ({
+    page,
+  }) => {
+    const errors: string[] = [];
+    page.on("pageerror", (error) => errors.push(error.message));
+    await page.goto("/");
+    await writeDraft(page, endedDraft("retry-delete"));
+    await page.evaluate(() => sessionStorage.setItem("footwork-generation", "trace_too_short"));
+    await page.goto(pathname);
+    const deleteButton = page.getByRole("button", { name: "Delete saved walk" });
+    await expect(deleteButton).toBeVisible();
+    await page.evaluate(
+      ({ store, key }) => {
+        const original = IDBObjectStore.prototype.delete;
+        IDBObjectStore.prototype.delete = function (query) {
+          if (this.name === store && query === key) {
+            IDBObjectStore.prototype.delete = original;
+            throw new DOMException("Storage unavailable", "UnknownError");
+          }
+          return original.call(this, query);
+        };
+      },
+      { store: DRAFT_STORE, key: DRAFT_KEY },
+    );
+
+    await deleteButton.click();
+    await expect(page.getByRole("alert")).toContainText(
+      "The saved walk could not be deleted. Please try again.",
+    );
+    await expect(deleteButton).toBeEnabled();
+    expect((await readDraft(page))?.sessionId).toBe("retry-delete");
+    expect(errors).toEqual([]);
+
+    await deleteButton.click();
+    await expect.poll(async () => readDraft(page)).toBeNull();
+    await expect(deleteButton).toHaveCount(0);
+    await expect(
+      page.getByText("The saved walk could not be deleted. Please try again."),
+    ).toHaveCount(0);
+    expect(errors).toEqual([]);
+  });
+}
+
 test("the landing has no coordinate export, and a saved ended walk can be deleted", async ({
   page,
 }) => {

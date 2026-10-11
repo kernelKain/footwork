@@ -176,17 +176,20 @@ export function GenerationRecovery({
   onExample,
   onRetry,
   onDeleteSavedWalk,
+  deleteSavedWalkError,
 }: {
   code: GenerationErrorCode;
   onExample: () => void;
   onRetry: () => void;
   onDeleteSavedWalk?: () => void;
+  deleteSavedWalkError?: string | null;
 }) {
   const retry = RETRYABLE_GENERATION_ERRORS.has(code);
   return (
     <section className="generation-panel" role="alert" aria-labelledby="generation-error-title">
       <h1 id="generation-error-title">The piece is not ready</h1>
       <p>{GENERATION_ERROR_COPY[code]}</p>
+      {deleteSavedWalkError ? <p>{deleteSavedWalkError}</p> : null}
       <div className="actions">
         {retry ? (
           <button type="button" className="ui-button ui-button-primary" onClick={onRetry}>
