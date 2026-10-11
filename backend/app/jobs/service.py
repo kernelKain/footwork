@@ -158,7 +158,7 @@ class NoProviderDispatch:
 
     def start(self, job_id: str) -> None:
         """Do nothing; no provider is dispatched."""
-        return None
+        return
 
 
 class JobView:
