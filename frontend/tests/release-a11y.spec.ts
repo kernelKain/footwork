@@ -61,7 +61,10 @@ async function tabTo(page: Page, name: string): Promise<void> {
   for (let step = 0; step < 24; step += 1) {
     await page.keyboard.press("Tab");
     const focused = page.locator(":focus");
-    const text = await focused.innerText().catch(() => "");
+    if ((await focused.count()) === 0) continue;
+    const kind = await focused.evaluate((element) => element.tagName);
+    if (kind === "BODY") continue;
+    const text = await focused.innerText({ timeout: 250 }).catch(() => "");
     if (!text.includes(name)) continue;
     const outline = await focused.evaluate((element) => getComputedStyle(element).outlineStyle);
     expect(outline).not.toBe("none");
