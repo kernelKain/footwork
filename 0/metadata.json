@@ -1,0 +1,52 @@
+{
+  "cli_version": "0.11.4",
+  "checkpoint_id": "01M4P1R92S2E0YFPSCNNKCM4MN",
+  "session_id": "5adc3941-abc5-4a0c-97fd-daec6604b73f",
+  "strategy": "manual-commit",
+  "created_at": "2026-10-11T17:56:49.522851656Z",
+  "branch": "main",
+  "checkpoints_count": 1,
+  "save_step_count": 1,
+  "files_touched": [
+    "Docs/HANDOFF_2.md",
+    "Docs/evidence/music-hosting.md",
+    "README.md"
+  ],
+  "agent": "Cursor",
+  "model": "grok-4.7-high",
+  "turn_id": "2c1af57db5cd",
+  "checkpoint_transcript_start": 33,
+  "transcript_lines_at_start": 33,
+  "compact_transcript_start": 8,
+  "token_usage": {
+    "input_tokens": 104869,
+    "cache_creation_tokens": 0,
+    "cache_read_tokens": 715136,
+    "output_tokens": 5237,
+    "api_call_count": 1
+  },
+  "session_metrics": {
+    "turn_count": 5
+  },
+  "initial_attribution": {
+    "calculated_at": "2026-10-11T17:56:49.509723997Z",
+    "agent_lines": 11,
+    "agent_removed": 5,
+    "human_added": 447,
+    "human_modified": 0,
+    "human_removed": 0,
+    "total_committed": 458,
+    "total_lines_changed": 490,
+    "agent_percentage": 3.2653061224489797,
+    "metric_version": 2
+  },
+  "prompt_attributions": [
+    {
+      "checkpoint_number": 1,
+      "user_lines_added": 0,
+      "user_lines_removed": 0,
+      "agent_lines_added": 0,
+      "agent_lines_removed": 0
+    }
+  ]
+}
