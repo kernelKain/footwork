@@ -1,0 +1,36 @@
+{
+  "cli_version": "0.11.4",
+  "checkpoint_id": "01M4P3CC0G1Y2QS7SGW2NC88Y6",
+  "strategy": "manual-commit",
+  "branch": "main",
+  "checkpoints_count": 2,
+  "files_touched": [
+    "Docs/FRONTEND_EXPERIENCE.md",
+    "Docs/HANDOFF_2.md",
+    "Docs/PRODUCT_CONCEPT.md",
+    "README.md",
+    "frontend/src/studio/MovementRibbon.tsx",
+    "frontend/src/studio/SoundprintPlayer.tsx",
+    "frontend/src/studio/StudioScreen.tsx",
+    "frontend/src/studio/journeyModel.ts",
+    "frontend/src/styles/recap.css",
+    "frontend/tests/live-job.spec.ts",
+    "frontend/tests/recap.spec.ts"
+  ],
+  "sessions": [
+    {
+      "metadata": "/0/metadata.json",
+      "transcript": "/0/full.jsonl",
+      "compact_transcript": "/0/transcript.jsonl",
+      "content_hash": "/0/content_hash.txt",
+      "prompt": "/0/prompt.txt"
+    }
+  ],
+  "token_usage": {
+    "input_tokens": 34797,
+    "cache_creation_tokens": 0,
+    "cache_read_tokens": 2713088,
+    "output_tokens": 10866,
+    "api_call_count": 2
+  }
+}
