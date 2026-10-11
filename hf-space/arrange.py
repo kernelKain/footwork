@@ -21,6 +21,7 @@ FORBIDDEN_KEYS = {
 
 
 def arrange(timeline: dict) -> dict:
+    """Validate the anonymous timeline and return a blocked (never a live) arrangement result."""
     if _contains_forbidden(timeline):
         return _result(
             status="invalid",
@@ -42,6 +43,7 @@ def arrange(timeline: dict) -> dict:
 
 
 def _result(status: str, code: str, message: str) -> dict:
+    """Build the standard proof-result payload for the given status/code/message."""
     return {
         "schema_version": "1",
         "status": status,
@@ -55,6 +57,7 @@ def _result(status: str, code: str, message: str) -> dict:
 
 
 def _contains_forbidden(value: object) -> bool:
+    """Return True if value contains any forbidden (location/clock) key."""
     if isinstance(value, dict):
         for key, nested in value.items():
             if str(key).lower() in FORBIDDEN_KEYS or _contains_forbidden(nested):

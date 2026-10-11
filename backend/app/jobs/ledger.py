@@ -26,12 +26,14 @@ class LedgerError(Exception):
 
 class Ledger:
     def __init__(self, path: Path, now: Callable[[], datetime]) -> None:
+        """Set up the ledger at the given path, using now() for timestamps."""
         self.path = path
         self._lock_path = path.with_suffix(".lock")
         self.now = now
         self._opened = False
 
     def transact(self, mutate: Callable[[dict[str, object]], _T]) -> _T:
+        """Run mutate against the locked, loaded ledger data and persist the result."""
         self.path.parent.mkdir(parents=True, exist_ok=True)
         with self._lock_path.open("a+") as handle:
             fcntl.flock(handle.fileno(), fcntl.LOCK_EX)
@@ -45,6 +47,7 @@ class Ledger:
             return result
 
     def _read(self) -> dict[str, object]:
+        """Load and validate the ledger file, or raise LedgerError if it's untrustworthy."""
         if not self.path.is_file():
             return {"schema_version": "1", "jobs": {}, "usage": {}}
         try:
@@ -61,6 +64,7 @@ class Ledger:
         return loaded
 
     def _write(self, data: dict[str, object]) -> None:
+        """Atomically write the ledger data to disk with restrictive permissions."""
         temporary = self.path.with_suffix(".json.tmp")
         payload = json.dumps(data, sort_keys=True, separators=(",", ":")).encode()
         try:
@@ -75,18 +79,22 @@ class Ledger:
 
 
 def digest(label: str, value: bytes) -> str:
+    """Return a SHA-256 hex digest of value, namespaced by label."""
     return hashlib.sha256(label.encode() + b"\0" + value).hexdigest()
 
 
 def day_key(instant: datetime) -> str:
+    """Return the UTC calendar-day key for the given instant."""
     return instant.astimezone(UTC).date().isoformat()
 
 
 def stamp(instant: datetime) -> str:
+    """Return the ISO-8601 UTC string for the given instant."""
     return instant.astimezone(UTC).isoformat()
 
 
 def parse_stamp(value: str) -> datetime:
+    """Parse an ISO-8601 timestamp, assuming UTC when no timezone is given."""
     parsed = datetime.fromisoformat(value)
     if parsed.tzinfo is None:
         return parsed.replace(tzinfo=UTC)
@@ -94,10 +102,12 @@ def parse_stamp(value: str) -> datetime:
 
 
 def zero_usage() -> dict[str, int]:
+    """Return a fresh zeroed usage counters dict."""
     return {"gemma_attempts": 0, "gpu_seconds": 0, "eleven_attempts": 0}
 
 
 def _interrupt_active(data: dict[str, object]) -> None:
+    """Mark any jobs left in an active state (e.g. after a crash) as interrupted."""
     jobs = data["jobs"]
     if not isinstance(jobs, dict):
         return
@@ -115,6 +125,7 @@ def _interrupt_active(data: dict[str, object]) -> None:
 
 
 def _expire(data: dict[str, object], now: datetime) -> None:
+    """Drop retained-too-long jobs/usage entries and mark expired jobs as expired."""
     jobs = data["jobs"]
     usage = data["usage"]
     if not isinstance(jobs, dict) or not isinstance(usage, dict):
@@ -141,6 +152,7 @@ def _expire(data: dict[str, object], now: datetime) -> None:
 
 
 def _safe_stamp(value: object) -> datetime | None:
+    """Parse value as a timestamp, returning None if it isn't a valid string stamp."""
     if not isinstance(value, str):
         return None
     try:

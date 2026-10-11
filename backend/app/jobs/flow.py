@@ -43,18 +43,22 @@ class WalkDispatch:
         render: Callable[[Sequence[Mapping[str, object]], Sequence[str]], MusicReceipt],
         complete: Callable[[str, WalkOutcome], None] | None = None,
     ) -> None:
+        """Store the arrange/render callables and optional completion callback."""
         self.arrange = arrange
         self.render = render
         self.complete = complete
         self._traces: dict[str, CleanTrace] = {}
 
     def prepare(self, job_id: str, trace: CleanTrace) -> None:
+        """Stash the cleaned trace in memory for this job, pending `start`."""
         self._traces[job_id] = trace
 
     def discard(self, job_id: str) -> None:
+        """Drop the stashed trace for the job, if any."""
         self._traces.pop(job_id, None)
 
     def start(self, job_id: str) -> None:
+        """Run the walk-to-music pipeline for the job and report completion."""
         trace = self._traces.pop(job_id)
         outcome = finish_walk(job_id, trace, self.arrange, self.render)
         if self.complete is not None:
@@ -67,6 +71,7 @@ def finish_walk(
     arrange: Callable[[Sequence[Mapping[str, object]]], object],
     render: Callable[[Sequence[Mapping[str, object]], Sequence[str]], MusicReceipt],
 ) -> WalkOutcome:
+    """Build the full walk outcome: events, arrangement, audio, and result payload."""
     stages = ["reading_walk", "finding_moments"]
     detected = detect_events(trace)
     sketch = compose_sketch(trace, detected)
@@ -110,6 +115,7 @@ def finish_walk(
 def blocked_arrangement(
     events: Sequence[Mapping[str, object]],
 ) -> object:
+    """Attempt an arrangement using the unproved (always-failing) space client."""
     return generate_arrangement(
         events,
         _BlockedSpace(),
@@ -124,9 +130,11 @@ def render_with_key(
     events: Sequence[Mapping[str, object]],
     styles: Sequence[str],
 ) -> MusicReceipt:
+    """Render the arrangement into music using the configured Eleven Music key."""
     key = _music_key()
 
     def post(body: dict[str, object]) -> object:
+        """Post the render request body to Eleven Music with the resolved key."""
         return post_eleven(body, key)
 
     return render_arrangement(events, styles, post, inspect_mpeg)
@@ -136,6 +144,7 @@ def generation_disabled(
     _events: Sequence[Mapping[str, object]],
     _styles: Sequence[str],
 ) -> MusicReceipt:
+    """Return a receipt indicating music generation is disabled."""
     return MusicReceipt(
         status="unavailable",
         code="generation_disabled",
@@ -150,6 +159,7 @@ def generation_disabled(
 
 
 def live_dispatch() -> WalkDispatch:
+    """Build the production WalkDispatch, enabling music rendering per the environment."""
     enabled = os.environ.get("GENERATION_ENABLED", "").strip().lower() == "true"
     music = render_with_key if enabled else generation_disabled
     return WalkDispatch(blocked_arrangement, music)
@@ -157,14 +167,17 @@ def live_dispatch() -> WalkDispatch:
 
 class _BlockedSpace:
     def arrange(self, timeline: dict[str, object]) -> object:
+        """Always raise, since the arrangement space is not yet proved safe to call."""
         raise RuntimeError("arrangement space is not proved")
 
 
 def _accepted(arrangement: object) -> bool:
+    """Return True when the arrangement outcome's status is 'valid'."""
     return getattr(arrangement, "status", None) == "valid"
 
 
 def _plan(arrangement: object, events: Sequence[Mapping[str, object]]) -> dict[str, object] | None:
+    """Extract and validate the arrangement's plan, or None if it references unknown events."""
     plan = getattr(arrangement, "arrangement", None)
     if not isinstance(plan, dict):
         return None
@@ -176,6 +189,7 @@ def _plan(arrangement: object, events: Sequence[Mapping[str, object]]) -> dict[s
 
 
 def _sketch_plan(events: Sequence[Mapping[str, object]]) -> dict[str, object]:
+    """Build the default Route Sketch arrangement plan from the first events."""
     return {
         "mood": "warm_cinematic",
         "style": list(_SKETCH_STYLE),
@@ -184,6 +198,7 @@ def _sketch_plan(events: Sequence[Mapping[str, object]]) -> dict[str, object]:
 
 
 def _public_events(events: Sequence[SketchEvent]) -> list[dict[str, object]]:
+    """Anonymize sketch events and re-attach their source offsets and confidence."""
     raw = [
         {"id": event.id, "type": event.type, "audio_offset_ms": event.audio_offset_ms}
         for event in events
@@ -217,6 +232,7 @@ def _public_events(events: Sequence[SketchEvent]) -> list[dict[str, object]]:
 def _match(
     events: Sequence[SketchEvent], used: set[int], kind: str, audio_offset: object
 ) -> SketchEvent | None:
+    """Find the first unused source event matching the given type and offset."""
     for index, event in enumerate(events):
         if index in used:
             continue
@@ -237,6 +253,7 @@ def _result(
     warnings: Sequence[str],
     audio_format: str,
 ) -> dict[str, object]:
+    """Assemble the full public job result payload."""
     route = [{"x": point.x, "y": point.y, "t_ms": point.t_ms} for point in sketch.route]
     summary = _movement(trace, events, route)
     route = _route_inside(route, summary)
@@ -291,6 +308,7 @@ def _movement(
     events: Sequence[Mapping[str, object]],
     route: Sequence[Mapping[str, object]],
 ) -> dict[str, object]:
+    """Compute the movement summary (durations, distance, pace, segments) for the result."""
     end = trace.samples[-1].t_ms if trace.samples else 60_000
     end = max(end, _max_time(events, route), 1)
     segments, gaps = _intervals(end, trace.gaps_ms)
@@ -338,6 +356,7 @@ def _movement(
 def _intervals(
     end: int, gaps: Sequence[tuple[int, int]]
 ) -> tuple[list[tuple[int, int]], list[tuple[int, int]]]:
+    """Split the trace's timeline into recorded segments and uncertain gap intervals."""
     cursor = 0
     segments: list[tuple[int, int]] = []
     uncertain: list[tuple[int, int]] = []
@@ -357,6 +376,7 @@ def _intervals(
 
 
 def _distances(segments: Sequence[tuple[int, int]], total: float) -> list[float]:
+    """Apportion the total distance across segments proportionally to their duration."""
     span = sum(stop - start for start, stop in segments) or 1
     amounts: list[float] = []
     used = 0.0
@@ -373,6 +393,7 @@ def _distances(segments: Sequence[tuple[int, int]], total: float) -> list[float]
 def _route_inside(
     route: Sequence[Mapping[str, object]], summary: Mapping[str, object]
 ) -> list[dict[str, object]]:
+    """Filter route points to those inside recorded segments, keeping the largest run."""
     gaps = _spans(summary.get("uncertain_intervals"))
     kept: list[dict[str, object]] = []
     groups: list[list[dict[str, object]]] = [[]]
@@ -395,6 +416,7 @@ def _route_inside(
 
 
 def _spans(value: object) -> list[tuple[int, int]]:
+    """Parse a list of {start_ms, end_ms} dicts into (start, end) tuples."""
     if not isinstance(value, list):
         return []
     spans: list[tuple[int, int]] = []
@@ -405,6 +427,7 @@ def _spans(value: object) -> list[tuple[int, int]]:
 
 
 def _inside(time_ms: int, summary: Mapping[str, object], gaps: Sequence[tuple[int, int]]) -> bool:
+    """Return True when time_ms falls within a recorded segment and outside any gap."""
     segments = _spans(summary.get("recording_segments"))
     covered = any(start <= time_ms <= stop for start, stop in segments)
     blocked = any(start < time_ms < stop for start, stop in gaps)
@@ -412,16 +435,19 @@ def _inside(time_ms: int, summary: Mapping[str, object], gaps: Sequence[tuple[in
 
 
 def _crosses(left: int, right: int, gaps: Sequence[tuple[int, int]]) -> bool:
+    """Return True if the interval (left, right) crosses any gap."""
     return any(left < stop and start < right for start, stop in gaps)
 
 
 def _max_time(events: Sequence[Mapping[str, object]], route: Sequence[Mapping[str, object]]) -> int:
+    """Return the latest timestamp across events and route points."""
     times = [int(event["source_offset_ms"]) for event in events]
     times.extend(int(point["t_ms"]) for point in route)
     return max(times, default=0)
 
 
 def _rights(mode: str) -> str:
+    """Return the rights/provenance note matching the generation mode."""
     if mode == "studio_live":
         return (
             "Eleven Music rendered this track from the walk. It is not separately licensed as MIT."
@@ -430,6 +456,7 @@ def _rights(mode: str) -> str:
 
 
 def _safe_summary(summary: str) -> str:
+    """Return a truncated summary, redacting any that mentions coordinates."""
     text = " ".join(summary.split())
     if any(word in text.lower() for word in ("latitude", "longitude")):
         return "This walk has enough clear movement to shape a piece."
@@ -437,6 +464,7 @@ def _safe_summary(summary: str) -> str:
 
 
 def _music_key() -> str:
+    """Resolve the Eleven Music API key from the env file or environment variable."""
     for line in _env_lines():
         if line.startswith("ELEVENLABS_API_KEY="):
             return line.split("=", 1)[1].strip().strip('"').strip("'")
@@ -444,6 +472,7 @@ def _music_key() -> str:
 
 
 def _env_lines() -> list[str]:
+    """Return the lines of the configured .env file, or an empty list if absent."""
     path = os.environ.get("FOOTWORK_ENV_FILE", "")
     if not path:
         candidate = os.path.join(os.path.dirname(__file__), "..", "..", ".env")

@@ -73,6 +73,7 @@ class MusicReceipt:
     audio: bytes | None
 
     def __repr__(self) -> str:
+        """Return a concise repr with status, attempts, and code."""
         return f"MusicReceipt(status={self.status!r}, attempts={self.attempts}, code={self.code!r})"
 
 
@@ -80,6 +81,7 @@ def compile_chunks(
     events: Sequence[Mapping[str, object]],
     styles: Sequence[str],
 ) -> list[dict[str, object]]:
+    """Build the composition-plan chunks for the events and requested styles."""
     edges, kinds = _edges(events)
     chunks: list[dict[str, object]] = []
     turn_at = _first_time(events, "turn")
@@ -104,6 +106,7 @@ def compile_chunks(
 
 
 def request_body(chunks: Sequence[Mapping[str, object]]) -> dict[str, object]:
+    """Wrap the chunks into the Eleven Music composition-plan request body."""
     return {"model_id": MODEL_ID, "composition_plan": {"chunks": list(chunks)}}
 
 
@@ -113,6 +116,7 @@ def render_arrangement(
     post: Callable[[dict[str, object]], HttpResult],
     inspect: Callable[[bytes], tuple[bool, int | None]],
 ) -> MusicReceipt:
+    """Compose, post, and validate a single music render attempt, never retried."""
     body = request_body(compile_chunks(events, styles))
     digest = hashlib.sha256(
         json.dumps(body, sort_keys=True, separators=(",", ":")).encode()
@@ -151,6 +155,7 @@ def render_arrangement(
 
 
 def post_eleven(body: dict[str, object], api_key: str) -> HttpResult:
+    """Post the composition request to Eleven Music and classify the outcome."""
     try:
         response = httpx.post(
             COMPOSE_URL,
@@ -167,6 +172,7 @@ def post_eleven(body: dict[str, object], api_key: str) -> HttpResult:
 
 
 def inspect_mpeg(data: bytes) -> tuple[bool, int | None]:
+    """Check that the MPEG audio has a valid duration and is audible."""
     if len(data) < 128:
         return False, None
     with tempfile.TemporaryDirectory() as directory:
@@ -180,10 +186,12 @@ def inspect_mpeg(data: bytes) -> tuple[bool, int | None]:
 
 
 def _failed(digest: str, code: str, size: int, song_id: str | None) -> MusicReceipt:
+    """Build a degraded MusicReceipt for a failed render attempt."""
     return MusicReceipt("degraded", code, MODEL_ID, digest, song_id, size, None, 1, None)
 
 
 def _edges(events: Sequence[Mapping[str, object]]) -> tuple[list[int], dict[int, str]]:
+    """Compute chunk boundary times and their event kinds from the timeline's events."""
     edges = [0, TARGET_MS]
     kinds = {0: "opening"}
     ordered = sorted(
@@ -216,6 +224,7 @@ def _edges(events: Sequence[Mapping[str, object]]) -> tuple[list[int], dict[int,
 
 
 def _event(event: Mapping[str, object]) -> tuple[int, str]:
+    """Extract the (time_ms, type) pair from an event, defaulting on invalid shape."""
     time_ms = event.get("audio_offset_ms", 0)
     kind = event.get("type", "")
     if isinstance(time_ms, bool) or not isinstance(time_ms, int):
@@ -224,6 +233,7 @@ def _event(event: Mapping[str, object]) -> tuple[int, str]:
 
 
 def _can_split(edges: Sequence[int], time_ms: int) -> bool:
+    """Return True when inserting a boundary at time_ms keeps chunks at least MIN_CHUNK_MS."""
     if time_ms in edges or time_ms <= 0 or time_ms >= TARGET_MS:
         return False
     previous = max(edge for edge in edges if edge < time_ms)
@@ -232,6 +242,7 @@ def _can_split(edges: Sequence[int], time_ms: int) -> bool:
 
 
 def _styles(styles: Sequence[str], movement: Sequence[str], *, leading: bool) -> list[str]:
+    """Assemble the deduplicated, cleaned positive style list for a chunk."""
     chosen: list[str] = []
     source = [style for style in styles if isinstance(style, str)]
     source.extend(_BASE_STYLES if leading else ("instrumental",))
@@ -244,11 +255,13 @@ def _styles(styles: Sequence[str], movement: Sequence[str], *, leading: bool) ->
 
 
 def _first_time(events: Sequence[Mapping[str, object]], kind: str) -> int | None:
+    """Return the earliest audio offset among events of the given kind, if any."""
     times = [_event(event)[0] for event in events if _event(event)[1] == kind]
     return min(times) if times else None
 
 
 def _song_id(headers: Mapping[str, str]) -> str | None:
+    """Extract the song id from the response headers, if present."""
     folded = {key.lower(): value for key, value in headers.items()}
     for name in ("song-id", "song_id", "x-song-id"):
         value = folded.get(name)
@@ -258,6 +271,7 @@ def _song_id(headers: Mapping[str, str]) -> str | None:
 
 
 def _duration_ms(path: Path) -> int | None:
+    """Return the audio file's duration in milliseconds via ffprobe, or None if unknown."""
     completed = subprocess.run(
         [
             "ffprobe",
@@ -283,6 +297,7 @@ def _duration_ms(path: Path) -> int | None:
 
 
 def _audible(path: Path) -> bool:
+    """Return True when the decoded audio has samples above a minimal loudness threshold."""
     completed = subprocess.run(
         ["ffmpeg", "-v", "error", "-i", str(path), "-f", "s16le", "-ac", "1", "-ar", "16000", "-"],
         check=False,
