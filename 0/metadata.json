@@ -1,0 +1,37 @@
+{
+  "cli_version": "0.11.4",
+  "checkpoint_id": "01M4PBDQ7THYDNEV74SX4RZP1V",
+  "session_id": "b302761a-819d-4f15-b579-5ffaa93722d6",
+  "strategy": "manual-commit",
+  "created_at": "2026-10-11T20:45:44.18903557Z",
+  "branch": "final-product-polish",
+  "checkpoints_count": 1,
+  "files_touched": [
+    "Docs/HANDOFF_1.md",
+    "Docs/HANDOFF_2.md",
+    "Docs/PHASE_5_FINAL_POLISH_PLAN.md",
+    "README.md"
+  ],
+  "agent": "Cursor",
+  "model": "grok-4.7-high",
+  "turn_id": "14c37ae11e97",
+  "checkpoint_transcript_start": 1,
+  "transcript_lines_at_start": 1,
+  "compact_transcript_start": 1,
+  "session_metrics": {
+    "context_tokens": 242983,
+    "context_window_size": 256000
+  },
+  "initial_attribution": {
+    "calculated_at": "2026-10-11T20:45:44.185727422Z",
+    "agent_lines": 22,
+    "agent_removed": 14,
+    "human_added": 0,
+    "human_modified": 0,
+    "human_removed": 0,
+    "total_committed": 22,
+    "total_lines_changed": 36,
+    "agent_percentage": 100,
+    "metric_version": 2
+  }
+}
