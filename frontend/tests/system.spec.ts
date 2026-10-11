@@ -74,6 +74,23 @@ test("catalog and small logo fit a 360px screen", async ({ page }) => {
   await expect(page.getByRole("dialog", { name: "Walk details" })).toBeHidden();
 });
 
+test("the catalog theme control names its action and shows the matching icon", async ({ page }) => {
+  await page.goto("/system");
+  const toggle = page.locator("[data-catalog='theme']").getByRole("button");
+  const name = await toggle.getAttribute("aria-label");
+  expect(name === "Light theme" || name === "Dark theme").toBe(true);
+  await expect(toggle.locator("svg")).toHaveAttribute("aria-hidden", "true");
+  await expect(toggle.locator("svg")).toHaveAttribute(
+    "data-icon",
+    name === "Light theme" ? "sun" : "moon",
+  );
+  expect((await toggle.innerText()).trim()).toBe("");
+  const box = await toggle.boundingBox();
+  expect(box).not.toBeNull();
+  expect(box!.width).toBeGreaterThanOrEqual(44);
+  expect(box!.height).toBeGreaterThanOrEqual(44);
+});
+
 test("catalog has no serious accessibility violations", async ({ page }) => {
   await page.goto("/system");
   const results = await new AxeBuilder({ page }).analyze();

@@ -63,9 +63,17 @@ test("generation states stay honest and keep the result hidden", async ({ page }
   await page.addInitScript(() => sessionStorage.setItem("footwork-generation", "generation_limit"));
   await page.goto("/studio");
   const limit = page.getByRole("alert");
-  await expect(limit).toContainText("limit for new pieces");
+  await expect(limit).toContainText("today's generation limit");
   await expect(limit).not.toContainText("balance");
   await expect(limit.getByRole("button", { name: "Try again" })).toHaveCount(0);
+
+  await page.addInitScript(() =>
+    sessionStorage.setItem("footwork-generation", "install_allowance"),
+  );
+  await page.goto("/studio");
+  const allowance = page.getByRole("alert");
+  await expect(allowance).toContainText("today's pieces");
+  await expect(allowance.getByRole("button", { name: "Try again" })).toHaveCount(0);
 });
 
 test("a finished practice walk moves through the generation stages", async ({ page }) => {
@@ -130,13 +138,24 @@ for (const width of [360, 390, 430, 768, 1280]) {
     await page.setViewportSize({ width, height: width >= 768 ? 900 : 800 });
     await page.goto("/studio");
     await expect(page.getByRole("heading", { name: "Corner and pause" })).toBeVisible();
-    await expect(page.getByRole("heading", { name: "Moments in the music" })).toBeVisible();
-    await expect(page.getByRole("heading", { name: "Walk story" })).toBeVisible();
+    await expect(
+      page.getByText("The displayed route is abstracted and contains no coordinates."),
+    ).toBeVisible();
+    await expect(page.getByRole("heading", { name: "What shaped the music" })).toBeVisible();
+    await expect(page.getByRole("heading", { name: "The journey" })).toBeVisible();
+    await expect(page.locator("audio")).toHaveCount(1);
     const play = await page.getByRole("button", { name: "Play", exact: true }).boundingBox();
+    const title = await page.getByRole("heading", { name: "Corner and pause" }).boundingBox();
     const route = await page.getByRole("img", { name: "Example route" }).boundingBox();
-    expect(play).not.toBeNull();
-    expect(route).not.toBeNull();
+    const shaped = await page.getByRole("heading", { name: "What shaped the music" }).boundingBox();
+    const ribbon = await page.getByRole("heading", { name: "Movement ribbon" }).boundingBox();
+    expect(play && title && route && shaped && ribbon).toBeTruthy();
+    expect(title!.y).toBeGreaterThanOrEqual(0);
+    expect(title!.y + title!.height).toBeLessThanOrEqual(page.viewportSize()?.height ?? 0);
     expect(play!.y).toBeLessThan(route!.y);
+    expect(play!.y + play!.height).toBeLessThanOrEqual(page.viewportSize()?.height ?? 0);
+    expect(route!.y).toBeLessThan(shaped!.y);
+    expect(shaped!.y).toBeLessThan(ribbon!.y);
     expect(play!.height).toBeGreaterThanOrEqual(44);
     await expectNoHorizontalOverflow(page);
   });

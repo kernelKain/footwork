@@ -6,6 +6,7 @@ import {
   type GenerationErrorCode,
   type GenerationStageId,
 } from "./generationContract";
+import { installToken } from "./installToken";
 
 const STORAGE_KEY = "footwork-live-job";
 
@@ -45,6 +46,7 @@ export async function submitFinishedWalk(
       "content-type": "application/json",
       "x-idempotency-key": idempotencyKey(draft.sessionId),
       "x-job-key": jobKey,
+      "x-install-token": installToken(),
     },
     body: JSON.stringify(requestBody(draft)),
   });

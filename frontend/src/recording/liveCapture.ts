@@ -213,7 +213,13 @@ export function resumeLive(state: LiveModel, online: boolean): LiveModel {
 
 export function endLive(state: LiveModel, activeMs: number, nowMs: number): LiveModel {
   if (!state.draft) return { ...state, watching: false, phase: "finished" };
-  if (state.phase !== "recording" && state.phase !== "paused" && state.phase !== "pausing") {
+  if (
+    state.phase !== "recording" &&
+    state.phase !== "paused" &&
+    state.phase !== "pausing" &&
+    state.phase !== "resuming" &&
+    state.phase !== "interrupted"
+  ) {
     return state;
   }
   return {

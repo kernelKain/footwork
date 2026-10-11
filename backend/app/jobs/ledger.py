@@ -49,18 +49,23 @@ class Ledger:
     def _read(self) -> dict[str, object]:
         """Load and validate the ledger file, or raise LedgerError if it's untrustworthy."""
         if not self.path.is_file():
-            return {"schema_version": "1", "jobs": {}, "usage": {}}
+            return _empty_ledger()
         try:
             loaded = json.loads(self.path.read_text(encoding="utf-8"))
         except (OSError, json.JSONDecodeError) as exc:
             raise LedgerError from exc
         if (
             not isinstance(loaded, dict)
-            or loaded.get("schema_version") != "1"
+            or loaded.get("schema_version") not in {"1", "2"}
             or not isinstance(loaded.get("jobs"), dict)
             or not isinstance(loaded.get("usage"), dict)
         ):
             raise LedgerError
+        installs = loaded.get("installs", {})
+        if not isinstance(installs, dict):
+            raise LedgerError
+        loaded["installs"] = installs
+        loaded["schema_version"] = "2"
         return loaded
 
     def _write(self, data: dict[str, object]) -> None:
@@ -106,6 +111,11 @@ def zero_usage() -> dict[str, int]:
     return {"gemma_attempts": 0, "gpu_seconds": 0, "eleven_attempts": 0}
 
 
+def _empty_ledger() -> dict[str, object]:
+    """Return a new ledger. Install buckets are separate from spent global usage."""
+    return {"schema_version": "2", "jobs": {}, "usage": {}, "installs": {}}
+
+
 def _interrupt_active(data: dict[str, object]) -> None:
     """Mark any jobs left in an active state (e.g. after a crash) as interrupted."""
     jobs = data["jobs"]
@@ -143,12 +153,29 @@ def _expire(data: dict[str, object], now: datetime) -> None:
         if job.get("status") != "deleted" and expires is not None and expires <= now:
             job["status"] = "expired"
     for day in list(usage):
-        try:
-            started = datetime.fromisoformat(str(day)).replace(tzinfo=UTC)
-        except ValueError:
-            continue
-        if now - started > RETAIN_FOR:
+        if _stale_day(day, now):
             del usage[day]
+    installs = data.get("installs")
+    if not isinstance(installs, dict):
+        return
+    for install_id, days in list(installs.items()):
+        if not isinstance(days, dict):
+            del installs[install_id]
+            continue
+        for day in list(days):
+            if _stale_day(day, now):
+                del days[day]
+        if not days:
+            del installs[install_id]
+
+
+def _stale_day(day: object, now: datetime) -> bool:
+    """Return True when a UTC day key is older than the ledger retention window."""
+    try:
+        started = datetime.fromisoformat(str(day)).replace(tzinfo=UTC)
+    except ValueError:
+        return False
+    return now - started > RETAIN_FOR
 
 
 def _safe_stamp(value: object) -> datetime | None:

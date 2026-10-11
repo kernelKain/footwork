@@ -66,3 +66,34 @@ export function SoundprintPlayer({
     </div>
   );
 }
+
+export function MiniPlayer({
+  timeMs,
+  durationMs,
+  playing,
+  nowPlaying,
+  onToggle,
+}: {
+  timeMs: number;
+  durationMs: number;
+  playing: boolean;
+  nowPlaying: string;
+  onToggle: () => void;
+}) {
+  return (
+    <div className="mini-player" role="region" aria-label="Mini player">
+      <p>{nowPlaying}</p>
+      <button
+        type="button"
+        className="ui-button ui-button-playback"
+        aria-label={playing ? "Pause in the mini player" : "Play in the mini player"}
+        onClick={onToggle}
+      >
+        {playing ? "Pause" : "Play"}
+      </button>
+      <span className="studio-clock">
+        {formatTime(timeMs)} / {formatTime(durationMs)}
+      </span>
+    </div>
+  );
+}

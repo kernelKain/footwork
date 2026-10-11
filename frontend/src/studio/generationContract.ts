@@ -17,6 +17,7 @@ export const GENERATION_ERRORS = [
   "arrangement_unavailable",
   "music_unavailable",
   "generation_limit",
+  "install_allowance",
 ] as const;
 
 export type GenerationErrorCode = (typeof GENERATION_ERRORS)[number];
@@ -33,7 +34,9 @@ export const GENERATION_ERROR_COPY: Record<GenerationErrorCode, string> = {
   timed_out: "Making the piece took too long.",
   arrangement_unavailable: "The music plan is unavailable. A simpler version can still be made.",
   music_unavailable: "The studio recording is unavailable. Your simpler version is ready.",
-  generation_limit: "Today's limit for new pieces has been reached.",
+  generation_limit:
+    "The studio has reached today's generation limit. Hear the example or try tomorrow.",
+  install_allowance: "This phone has made today's pieces. New pieces are available tomorrow.",
 };
 
 const PRACTICE_STAGE_MS = 800;

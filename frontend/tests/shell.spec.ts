@@ -11,7 +11,7 @@ async function expectNoHorizontalOverflow(page: import("@playwright/test").Page)
 test("walk screen explains the practice and offers the example", async ({ page }) => {
   await page.goto("/");
   await expect(page.getByRole("heading", { name: "Turn a walk into music." })).toBeVisible();
-  await expect(page.getByText("A real walk is not saved on this page.")).toBeVisible();
+  await expect(page.getByText("A real walk is not saved on this page.")).toHaveCount(0);
   await expect(page.getByRole("navigation")).toHaveCount(0);
   await page.getByRole("link", { name: "Hear an example" }).first().click();
   await expect(page).toHaveURL(/\/studio$/);
@@ -33,7 +33,7 @@ for (const width of [390, 1280]) {
     await expect(page.getByRole("img", { name: "Example route" })).toBeVisible();
     const routeBox = await page.getByRole("img", { name: "Example route" }).boundingBox();
     const playBox = await page.getByRole("button", { name: "Play", exact: true }).boundingBox();
-    const moments = page.getByRole("heading", { name: "Moments in the music" });
+    const moments = page.getByRole("heading", { name: "What shaped the music" });
     const momentsBox = await moments.boundingBox();
     expect(routeBox).not.toBeNull();
     expect(playBox).not.toBeNull();

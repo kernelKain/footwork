@@ -29,28 +29,34 @@ from app.movement.clean import RawGap, RawSample, clean_trace
 
 MAX_BODY_BYTES = 1_048_576
 MAX_SAMPLES = 3000
-_LOCKED_GEMMA_ATTEMPTS = 4
-_LOCKED_GPU_SECONDS = 240
-_LOCKED_MUSIC_ATTEMPTS = 6
+_INSTALL_DEFAULT = 8
+_INSTALL_MAX = 8
+_GEMMA_DEFAULT = 4
+_GEMMA_MAX = 8
+_GPU_DEFAULT = 240
+_GPU_MAX = 8 * 60
+_MUSIC_DEFAULT = 6
+_MUSIC_MAX = 8
 
 
-def _release_cap(name: str, locked: int) -> int:
-    """Return the env-configured cap for name, capped at locked, or locked if unset/invalid."""
+def bounded_cap(name: str, default: int, maximum: int) -> int:
+    """Return the env value for name, or default when unset or invalid, never above maximum."""
     raw = os.environ.get(name, "").strip()
     if not raw:
-        return locked
+        return default
     try:
         value = int(raw)
     except ValueError:
-        return locked
+        return default
     if value < 1:
-        return locked
-    return min(value, locked)
+        return default
+    return min(value, maximum)
 
 
-GEMMA_ATTEMPT_LIMIT = _release_cap("MAX_GEMMA_ATTEMPTS_PER_DAY", _LOCKED_GEMMA_ATTEMPTS)
-GPU_SECOND_LIMIT = _release_cap("MAX_GEMMA_GPU_SECONDS_PER_DAY", _LOCKED_GPU_SECONDS)
-ELEVEN_ATTEMPT_LIMIT = _release_cap("MAX_MUSIC_ATTEMPTS_PER_DAY", _LOCKED_MUSIC_ATTEMPTS)
+INSTALL_JOB_LIMIT = bounded_cap("MAX_INSTALL_JOBS_PER_DAY", _INSTALL_DEFAULT, _INSTALL_MAX)
+GEMMA_ATTEMPT_LIMIT = bounded_cap("MAX_GEMMA_ATTEMPTS_PER_DAY", _GEMMA_DEFAULT, _GEMMA_MAX)
+GPU_SECOND_LIMIT = bounded_cap("MAX_GEMMA_GPU_SECONDS_PER_DAY", _GPU_DEFAULT, _GPU_MAX)
+ELEVEN_ATTEMPT_LIMIT = bounded_cap("MAX_MUSIC_ATTEMPTS_PER_DAY", _MUSIC_DEFAULT, _MUSIC_MAX)
 GEMMA_RESERVE_ATTEMPTS = 1
 GPU_RESERVE_SECONDS = 60
 ELEVEN_RESERVE_ATTEMPTS = 1
@@ -97,9 +103,15 @@ _ERRORS: dict[str, tuple[int, str, bool, str]] = {
         False,
         "Wait for the current piece to finish.",
     ),
+    "install_allowance": (
+        429,
+        "This phone has made today's pieces. New pieces are available tomorrow.",
+        False,
+        "Hear an example, or try again tomorrow.",
+    ),
     "generation_limit": (
         429,
-        "Today's limit for new pieces has been reached.",
+        "The studio has reached today's generation limit. Hear the example or try tomorrow.",
         False,
         "Hear an example, or try again tomorrow.",
     ),
@@ -242,9 +254,15 @@ class JobService:
             "providers": {"arrangement": "unavailable", "music": "unavailable"},
         }
 
-    def submit(self, raw_body: bytes, idempotency_key: str, job_key: str) -> JobView:
+    def submit(
+        self, raw_body: bytes, idempotency_key: str, job_key: str, install_token: str
+    ) -> JobView:
         """Validate, clean, and reserve a new job from the request, then dispatch it."""
-        if not _IDEMPOTENCY.fullmatch(idempotency_key) or not _CAPABILITY.fullmatch(job_key):
+        if (
+            not _IDEMPOTENCY.fullmatch(idempotency_key)
+            or not _CAPABILITY.fullmatch(job_key)
+            or not _CAPABILITY.fullmatch(install_token)
+        ):
             raise JobError("invalid_request")
         if len(raw_body) > MAX_BODY_BYTES:
             raise JobError("payload_too_large")
@@ -257,6 +275,7 @@ class JobService:
             raise JobError(code)
         idempotency_hash = digest("idempotency", idempotency_key.encode())
         capability_hash = digest("capability", job_key.lower().encode())
+        install_hash = digest("install", install_token.lower().encode())
         body_hash = digest("body", raw_body)
         created = False
         job_id = ""
@@ -273,9 +292,14 @@ class JobService:
                 return
             if _has_active(data):
                 raise JobError("active_job")
-            usage = _usage_bucket(data, day_key(self.now()))
+            day = day_key(self.now())
+            usage = _usage_bucket(data, day)
+            install_usage = _install_bucket(data, install_hash, day)
+            if install_usage["jobs"] + 1 > INSTALL_JOB_LIMIT:
+                raise JobError("install_allowance")
             if not _fits(usage):
                 raise JobError("generation_limit")
+            install_usage["jobs"] += 1
             usage["gemma_attempts"] += GEMMA_RESERVE_ATTEMPTS
             usage["gpu_seconds"] += GPU_RESERVE_SECONDS
             usage["eleven_attempts"] += ELEVEN_RESERVE_ATTEMPTS
@@ -288,6 +312,7 @@ class JobService:
                 "job_id": job_id,
                 "capability_hash": capability_hash,
                 "idempotency_hash": idempotency_hash,
+                "install_hash": install_hash,
                 "body_hash": body_hash,
                 "status": "dispatching",
                 "stage": "reading_walk",
@@ -685,6 +710,25 @@ def _jobs(data: dict[str, object]) -> dict[str, object]:
     if not isinstance(jobs, dict):
         raise LedgerError
     return jobs
+
+
+def _install_bucket(data: dict[str, object], install_hash: str, day: str) -> dict[str, int]:
+    """Return the install's job count for the UTC day, creating a zeroed bucket if needed."""
+    installs = data.get("installs")
+    if not isinstance(installs, dict):
+        raise LedgerError
+    record = installs.get(install_hash)
+    if not isinstance(record, dict):
+        record = {}
+        installs[install_hash] = record
+    bucket = record.get(day)
+    if not isinstance(bucket, dict):
+        bucket = {"jobs": 0}
+        record[day] = bucket
+    jobs = bucket.get("jobs")
+    if type(jobs) is not int:
+        raise LedgerError
+    return bucket
 
 
 def _usage_bucket(data: dict[str, object], day: str) -> dict[str, int]:

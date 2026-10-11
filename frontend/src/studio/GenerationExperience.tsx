@@ -174,10 +174,12 @@ export function GenerationRecovery({
   code,
   onExample,
   onRetry,
+  onDeleteSavedWalk,
 }: {
   code: GenerationErrorCode;
   onExample: () => void;
   onRetry: () => void;
+  onDeleteSavedWalk?: () => void;
 }) {
   const retry = RETRYABLE_GENERATION_ERRORS.has(code);
   return (
@@ -197,6 +199,15 @@ export function GenerationRecovery({
         <button type="button" className="ui-button ui-button-secondary" onClick={onExample}>
           Hear the example
         </button>
+        {onDeleteSavedWalk ? (
+          <button
+            type="button"
+            className="ui-button ui-button-destructive"
+            onClick={onDeleteSavedWalk}
+          >
+            Delete saved walk
+          </button>
+        ) : null}
       </div>
     </section>
   );

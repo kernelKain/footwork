@@ -17,6 +17,8 @@ export function RouteFigure({
   timeMs,
   playing,
   onSeek,
+  selectedId = null,
+  onSelect,
   title = "Example route",
 }: {
   points: RoutePoint[];
@@ -25,6 +27,8 @@ export function RouteFigure({
   timeMs: number;
   playing: boolean;
   onSeek: (timeMs: number) => void;
+  selectedId?: string | null;
+  onSelect?: (eventId: string) => void;
   title?: string;
 }) {
   const stageRef = useOnstage<HTMLElement>();
@@ -91,7 +95,9 @@ export function RouteFigure({
             points={points}
             summary={summary}
             active={eventIsCurrent(timeMs, event)}
+            selected={selectedId === event.id}
             onSeek={onSeek}
+            onSelect={onSelect}
           />
         ))}
         <g
@@ -117,13 +123,17 @@ function Marker({
   points,
   summary,
   active,
+  selected,
   onSeek,
+  onSelect,
 }: {
   event: MovementEvent;
   points: RoutePoint[];
   summary: MovementSummary;
   active: boolean;
+  selected: boolean;
   onSeek: (timeMs: number) => void;
+  onSelect?: (eventId: string) => void;
 }) {
   const point = playbackPoint(points, summary, event.audio_offset_ms);
   const cx = point.x * 100;
@@ -135,8 +145,16 @@ function Marker({
       role="button"
       tabIndex={0}
       aria-label={label}
-      className={active ? "route-marker is-current" : "route-marker"}
+      data-event-id={event.id}
+      className={
+        active
+          ? "route-marker is-current is-live"
+          : selected
+            ? "route-marker is-current"
+            : "route-marker"
+      }
       onClick={seek}
+      onFocus={() => onSelect?.(event.id)}
       onKeyDown={(keyEvent) => {
         if (keyEvent.key === "Enter" || keyEvent.key === " ") {
           keyEvent.preventDefault();

@@ -29,9 +29,8 @@ export function MovementRibbon({
     <section className="stack" aria-labelledby="ribbon-title">
       <h2 id="ribbon-title">Movement ribbon</h2>
       <p>
-        The bar is the song, from the start of the walk to the end. Taller cyan means a faster
-        stretch. Blue is a manual break. Hatching is a gap where the location was uncertain. Amber
-        marks are moments in the music. The times and the list below name the same scale.
+        A compact view of the whole piece. Taller cyan means a faster stretch. Blue is a manual
+        break. Hatching is an uncertain gap. Amber marks are moments.
       </p>
       <div className="ribbon" aria-hidden="true">
         {bands.map((band) => (

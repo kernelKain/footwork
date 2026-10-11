@@ -11,6 +11,7 @@ import { Sheet } from "../ui/Sheet";
 import { Skeleton } from "../ui/Skeleton";
 import { StatusChip } from "../ui/StatusChip";
 import { Surface } from "../ui/Surface";
+import { ThemeToggle } from "../ui/ThemeToggle";
 import { TimerDisplay } from "../ui/TimerDisplay";
 
 export function SystemScreen() {
@@ -21,7 +22,8 @@ export function SystemScreen() {
       <h1>Nocturne Pulse</h1>
       <p>
         This catalog is not part of the public walk. It shows the brand and controls. Daylight is
-        the light theme. Nocturne Pulse is the dark theme.
+        the light theme. Nocturne Pulse is the dark theme. The sun switches to Daylight. The moon
+        switches to Nocturne Pulse.
       </p>
       <Logo variant="wordmark" size={32} />
       <Logo variant="mark" size={16} />
@@ -33,6 +35,9 @@ export function SystemScreen() {
         <Button variant="destructive">End walk</Button>
         <Button loading>Start walking</Button>
         <Button disabled>Unavailable</Button>
+        <span data-catalog="theme">
+          <ThemeToggle />
+        </span>
         <IconButton label="Close catalog">
           <svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true">
             <path d="M6 6 L18 18 M18 6 L6 18" fill="none" stroke="currentColor" strokeWidth="2" />

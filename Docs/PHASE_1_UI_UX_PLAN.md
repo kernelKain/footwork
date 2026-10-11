@@ -450,14 +450,8 @@ No step below is implemented by this document.
 - [ ] No horizontal overflow occurs at 360, 390, 430, 768, or 1280 px.
 - [ ] No new dependency, WebGL runtime, or remote asset is added without an explicit recorded decision.
 
-## 13. Budget decision required before implementation
+## 13. Historical budget note
 
-The seven planned steps total approximately 290 minutes. The original 20-hour execution plan already allocated the full budget across P0–P5, and the original P1 window is already complete locally. The user has approved the feature direction but has not yet changed the 20-hour ceiling or named later work to remove.
+The seven planned steps were estimated at approximately 290 minutes outside the original 20-hour allocation. They were subsequently implemented and recorded in `Docs/HANDOFF_2.md`; P1.7 remained the planning decision rather than a separate implementation commit.
 
-Before P1.7 implementation starts, record one decision:
-
-1. Increase the active-work ceiling by about five hours; or
-2. Replace equivalent lower-priority work in later phases; or
-3. Use the Must ship list only and stop at a smaller approved timebox.
-
-Do not silently consume release verification, privacy, provider proof, or submission time to fund visual polish.
+On October 12, 2026 the user separately inserted a seven-hour final-polish Phase 5 and moved submission to Phase 6. The current budget and phase order are in `Docs/HANDOFF_1.md`. This historical estimate must not be confused with the new Phase 5 plan in `Docs/PHASE_5_FINAL_POLISH_PLAN.md`.

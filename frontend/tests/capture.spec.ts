@@ -118,6 +118,7 @@ test("start and end stop the watch, and a reload recovers the open draft", async
   await page.emulateMedia({ reducedMotion: "reduce" });
   await page.getByRole("button", { name: "Hold to end walk" }).click();
   await page.getByRole("button", { name: "Confirm end walk" }).click();
+  await page.getByRole("button", { name: "End walk anyway" }).click();
   await expect(page).toHaveURL(/\/studio$/);
   await expect.poll(async () => (await readDraft(page))?.status).toBe("ended");
   const cleared = await page.evaluate(

@@ -226,4 +226,5 @@ def _headers(idempotency_key: str, job_key: str) -> dict[str, str]:
         "content-type": "application/json",
         "x-idempotency-key": idempotency_key,
         "x-job-key": job_key,
+        "x-install-token": token_hex(32),
     }

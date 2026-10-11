@@ -197,6 +197,12 @@ test("reduced motion ends a live walk from the keyboard", async ({ page }) => {
   await page.keyboard.press("Enter");
   await expect(page.getByRole("button", { name: "Confirm end walk" })).toBeVisible();
   await page.keyboard.press("Enter");
+  const anyway = page.getByRole("button", { name: "End walk anyway" });
+  await expect(anyway).toBeVisible();
+  await expect(
+    page.getByText("This recording may be too short for a reliable Soundprint."),
+  ).toBeVisible();
+  await anyway.press("Enter");
   await expect(page).toHaveURL(/\/studio$/);
   const recovery = page.getByRole("heading", { name: "The piece is not ready" });
   await expect(recovery).toBeVisible();

@@ -28,7 +28,14 @@ _FORBIDDEN_KEYS = frozenset(
         "idempotency",
     }
 )
-_FORBIDDEN_WORDS = ("latitude", "longitude", "authorization", "bearer ", "sk-")
+_FORBIDDEN_WORDS = (
+    "latitude",
+    "longitude",
+    "authorization",
+    "bearer ",
+    "sk-",
+    "x-install-token",
+)
 
 
 class _DropSensitive(logging.Filter):

@@ -1,43 +1,18 @@
-import { useState } from "react";
 import { Button } from "../ui/Button";
 import { WalkerMark } from "../ui/Walker";
-
-type MomentId = "turn" | "pause" | "pace";
-
-const MOMENTS: Record<MomentId, { label: string; line: string; visual: string; bars: number[] }> = {
-  turn: {
-    label: "Turn",
-    line: "A sharp turn is meant to change the melody's direction. This change is planned.",
-    visual: "A route corner with a musical beat",
-    bars: [8, 14, 10, 18, 6, 16],
-  },
-  pause: {
-    label: "Pause",
-    line: "A pause is meant to become a musical break. This change is planned.",
-    visual: "A route with a gap for a musical break",
-    bars: [12, 8, 4, 2, 4, 8],
-  },
-  pace: {
-    label: "Speed",
-    line: "A change in pace is meant to change the energy of the piece. This change is planned.",
-    visual: "A steadier route with a taller waveform",
-    bars: [10, 16, 22, 18, 24, 14],
-  },
-};
+import { MomentExamples } from "./MomentExamples";
 
 type Navigate = (event: { preventDefault: () => void; currentTarget: { href: string } }) => void;
 
 export function LandingView({
   onStart,
   onNavigate,
-  onDownloadWalk,
+  onDeleteSavedWalk,
 }: {
   onStart: () => void;
   onNavigate: Navigate;
-  onDownloadWalk?: () => void;
+  onDeleteSavedWalk?: () => void;
 }) {
-  const [moment, setMoment] = useState<MomentId>("turn");
-  const current = MOMENTS[moment];
   return (
     <div className="journey">
       <section className="journey-hero" aria-labelledby="hero-title">
@@ -52,15 +27,11 @@ export function LandingView({
               Hear an example
             </a>
           </div>
-          {onDownloadWalk ? (
+          {onDeleteSavedWalk ? (
             <div className="actions">
-              <Button variant="secondary" onClick={onDownloadWalk}>
-                Download the walk stored on this phone
+              <Button variant="destructive" onClick={onDeleteSavedWalk}>
+                Delete saved walk
               </Button>
-              <p>
-                This file contains the location of that walk. Keep it in recordings/ on your
-                computer, and do not commit it.
-              </p>
             </div>
           ) : null}
         </div>
@@ -119,50 +90,7 @@ export function LandingView({
         </ol>
       </section>
 
-      <section aria-labelledby="moment-title">
-        <h2 id="moment-title">Hear what a moment does</h2>
-        <div className="moment-controls" role="group" aria-label="Musical moments">
-          {(Object.keys(MOMENTS) as MomentId[]).map((id) => (
-            <button
-              key={id}
-              type="button"
-              className="ui-button ui-button-secondary"
-              aria-pressed={moment === id}
-              onClick={() => setMoment(id)}
-            >
-              {MOMENTS[id].label}
-              {moment === id ? " Showing" : ""}
-            </button>
-          ))}
-        </div>
-        <figure className="moment-figure">
-          <svg viewBox="0 0 220 72" role="img" aria-label={current.visual}>
-            <title>{current.visual}</title>
-            {moment === "pause" ? (
-              <path className="ui-route-line is-paused" d="M12 48 H 70 M 130 48 H 190" />
-            ) : (
-              <path
-                className="ui-route-line"
-                d={moment === "turn" ? "M12 56 H 70 V 20 H 140" : "M12 40 C 50 40 80 28 140 28"}
-              />
-            )}
-            <circle className="ui-waypoint" cx="12" cy={moment === "pace" ? 40 : 48} r="5" />
-            <rect className="ui-beat" x="132" y="12" width="12" height="12" rx="2" />
-            {current.bars.map((height, index) => (
-              <rect
-                key={`moment-bar-${index}`}
-                x={156 + index * 10}
-                y={60 - height}
-                width="6"
-                height={height}
-                rx="2"
-                className="ui-wave-bar"
-              />
-            ))}
-          </svg>
-          <figcaption>{current.line}</figcaption>
-        </figure>
-      </section>
+      <MomentExamples />
 
       <section aria-labelledby="before-title">
         <h2 id="before-title">Before you go</h2>
@@ -205,9 +133,6 @@ export function LandingView({
           </a>
         </div>
       </section>
-      <footer className="journey-footer">
-        <p>Footwork practice. A real walk is not saved on this page.</p>
-      </footer>
     </div>
   );
 }

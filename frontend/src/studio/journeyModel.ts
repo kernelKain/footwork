@@ -125,6 +125,25 @@ export function isCurrentChapter(
   return timeMs === durationMs && endMs === durationMs;
 }
 
+export function momentPresence(count: number): "none" | "few" | "several" {
+  if (count <= 0) return "none";
+  if (count <= 2) return "few";
+  return "several";
+}
+
+export function nowPlayingLine(
+  chapters: Chapter[],
+  events: MovementEvent[],
+  durationMs: number,
+  timeMs: number,
+): string {
+  const chapter = currentChapter(chapters, durationMs, timeMs);
+  const chapterName = chapter?.title ?? "The piece";
+  const event = events.find((item) => eventIsCurrent(timeMs, item));
+  if (!event) return `Now playing ${chapterName}`;
+  return `Now playing ${chapterName}. ${CAUSAL[event.type]}`;
+}
+
 export function currentChapter(
   chapters: Chapter[],
   durationMs: number,

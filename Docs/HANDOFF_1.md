@@ -6,10 +6,10 @@
 - **Thesis:** Your recorded walk becomes a short instrumental composition and synchronized visual Soundprint.
 - **Hook:** A sharp turn changes the melody's direction. A pause becomes an audible musical break.
 - **Deadline:** October 11, 2026, 11:59 PM PDT. Coding only October 9–10, with a maximum of 20 active hours.
-- **Feature freeze:** Build hour 15, at 75% of the budget.
+- **Feature freeze:** Original freeze at hour 15. Reopened on October 12, 2026 for the approved final polish. Restored the same day for further product changes after the automated gates passed. Provider-budget confirmation, a real-phone review, and deployment remain open user gates. Phase 6 has not started.
 - **Stack:** React/TypeScript/Vite → Python/FastAPI on Render → Gemma on free Hugging Face ZeroGPU → Eleven Music.
 - **Development toolchain (Phase 0):** CodeRabbit for code review, Entire for agent-session sharing, DevRelay for DEV write-ups, GitHub Actions for automated checks, Excalidraw for architecture diagrams. These are not part of the running application.
-- **Plan:** Six phases, 30 original separately committed steps plus the Phase 1 UI/UX extension, one branch per phase. P1.8 through P1.13 and Daylight are on `build/experience`. The 290-minute budget decision is still open.
+- **Plan:** Seven phases. The user inserted a final product-polish Phase 5 on October 12, 2026 and moved Demo and submission to Phase 6. The original 30 steps, the Phase 1 UI/UX extension, and the new Phase 5 steps remain separately reviewable, with one branch per phase. P1.8 through P1.13 and Daylight are on `build/experience`. The new plan is `Docs/PHASE_5_FINAL_POLISH_PLAN.md`.
 - **Largest risk:** Free Gemma availability and whether generated Studio audio makes the intended movement mappings perceptible.
 
 ---
@@ -18,17 +18,17 @@
 
 | Field | Locked value |
 |---|---|
-| Planning status | **LOCKED** |
+| Planning status | **AMENDED** on October 12, 2026 by the approved Phase 5 final-polish plan |
 | Planning date | October 8, 2026 |
 | Toolchain amendment | October 8, 2026. User added CodeRabbit, Entire, DevRelay, GitHub Actions, and Excalidraw to Phase 0. Product scope and architecture boundaries are unchanged. |
 | Source packet | Updated "PROMPT 0 → PROMPT 1 IDEA PACKET" in `Docs/handoff-0.md` |
 | Hackathon | Hacktoberfest Open-Source AI Challenge: Week 1 |
 | Deadline | October 11, 2026, 11:59 PM PDT; October 12, 2026, 12:29 PM IST |
-| Working dates | October 9 and October 10, 2026 only |
-| Active-work ceiling | **20 hours**, including commands, reviews, testing, documentation and submission preparation |
-| Feature freeze | Build hour **15**, or **75%** |
+| Working dates | Original build: October 9–10, 2026. Final-polish extension begins October 12, 2026. |
+| Active-work ceiling | **27 hours** after the seven-hour final-polish extension; planning, deployment wait, and human review remain outside measured active work |
+| Feature freeze | Original freeze at hour 15; explicitly reopened for P5; final freeze at hour **24** before submission-only P6 |
 | Execution authority | **A1:** agent edits files; user runs commands and controls branches, commits, pushes, merges and deployments |
-| Repository | Existing skeleton; application implementation not started |
+| Repository | Implemented and deployed application; final-polish planning changes are on `final-product-polish` |
 | Local path | `/home/kernel-kain/Documents/Github/footwork` |
 | Remote | `git@github.com:kernelKain/footwork.git` |
 | Inspected branch | `main`, tracking `origin/main` |
@@ -503,9 +503,9 @@ These five tools are set up in Phase 0. They are not part of the running applica
 |---|---|---|---|
 | CodeRabbit | Code review | User installs the GitHub App on `kernelKain/footwork` with owner permission, limited to this repository. The repository commits `.coderabbit.yaml` so pull requests are reviewed automatically. [GitHub setup](https://docs.coderabbit.ai/platforms/github-com). | Reviews phase pull requests. Does not merge, deploy, or change acceptance criteria. |
 | Entire | Agent session sharing | User installs the Entire CLI and, from this repository, runs `entire enable --agent cursor`. That writes `.cursor/hooks.json` and Entire settings. Sessions capture prompts, responses, and tool calls; checkpoints link that context to commits. [Cursor setup](https://docs.entire.io/agents/cursor). | Commit subjects stay one-line descriptions of completed work. An `Entire-Checkpoint` trailer is allowed. Do not share a session that contains raw coordinates, provider keys, or `.env` values. Checkpoint data lives on a separate Git ref; pushing it publishes that context. |
-| DevRelay | DEV write-ups | Confirm the DevRelay gateway is authenticated. Later write-ups are drafted unpublished, with secrets and raw locations removed. | Phase 0 does not publish. The hackathon article is drafted in P5 and published by the user. |
+| DevRelay | DEV write-ups | Confirm the DevRelay gateway is authenticated. Later write-ups are drafted unpublished, with secrets and raw locations removed. | Phase 0 does not publish. The hackathon article is drafted in P6 and published by the user. |
 | GitHub Actions | Automated checks | `.github/workflows/ci.yml` runs backend tests, frontend typecheck, lint, build, and fixture validation on pull requests and `main`. | No live ElevenLabs, Hugging Face, or other paid provider calls in CI. |
-| Excalidraw | Architecture diagrams | Commit `Docs/diagrams/architecture.excalidraw` for the locked system: browser, Render, Hugging Face ZeroGPU, and Eleven Music. | The diagram matches Section 8. P5 exports a PNG for the submission. It does not introduce a second architecture. |
+| Excalidraw | Architecture diagrams | Commit `Docs/diagrams/architecture.excalidraw` for the locked system: browser, Render, Hugging Face ZeroGPU, and Eleven Music. | The diagram matches Section 8. P6 exports a PNG for the submission. It does not introduce a second architecture. |
 
 User-side proof required before P1 uses each tool: CodeRabbit installed on the repository, `entire enable --agent cursor` completed, and DevRelay authentication confirmed. The workflow file, `.coderabbit.yaml`, Entire hook files, and Excalidraw source are repository files prepared in P0.2.
 
@@ -853,7 +853,7 @@ Tests are added with the behavior they protect.
 | Privacy/security | Focused artifact/log review | No secrets/raw coordinates in provider payloads, repository or public assets; unauthorized artifact requests denied. | P4 / 14 |
 | Audio quality | Decode checks plus listening | Valid duration/samples; no obvious clipping; prepared Studio Hook audibly verified. | P3 / 03, 17 |
 | Deployment | External smoke check | HTTPS, health, example, recording permission and result retrieval. | P1, P4 / 07 |
-| Judge-day | Runbook | URL, quota, cached track, reset procedure and backup video. | P5 / 16 |
+| Judge-day | Runbook | URL, quota, cached track, reset procedure and backup video. | P6 / 16 |
 
 Browser tests may inject position samples, but they do not replace one real outdoor recording.
 
@@ -1006,7 +1006,7 @@ Free HF quotas and queues are operational constraints. The app must never promis
 
 ### Write-up Path
 
-DevRelay drafts the DEV explanation. The draft stays unpublished until the user reviews it and publishes in P5. Required challenge tags, including `#devchallenge` and `#hf26challenge`, belong on that article. Secrets, raw coordinates, and private paths are removed before a draft is created. An Entire session may be cited only after that scrub.
+DevRelay drafts the DEV explanation. The draft stays unpublished until the user reviews it and publishes in P6. Required challenge tags, including `#devchallenge` and `#hf26challenge`, belong on that article. Secrets, raw coordinates, and private paths are removed before a draft is created. An Entire session may be cited only after that scrub.
 
 ### Submission Outline
 
@@ -1045,9 +1045,9 @@ The user controls publication under A1.
 
 ## 19. Clock and Budget
 
-**Maximum active work: 20 hours across October 9–10.**
+**Rebaselined maximum active work: 27 hours.**
 
-No coding, debugging or polish is assumed after October 10.
+The original 20-hour plan covered P0–P4 and the former submission phase. On October 12, 2026 the user explicitly reopened the feature freeze for one final seven-hour product-polish phase. Demo and submission move after it without losing their original three-hour allocation. The separately recorded Phase 1 extension remains historical work and is not silently charged to release or submission time.
 
 Planning time is not recorded as coding time. At execution start, initialize the active clock at zero unless the user reports prior implementation.
 
@@ -1057,11 +1057,13 @@ Planning time is not recorded as coding time. At execution start, initialize the
 | P1 — Complete frontend experience | 5 | 2–7 |
 | P2 — Real recording and movement engine | 4 | 7–11 |
 | P3 — Sponsor-backed Soundprint | 4 | 11–15 |
-| **Feature freeze** | — | **Hour 15** |
+| Original feature freeze | — | Hour 15 |
 | P4 — Release verification | 2 | 15–17 |
-| P5 — Demo and submission | 3 | 17–20 |
+| P5 — Final product polish | 7 | 17–24 |
+| **Final feature freeze** | — | **Hour 24** |
+| P6 — Demo and submission | 3 | 24–27 |
 
-P5 includes **30 minutes of unallocated emergency buffer**. Planned queue work totals 19.5 hours.
+P6 includes **30 minutes of unallocated emergency buffer**. The new P5 plan is `Docs/PHASE_5_FINAL_POLISH_PLAN.md`; its 420-minute estimate is product work, while provider-budget confirmation, deployment wait, and human phone/listening review remain user-controlled gates. On October 12, 2026 the automated P5 gates passed and the product feature freeze was restored in this record. Those three user gates are still open, and Phase 6 has not started.
 
 Suggested distribution: approximately ten active hours per date, with meals and rest outside active work. Exact daily clock times remain user-controlled.
 
@@ -1100,9 +1102,9 @@ The inspected Render 1 CPU/2 GB price was $25/month. Five days would be approxim
 | R-07 | Render deployment blocked; medium/high | Build/runtime/credit failure. Deploy early. | Smaller compatible instance or documented sleeping host limitation. | P1.2 / user |
 | R-08 | Public abuse consumes credits; medium/high | Concurrent or repeated requests. Reserve quotas before dispatch. | Disable Studio generation; retain Sketch/example. | P3.1, P4.1 / agent |
 | R-09 | Private route leaks; medium/high | Coordinates in logs/assets/provider requests. Inspect boundaries. | Remove artifact, rotate exposed secrets if necessary, redeploy. | P4.1 / agent + user |
-| R-10 | Scope/process overhead exceeds 20 h; high/high | Phase overruns or optional work starts early. Timebox and protect freeze. | Drop optional visuals/remix; preserve required path. | Every phase / user |
-| R-11 | Demo network/provider failure; medium/high | Unstable rehearsal. Prepare backup early. | Cached genuine playback and local video. | P5.2 / user |
-| R-12 | Submission incomplete; medium/high | Broken links or missing template evidence. | Finish checklist before cosmetic editing. | P5.3 / user |
+| R-10 | Scope/process overhead exceeds 27 h; high/high | Phase overruns or deferred ideas enter P5. Timebox and restore the final freeze. | Keep P5 to its eight approved steps; preserve privacy, core journey, release checks, and submission. | Every phase / user |
+| R-11 | Demo network/provider failure; medium/high | Unstable rehearsal. Prepare backup early. | Cached genuine playback and local video. | P6.2 / user |
+| R-12 | Submission incomplete; medium/high | Broken links or missing template evidence. | Finish checklist before cosmetic editing. | P6.3 / user |
 
 ### Two-Hours-to-Deadline Pre-Mortem
 
@@ -1134,11 +1136,12 @@ A reduced release cannot silently pass failed sponsor or Studio acceptance crite
 | D-11 | Exact Hook guaranteed by Sketch; Studio verified by listening | Instructions do not prove audible behavior. | Actual measured Studio evidence. |
 | D-12 | One concurrent job and strict daily caps | Protect free quota and existing credits. | Explicit budget approval. |
 | D-13 | No accounts or public walk links | Avoid security/privacy expansion. | Separate approved phase after hackathon. |
-| D-14 | Six phase branches, individual step commits | Explicit user workflow. | User changes workflow. |
+| D-14 | Seven phase branches, individual step commits | Explicit user workflow plus the October 12 Phase 5 insertion. | User changes workflow. |
 | D-15 | A1 authority | Explicit user choice. | User explicitly changes autonomy. |
-| D-16 | Freeze at hour 15 | Protect final verification and writing. | Approval required; default is scope reduction. |
+| D-16 | Original freeze at hour 15; one approved Phase 5 reopening; final freeze at hour 24 | Protect the final product pass, then keep P6 submission-only. | Approval required; default is scope reduction. |
 | D-17 | Phase 0 development toolchain: CodeRabbit, Entire, DevRelay, GitHub Actions, Excalidraw | User request on October 8, 2026. Review, session sharing, write-ups, automated checks, and architecture diagrams. These are not product APIs. | User removes a tool. |
-| D-18 | Extend Phase 1 with pause/resume, Nocturne Pulse, visual journey analytics, and state-driven motion | Explicit user request on October 9, 2026. Keep the work in Phase 1 and plan it as separately verifiable steps. Manual breaks remain distinct from detected movement pauses. | Implementation starts only after the unchanged 20-hour ceiling is reconciled with the additional 290-minute estimate. |
+| D-18 | Extend Phase 1 with pause/resume, Nocturne Pulse, visual journey analytics, and state-driven motion | Explicit user request on October 9, 2026. Keep the work in Phase 1 and plan it as separately verifiable steps. Manual breaks remain distinct from detected movement pauses. | Historical extension; completed work is recorded in `Docs/HANDOFF_2.md`. |
+| D-19 | Insert final product-polish Phase 5 and renumber submission to Phase 6 | Explicit user request on October 12, 2026. Scope and ordered acceptance criteria are in `Docs/PHASE_5_FINAL_POLISH_PLAN.md`. | Final feature freeze at P5 completion; P6 does not accept product features. |
 
 ---
 
@@ -1189,7 +1192,8 @@ Every phase uses A1. Dependencies are sequential. The user creates the next bran
 | **P2 — Real recording and movement engine** `build/movement` | 7–11 h | Real capture, four detectors, compression and exact Sketch Hook pass. | R05, 06; AC01, 02, 09 | Tune against one real trace; no additional event types. |
 | **P3 — Sponsor-backed Soundprint** `build/soundprint` | 11–15 h | Live provider adapters, quota/job controls, genuine prepared Studio result and verified provenance. | R02, 04, 08; AC03–06, 08, 15, 17, 18 | Use documented fallback; record failed criteria; freeze at hour 15. |
 | **P4 — Release verification** `build/release` | 15–17 h | Privacy, accessibility, responsive and failure checks; final deployed release. | R08, 09; AC11–14 | Fix required failures only. |
-| **P5 — Demo and submission** `build/submission` | 17–20 h | Video, article, README, links, final evidence and release record. | R11, 12; AC16 | Drop cosmetic article edits; preserve submission completeness and buffer. |
+| **P5 — Final product polish** `final-product-polish` | 17–24 h | Remove the coordinate export, clarify recording/processing, raise the private per-install allowance, improve theme and mapping controls, and deliver the final premium Soundprint result. | R08–10; AC08, 10–15, 18 | Keep the eight approved steps only; cut decorative motion before privacy, clarity, synchronization, accessibility, or quota safety. |
+| **P6 — Demo and submission** `build/submission` | 24–27 h | Video, article, README, links, final evidence and release record. | R11, 12; AC16 | Drop cosmetic article edits; preserve submission completeness and buffer. |
 
 ### Branch and Commit Policy
 
@@ -1198,6 +1202,7 @@ Every phase uses A1. Dependencies are sequential. The user creates the next bran
 - Preserve step commits when merging; do not squash them away.
 - Commit subject is one line describing completed work only.
 - No phase name, phase number, step ID or planning metadata in commit subjects.
+- Branch names also use descriptive language only. They do not contain phase names, phase numbers, step numbers, step IDs, or prefixes such as `P5` or `P5.1`.
 - User runs all Git operations.
 - No force push or destructive history rewriting.
 - A step is not recorded as committed until its actual commit hash exists.
@@ -1289,14 +1294,29 @@ Release checks cover the rebaselined journey: integration, accessibility, perfor
 | **P4.3 — 30** | VERIFY: full contract/browser journey and targeted failure matrix. | Automated Hook plus release journey pass; unresolved criteria documented. | AC02, 10, 11, 18 — `Verify the release journey and synchronization contracts` |
 | **P4.4 — 30** | RELEASE: user deploys reviewed release; smoke check, rollback reference and cleanup settings. | Public URL healthy, example playable, live caps correct. Restore known-good deploy if necessary. | AC07, 08, 14 — `Prepare the verified public release and rollback record` |
 
-### P5 — 150 planned minutes + 30-minute buffer
+### P5 — 420 planned minutes
+
+The complete product, UX, privacy, quota, file, test, and acceptance detail is in `Docs/PHASE_5_FINAL_POLISH_PLAN.md`. The rows below are the execution index; that document wins if a short row here omits a boundary.
 
 | ID / min | Category; action and planned area | Verification / done-when / fallback | AC and proposed commit |
 |---|---|---|---|
-| **P5.1 — 45** | EDIT: README, architecture, DevRelay submission draft, AI disclosure and asset-rights notes. Export the Excalidraw architecture diagram for the article. Sponsor roles and technical provenance go in the README and submission evidence, not in the application UI. | Mechanism, evidence, limitations and setup are accurate; links resolve. The DEV draft is unpublished until the user reviews it. | AC16 — `Document the architecture demo and AI-assisted development` |
-| **P5.2 — 45** | RELEASE: user records 60-second demo; agent prepares runbook and screenshot references. | Hook appears in first ten seconds; backup video exists; no false live claim. | AC03, 16 — `Add the demonstration assets and judge runbook` |
-| **P5.3 — 45** | RELEASE: final template/tag/link review; user publishes submission and records URL. | Submission checklist complete before deadline. Prioritize links and explanation over polish. | AC16 — `Record the completed challenge submission` |
-| **P5.4 — 15** | VERIFY: update final handoff, acceptance evidence, release reference and remaining limitations. | Final state matches repository/deployment; user commits real verification record. | All — `Record final verification and release status` |
+| **P5.1 — 45** | EDIT: remove the raw-coordinate download, its source/test/state/copy, and the unwanted practice footer; clear accepted ended drafts. | No coordinate export remains; accepted jobs leave no ended raw draft. | AC14 — `Remove the private walk export and clear accepted drafts` |
+| **P5.2 — 45** | EDIT: show the 1:30 active-walk minimum, readiness progress, early-end warning, and explicit saving/submitting status. | Pause time does not advance readiness; a slow submit never looks frozen; one job is submitted. | AC01, 08, 11, 12 — `Clarify walk readiness and processing progress` |
+| **P5.3 — 75** | EDIT: introduce a random per-install quota key, eight-job daily allowance, separate global provider guard, safe ledger migration, and distinct public messages. | Ninth install job and exhausted global budget are rejected before dispatch; no raw token is stored. | AC08, 14, 15 — `Increase generation allowance with private quota guards` |
+| **P5.4 — 30** | EDIT: use the existing icon button with sun/moon SVG and an action-level accessible name. | Theme persistence, keyboard, contrast, and accessible-name checks pass. | AC12, 13 — `Replace the theme label with an accessible icon control` |
+| **P5.5 — 60** | EDIT: rebuild the three movement-to-music examples with accurate SVGs and user-triggered browser previews. | Turn, pause, and pace are distinct; audio never autoplays or overlaps; static and text equivalents work. | AC02, 10, 12, 13 — `Make movement examples visually and audibly accurate` |
+| **P5.6 — 90** | EDIT: recompose the Soundprint hero, overview, journey stage, synchronized moments, ribbon, composition, details, sticky player, and empty states. | One clock remains; labels stay honest; the first viewport and all target widths are usable. | AC10, 12, 13, 18 — `Redesign the Soundprint as a premium journey result` |
+| **P5.7 — 45** | EDIT: add loading/playback/selection-driven SVG and CSS polish with reduced-motion and hidden-page behavior. | Motion is never required for meaning and synchronized views stay within 500 ms. | AC10, 12, 13 — `Polish Soundprint motion around the shared audio clock` |
+| **P5.8 — 30** | VERIFY: run the complete regression, privacy, accessibility, responsive, performance, build, deployment, and docs pass. | Full suites and public smoke checklist pass; docs describe the release; final feature freeze is restored. | All — `Verify and document the final product experience` |
+
+### P6 — 150 planned minutes + 30-minute buffer
+
+| ID / min | Category; action and planned area | Verification / done-when / fallback | AC and proposed commit |
+|---|---|---|---|
+| **P6.1 — 45** | EDIT: README, architecture, DevRelay submission draft, AI disclosure and asset-rights notes. Export the Excalidraw architecture diagram for the article. Sponsor roles and technical provenance go in the README and submission evidence, not in the application UI. | Mechanism, evidence, limitations and setup are accurate; links resolve. The DEV draft is unpublished until the user reviews it. | AC16 — `Document the architecture demo and AI-assisted development` |
+| **P6.2 — 45** | RELEASE: user records 60-second demo; agent prepares runbook and screenshot references. | Hook appears in first ten seconds; backup video exists; no false live claim. | AC03, 16 — `Add the demonstration assets and judge runbook` |
+| **P6.3 — 45** | RELEASE: final template/tag/link review; user publishes submission and records URL. | Submission checklist complete before deadline. Prioritize links and explanation over polish. | AC16 — `Record the completed challenge submission` |
+| **P6.4 — 15** | VERIFY: update final handoff, acceptance evidence, release reference and remaining limitations. | Final state matches repository/deployment; user commits real verification record. | All — `Record final verification and release status` |
 
 **Unallocated emergency buffer: 30 minutes.**
 
@@ -1334,7 +1354,7 @@ Record changes in `Docs/HANDOFF_2.md` with evidence and budget effect.
 
 Use documented fallbacks before redesigning.
 
-The Git workflow is mandatory: separate phase branches, separate step commits and descriptive one-line commit subjects without phase metadata.
+The Git workflow is mandatory: separate descriptive work branches and separate reviewable commits. Branch names and one-line commit subjects contain no phase or step metadata.
 
 ---
 
@@ -1387,19 +1407,19 @@ The Phase 1 frontend that this handoff now starts from is the landing and practi
 | Field | Current state |
 |---|---|
 | Status | **IN PROGRESS** |
-| Current phase | P2 — Real recording and movement engine |
-| Last completed step | P2.5 generate synchronized route sketches from movement events, commit `6535866` |
-| Next step | P2.6 after the user records one real outdoor walk. P2.0 stays deferred until the final Render deploy. |
-| Current execution branch | `build/movement` |
-| Last execution commit | `6535866` |
+| Current phase | P5 — Final product polish planning |
+| Last completed step | P4 release work and the October 12 outdoor-walk/studio review recorded in `Docs/HANDOFF_2.md` |
+| Next step | P5.1 remove the private walk export and clear accepted drafts |
+| Current execution branch | `final-product-polish` |
+| Last execution commit | `1a27285` before this uncommitted planning amendment |
 | Existing baseline commit | `22df0e7` |
 | Last PR | Pull request #1 merged to `main` |
-| Live URL | NOT YET DEPLOYED |
-| Feature freeze | NOT REACHED |
+| Live URL | https://footwork-m6g0.onrender.com/ |
+| Feature freeze | Reopened only for approved P5; final freeze returns after P5.8 |
 | Active build time used | 0 hours recorded |
-| Active build time remaining | 20 hours maximum |
+| Active build time remaining | Seven-hour P5 estimate plus the existing three-hour P6 submission allocation; no measured active time recorded |
 | New build spend recorded | $0 |
-| Known blockers | Public Render URL is still P2.0; Gemma arrangement is still unproved; CodeRabbit GitHub App install is unconfirmed. The user is managing the clock. The 20-hour ceiling is unchanged. |
+| Known blockers | Production quota increase requires current provider-budget confirmation. Implementation has not started. |
 
 Update this section after every completed step or meaningful interruption.
 
@@ -1415,22 +1435,22 @@ HANDOFF PACKET
 Project: Footwork
 Repository: git@github.com:kernelKain/footwork.git
 Local path: /home/kernel-kain/Documents/Github/footwork
-Deadline: October 11, 2026, 11:59 PM PDT
-Working dates: October 9–10, 2026 only
-Active-work ceiling: 20 hours
-Feature freeze: Build hour 15, at 75%
+Original deadline: October 11, 2026, 11:59 PM PDT
+Final-polish amendment: October 12, 2026
+Active-work ceiling: 27 hours after the approved seven-hour extension
+Feature freeze: restored for product changes on October 12, 2026 after automated P5 verification. Provider budget, real-phone review, and deployment remain user gates.
 Autonomy: A1 — agent edits; user runs commands and controls Git/deployment
-Status: IN PROGRESS
-Last completed: P2.5 generate synchronized route sketches from movement events, commit 6535866. P2.4 remains b913a93.
-Next step: P2.6 after the user records one real outdoor walk. Do not invent that walk. P2.0 stays deferred until the final Render deploy. The user is managing the clock. The 20-hour ceiling is unchanged.
-Active phase: P2 — Real recording and movement engine
-Branch: build/movement
-Live URL: NOT YET DEPLOYED
+Status: PRODUCT FREEZE RESTORED; release gates still open
+Last completed: Final product polish, commit `be8e2e1`, on October 12, 2026. Not deployed.
+Next step: User confirms the provider budget, reviews a real phone, deploys, and runs the smoke checklist.
+Active phase: P5 verification recorded; P6 has not started
+Branch: final-product-polish
+Live URL: https://footwork-m6g0.onrender.com/
 Locked Hook: A sharp route turn changes melodic direction; a pause becomes an audible musical break.
 Primary fallback: Deterministic Route Sketch for the current trace, plus a separately labeled cached genuine Studio example.
 Critical warning: Free Gemma access and Studio audio timing require actual proof; planned mappings are not evidence of audible mappings.
-Instruction: Execute only the active step, verify its done-when conditions, update HANDOFF.md, then continue according to Prompt 2.
-Workflow: Separate branch per phase; separate commit per step; one-line descriptive commit subjects with no phase name or number.
+Instruction: Product feature freeze is restored. Do not add product features. P6 stays submission-only and has not started. The user still owns provider-budget confirmation, real-phone review, and deployment.
+Workflow: One descriptive branch for the final product pass; separate commit per planned slice; branch names and one-line commit subjects contain no phase or step identifiers.
 Input: Browser location and movement recording. No file uploads.
 Budget: Existing Render $50 and ElevenLabs Creator resources only. No new Gemma spending.
 Development toolchain: CodeRabbit, Entire, DevRelay, GitHub Actions, and Excalidraw, set up in P0.2. Not product APIs.
@@ -1448,8 +1468,8 @@ Development toolchain: CodeRabbit, Entire, DevRelay, GitHub Actions, and Excalid
 6. Begin with the exact Next step.
 7. Do not continue implementation in the planning chat.
 
-### How to Start the Coding Prompt
+### How to Resume the Final Product Pass
 
-On October 9, open the repository in the coding environment and provide Prompt 2 plus this handoff. Add:
+Open the repository on `final-product-polish`, provide this handoff plus `Docs/PHASE_5_FINAL_POLISH_PLAN.md`, and begin with the first unfinished item in the execution queue. Branch names and commit subjects must not contain phase or step identifiers.
 
-> Begin P0.1. Preserve A1 authority: edit files, but give me the commands to run. Follow the separate phase-branch and step-commit rules. Track the 20-hour ceiling and freeze features at hour 15.
+> Begin with “Remove the sensitive walk export.” Follow the execution queue in document order, preserve the privacy and single-audio-clock boundaries, record verification in HANDOFF_2, and restore feature freeze before submission work.

@@ -1,21 +1,40 @@
-import type { MovementEvent } from "../contracts/types";
+import type { MovementEvent, MovementSummary } from "../contracts/types";
 import { formatTime } from "./formatTime";
-import { cardCopy, eventIsCurrent, visibleEvents } from "./journeyModel";
+import {
+  cardCopy,
+  eventIsCurrent,
+  momentCount,
+  momentPresence,
+  visibleEvents,
+} from "./journeyModel";
+
+const PRESENCE = {
+  none: "No accepted moments shaped this piece.",
+  few: "Only a few accepted moments shaped this piece.",
+  several: "Choose a moment to hear where it sits in the piece.",
+};
 
 export function MomentCards({
   events,
+  summary,
   timeMs,
+  selectedId = null,
   onSeek,
+  onSelect,
 }: {
   events: MovementEvent[];
+  summary: MovementSummary;
   timeMs: number;
+  selectedId?: string | null;
   onSeek: (timeMs: number) => void;
+  onSelect?: (eventId: string) => void;
 }) {
   const cards = visibleEvents(events);
+  const presence = momentPresence(momentCount(summary));
   return (
     <section className="stack" aria-labelledby="graph-title">
-      <h2 id="graph-title">Moments in the music</h2>
-      <p>Choose a moment to hear where it sits in the piece.</p>
+      <h2 id="graph-title">What shaped the music</h2>
+      <p>{PRESENCE[presence]}</p>
       <ol className="mapping-list">
         {cards.map((event) => {
           const active = eventIsCurrent(timeMs, event);
@@ -24,8 +43,15 @@ export function MomentCards({
             <li key={event.id}>
               <button
                 type="button"
-                className={active ? "moment-card is-active" : "moment-card"}
-                onClick={() => onSeek(event.audio_offset_ms)}
+                data-event-id={event.id}
+                className={
+                  active || selectedId === event.id ? "moment-card is-active" : "moment-card"
+                }
+                onClick={() => {
+                  onSelect?.(event.id);
+                  onSeek(event.audio_offset_ms);
+                }}
+                onFocus={() => onSelect?.(event.id)}
               >
                 <EventGlyph type={event.type} />
                 <span className="moment-copy">
