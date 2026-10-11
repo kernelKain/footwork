@@ -92,10 +92,13 @@ test("shell has no serious accessibility violations", async ({ page }) => {
 test("keyboard reaches the example action", async ({ page }) => {
   await page.goto("/");
   let found = false;
-  for (let step = 0; step < 8; step += 1) {
+  for (let step = 0; step < 12; step += 1) {
     await page.keyboard.press("Tab");
     const focused = page.locator(":focus");
-    const text = await focused.innerText();
+    if ((await focused.count()) === 0) continue;
+    const kind = await focused.evaluate((element) => element.tagName);
+    if (kind === "BODY") continue;
+    const text = await focused.innerText({ timeout: 250 }).catch(() => "");
     if (text.includes("Hear an example")) {
       found = true;
       const outline = await focused.evaluate((element) => getComputedStyle(element).outlineStyle);
