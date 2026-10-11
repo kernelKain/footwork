@@ -2,10 +2,10 @@
 
 Step-by-step record of what actually happened. The locked plan stays in `Docs/HANDOFF_1.md`. This file is the place to read after a step is finished.
 
-**Status:** The feature set is frozen. On October 11, 2026 the user confirmed the studio path, later movement in the music, a read-only result link, and an honest player with a readable movement ribbon. On October 12, 2026 the user confirmed the sanitized outdoor walk is saved and the studio recording made from that walk has been reviewed. The public service is https://footwork-m6g0.onrender.com/. Commit `481b2c2` asks the Gemma Space for a plan before any studio render, and commit `b895304` accepts a one-word style. One validated plan from `google/gemma-4-E2B-it` is in `Docs/evidence/gemma-access.md`. The user set `GENERATION_ENABLED` to `true` on that service and placed the Eleven key in the dashboard. A validated plan is the only request sent to Eleven. Commit `3bde4e8` makes each later turn, pace change, pause, and loop change the sketch and the studio plan. Commit `29e78d5` gives a ready Soundprint a link at `/w` that opens the piece for about an hour. Commit `4f803f5` names the sound under the player and gives the ribbon a time scale and a written list. The labeled example still does not call either provider. The 20-hour ceiling is unchanged. CodeRabbit is installed. Raw coordinates stay out of Git. `fixtures/sanitized-real/seed-walk.json` is not in the repository, and `Docs/evidence/seed-walk-review.md` has no heard times or song id for that studio file.
-**Next step:** P5 has not started.
-**Last completed step:** Sanitized outdoor walk and studio review confirmed by the user on October 12, 2026. The player and ribbon are `4f803f5`. The share link remains `29e78d5`. Later movement remains `3bde4e8`. The studio path remains the confirmation after `b895304`. Earlier release checks remain P4.3 at `6915426`, P4.2 at `b2c9bfc`, and P4.1 at `3419919`.
-**Active build time:** 0 of 20 hours recorded. This session was not measured.
+**Status:** On October 12, 2026 the user explicitly reopened the feature freeze for one final product-facing Phase 5 and moved Demo and submission to Phase 6. The approved plan is `Docs/PHASE_5_FINAL_POLISH_PLAN.md` on `final-product-polish`. The private-walk export removal, the walk-readiness progress, the private generation allowance, the theme icon control, the movement examples, the Soundprint redesign, and the Soundprint motion polish are on `final-product-polish`. On October 12, 2026 the automated final-polish gates passed. Feature freeze is restored for further product changes. Provider-budget confirmation, a real-phone review, and deployment remain open user gates. The public service does not yet include this work. Branch names and commit subjects for this work contain no phase or step identifiers. Earlier release status remains: the user confirmed the studio path, later movement in the music, a read-only result link, an honest player with a readable movement ribbon, the sanitized outdoor walk, and the studio recording made from it. The public service is https://footwork-m6g0.onrender.com/. Commit `481b2c2` asks the Gemma Space for a plan before any studio render, and commit `b895304` accepts a one-word style. One validated plan from `google/gemma-4-E2B-it` is in `Docs/evidence/gemma-access.md`. The user set `GENERATION_ENABLED` to `true` on that service and placed the Eleven key in the dashboard. A validated plan is the only request sent to Eleven. Commit `3bde4e8` makes each later turn, pace change, pause, and loop change the sketch and the studio plan. Commit `29e78d5` gives a ready Soundprint a link at `/w` that opens the piece for about an hour. Commit `4f803f5` names the sound under the player and gives the ribbon a time scale and a written list. The labeled example still does not call either provider. CodeRabbit is installed. Raw coordinates stay out of Git. `fixtures/sanitized-real/seed-walk.json` is not in the repository, and `Docs/evidence/seed-walk-review.md` has no heard times or song id for that studio file.
+**Next step:** The user confirms the provider budget before any deployed cap change, reviews the flow on a real phone, deploys, and runs the smoke checklist in P5.8. Phase 6 has not started.
+**Last completed step:** Final product polish verified on October 12, 2026. Not deployed. The sanitized outdoor walk and studio review remain confirmed. The player and ribbon are `4f803f5`. The share link remains `29e78d5`. Later movement remains `3bde4e8`. The studio path remains the confirmation after `b895304`. Earlier release checks remain P4.3 at `6915426`, P4.2 at `b2c9bfc`, and P4.1 at `3419919`.
+**Active build time:** 0 of the rebaselined 27 hours recorded. This session was not measured.
 
 Execution notes stay in this file. The diagram and write-up path are under `Docs/`. Each **Notes** section is filled only after that step is finished.
 
@@ -828,16 +828,174 @@ On October 11, 2026 the user confirmed the service is deployed at https://footwo
 
 ---
 
-## P5 — Demo and submission
+## P5 — Final product polish
+
+**Branch:** `final-product-polish`
+**Window:** Seven-hour extension after P4 (420 planned minutes)
+**Outcome:** Remove the route-export risk, clarify recording and processing, increase safe generation allowance, improve the landing explanations and theme control, and deliver the final premium Soundprint experience.
+**Phase note:** The export removal, the walk-readiness progress, the private generation allowance, the theme icon control, the movement examples, the Soundprint redesign, and the Soundprint motion polish are on `final-product-polish`. Automated verification passed on October 12, 2026. Feature freeze is restored for further product changes. Provider-budget confirmation, a real-phone review, and deployment are still user gates and were not done. The spec remains `Docs/PHASE_5_FINAL_POLISH_PLAN.md`. Phase 6 has not started.
+
+### P5.1 — Remove the private walk export and clear accepted drafts
+
+**Status:** Done
+**Kind:** Edit · 45 minutes · AC-14
+**Commit subject:** Remove the private walk export and clear accepted drafts
+
+Remove the landing download and warning, `privateWalkFile.ts`, its dedicated test/state/props, and the unwanted practice footer. Clear an ended raw-coordinate draft after the server accepts its job, with bounded failure cleanup.
+
+**Done when.** No public coordinate export remains and an accepted job leaves no ended raw-coordinate draft on the phone.
+
+**Notes.** Implemented on October 12, 2026 in the final-polish commit on `final-product-polish`. The landing no longer offers a coordinate download or the practice footer. `frontend/src/recording/privateWalkFile.ts` and `frontend/tests/private-walk.spec.ts` are deleted. An ended draft is still ignored for recording recovery. A recording or paused draft is restored as before. After `POST /api/v1/soundprints` is accepted, the ended raw draft is deleted from IndexedDB. A refusal before acceptance keeps that draft, shows **Delete saved walk** on the recovery screen, and removes an ended draft older than 24 hours on the next read. `Docs/evidence/seed-walk-review.md` still describes the removed download. That sheet was left unchanged.
+
+From `frontend/`, `npm run typecheck` and `npm run lint` passed. Prettier passed on the edited files. `npm run format` still warns on `tests/fixtures/route-sketch-result.json`, which this step did not change. Playwright passed 19 tests in `tests/draft-privacy.spec.ts`, `tests/shell.spec.ts`, and `tests/capture.spec.ts`, then 13 tests in `tests/studio.spec.ts` and `tests/live-job.spec.ts`. No active time was measured.
+
+### P5.2 — Clarify walk readiness and processing progress
+
+**Status:** Done
+**Kind:** Edit · 45 minutes · AC-01, AC-08, AC-11, AC-12
+**Commit subject:** Clarify walk readiness and processing progress
+
+Show the 1 minute 30 second active-walk minimum, readiness progress, an early-end warning, and explicit saving/submitting status before the existing studio stages.
+
+**Done when.** Pause time does not advance readiness, End stays available for safety, a slow request never looks frozen, and one job is submitted.
+
+**Notes.** Implemented on October 12, 2026 in the final-polish commit on `final-product-polish`. The recording screen shows the 1 minute 30 second line under the active timer. Progress reads from active walking time only, for example “0:54 of 1:30 minimum.”, and changes to “Minimum time reached.” at 90 seconds. That threshold is checked against `MIN_ACTIVE_MS` in `backend/app/movement/clean.py`. Pause and a hidden page keep the stored active time. End stays available, including while location is returning and after the page was hidden. Ending before 90 seconds asks for confirmation and still allows the walk to finish. After the walk ends, one status says “Saving your walk on this phone…” until the phone save finishes, then “Walk saved. Turning your movement into music…” until the studio opens on “Reading your walk.” A second end click does not send a second job. The per-second progress is not a live region. “Minimum time reached.” is the only status while recording after the minimum, and the pause sentence replaces it during a break. A frame timestamp that lands slightly before the clock start is stored as zero so the draft remains valid. `Docs/evidence/seed-walk-review.md` was left unchanged.
+
+From `frontend/`, `npm run typecheck` and `npm run lint` passed. Prettier passed on the edited files. `npm run format` still warns on `tests/fixtures/route-sketch-result.json`, which this step did not change. Playwright passed 58 tests in `tests/readiness.spec.ts`, `tests/capture.spec.ts`, `tests/draft-privacy.spec.ts`, `tests/release-a11y.spec.ts`, `tests/pause.spec.ts`, `tests/journey.spec.ts`, and `tests/studio.spec.ts`. The interruption test was repeated six more times after a negative active-time save was fixed. No active time was measured.
+
+### P5.3 — Increase generation allowance with private quota guards
+
+**Status:** Done
+**Kind:** Edit · 75 minutes · AC-08, AC-14, AC-15
+**Commit subject:** Increase generation allowance with private quota guards
+
+Add an anonymous random per-install token, an eight-job daily install allowance, a separate global provider budget, safe ledger migration, and distinct public cap messages.
+
+**Done when.** The ninth install job and an exhausted global budget are rejected before dispatch, another install has its own allowance, and no raw install token is stored or logged.
+
+**Notes.** Implemented on October 12, 2026 in the final-polish commit on `final-product-polish`. The browser creates one random 256-bit token with `crypto.getRandomValues`, stores it in local storage as `footwork-install`, and sends it as `X-Install-Token`. The ledger stores only `digest("install", token)` under `installs`. A schema 1 ledger is read forward to schema 2 and keeps its spent global usage. Each install can be admitted eight jobs per UTC day. The global caps stay separately configured: defaults remain 4 Gemma attempts, 240 GPU seconds, and 6 music attempts, and environment values are clamped to 8 attempts, 480 GPU seconds, and 8 music attempts. `deploy/render.yaml` is unchanged, so the deployed global caps stay at 4, 240, and 6. Raising those production values still requires provider-budget confirmation. An exhausted install and an exhausted global budget are rejected before dispatch, with separate public sentences. Replaying an accepted request does not spend another allowance. One active job remains. The raw token is absent from the ledger and from job logs.
+
+`uv run --directory backend ruff check app tests/unit/test_jobs.py tests/unit/test_flow.py` passed, and `uv run --directory backend ruff format --check .` passed. `uv run --directory backend pytest` passed, 91 tests. From `frontend/`, `npm run typecheck` and `npm run lint` passed. Prettier passed on the edited frontend files. Playwright passed 4 tests in `tests/freeze.spec.ts` and the generation-state test in `tests/studio.spec.ts`. No provider was called. No active time was measured.
+
+### P5.4 — Replace the theme label with an accessible icon control
+
+**Status:** Done
+**Kind:** Edit · 30 minutes · AC-12, AC-13
+**Commit subject:** Replace the theme label with an accessible icon control
+
+Use the existing icon button with sun/moon SVG while keeping action-level accessible names and stored theme behavior.
+
+**Done when.** Keyboard, accessible-name, persistence, target-size, and contrast checks pass in both themes.
+
+**Notes.** Implemented on October 12, 2026 in the final-polish commit on `final-product-polish`. The header and system catalog use the existing icon button. A sun is shown for the Light theme action, which activates Daylight. A moon is shown for the Dark theme action, which activates Nocturne Pulse. The action name stays on the button as `aria-label`. The SVG is `aria-hidden` and `focusable="false"`. Device defaults, a stored explicit choice, `theme-color` metadata, and live device changes when no choice is stored are unchanged. The control stays at least 44 by 44 pixels, with the existing focus outline and text-on-surface contrast.
+
+From `frontend/`, `npm run typecheck` and `npm run lint` passed. Prettier passed on the edited frontend files. `npm run build` passed. Playwright passed `tests/theme.spec.ts`, `tests/system.spec.ts`, and `tests/release-a11y.spec.ts`. No active time was measured.
+
+### P5.5 — Make movement examples visually and audibly accurate
+
+**Status:** Done
+**Kind:** Edit · 60 minutes · AC-02, AC-10, AC-12, AC-13
+**Commit subject:** Make movement examples visually and audibly accurate
+
+Replace the generic landing diagram with accurate turn, pause, and pace cause/effect cards and user-triggered deterministic browser previews.
+
+**Done when.** The three mappings are distinct, previews neither autoplay nor overlap, and static/text equivalents remain complete.
+
+**Notes.** Implemented on October 12, 2026 in the final-polish commit on `final-product-polish`. “Hear what a moment does” shows three cards at once. A sharp route corner lines up with a pitch line that falls and then rises. A pause is two separated route segments lined up with a silent gap. A pace change draws closer route marks beside a taller pulse. Each card has plain copy and a Preview control. The short sounds are built in the browser from the existing sketch: a turn reverses pitch direction, a pause is silence, and a pace change is louder and adds the brighter fifth. The page calls them illustrations, not generated pieces. Nothing plays until a person asks. One preview stops the previous one, and playback also stops when the section unmounts or the page is hidden. Phone width stacks the cards. A wide page shows three columns. Reduced motion keeps the same static figures and words.
+
+From `frontend/`, `npm run typecheck` and `npm run lint` passed. Prettier passed on the edited frontend files. `npm run build` passed. Playwright passed `tests/moment-examples.spec.ts` and `tests/journey.spec.ts`. No provider was called. No active time was measured.
+
+### P5.6 — Redesign the Soundprint as a premium journey result
+
+**Status:** Done
+**Kind:** Edit · 90 minutes · AC-10, AC-12, AC-13, AC-18
+**Commit subject:** Redesign the Soundprint as a premium journey result
+
+Recompose the hero, overview, journey stage, synchronized moments, ribbon, composition, details, sticky player, Now playing state, sharing, and empty states without changing the result contract or adding a second clock.
+
+**Done when.** The first viewport is clear, all target widths work, labels remain honest, and synchronized views remain within 500 ms.
+
+**Notes.** Implemented on October 12, 2026 in the final-polish commit on `final-product-polish`. Motion polish is recorded under P5.7. The result contract and the single audio element are unchanged. The page now reads: album hero, four stats, one journey frame, What shaped the music, the compact ribbon, the journey pattern, then one details disclosure. The hero has the route art, the honest label, the title, a short sentence, the player, the share action when a token exists, and the line that the displayed route is abstracted and contains no coordinates. Now playing names the current chapter and the current moment. Focusing a route marker and its event card selects both. A phone shows a sticky mini player on that same clock after the hero player leaves the screen. No accepted moments, and only a few moments, have their own sentences. Example, sketch, and studio labels stay in the disclosure.
+
+From `frontend/`, `npm run typecheck` and `npm run lint` passed. Prettier passed on the edited frontend files. `npm run build` passed. Playwright passed playback, marker, recap, sharing, contract, studio, shell, phase 1, and release accessibility tests, including 360, 390, 430, 768, and 1280 px. No provider was called. No active time was measured.
+
+### P5.7 — Polish Soundprint motion around the shared audio clock
+
+**Status:** Done
+**Kind:** Edit · 45 minutes · AC-10, AC-12, AC-13
+**Commit subject:** Polish Soundprint motion around the shared audio clock
+
+Add loading-, playback-, and selection-driven CSS/SVG polish with complete reduced-motion and hidden-page behavior.
+
+**Done when.** Motion is never required for meaning, animations pause when hidden, and reduced-motion users retain all state and playback information.
+
+**Notes.** Implemented on October 12, 2026 in the final-polish commit on `final-product-polish`. The result still uses one audio element and one clock. When a result mounts, the hero route draws once and the page settles with a short fade. The journey route is already the finished stroke. The walker steps only while that audio is playing, the route is on screen, and the page is visible. Only the marker at the current clock time pulses, once. While audio plays, the hero cover holds a steady glow and the active moment's waveform grows. Chapter and current-moment text cross-fades when the line changes. Hiding the page pauses those animations. Reduced motion shows the finished route, the current marker, the progress position, and the text with no travel. There is no scrolling effect, parallax, flashing loop, WebGL, Lottie, or new animation dependency. The walker step remains the only repeating motion, and it runs only during playback.
+
+Against the redesign build (HTML 1.60 kB, gzip 0.74 kB; CSS 21.24 kB, gzip 4.81 kB; JS 327.07 kB, gzip 98.96 kB), the motion build is HTML 1.60 kB, gzip 0.74 kB; CSS 22.39 kB, gzip 5.02 kB; JS 327.16 kB, gzip 98.99 kB. CSS grew by 1.15 kB (gzip 0.21 kB). JS grew by 0.09 kB (gzip 0.03 kB). One warm throttled sample, with 1.6 Mbps down, 750 kbps up, 150 ms latency, and 4× CPU, reached the landing in 1477 ms and the studio in 4084 ms. DOM content loaded in 388 ms and the load event ended at 389 ms. The document transfer was 1045 bytes and encoded resource bytes were 0 because the preview assets were already cached. That sample is one observation, not a Lighthouse score. The earlier redesign sample in the same profile was 1646 ms to the landing and 4068 ms to the studio.
+
+From `frontend/`, `npm run typecheck` and `npm run lint` passed. Prettier passed on the edited frontend files. `npm run build` passed. Playwright passed `tests/motion.spec.ts`, `tests/playback.spec.ts`, `tests/markers.spec.ts`, `tests/recap.spec.ts`, `tests/studio.spec.ts`, `tests/release-a11y.spec.ts`, and `tests/phase1.spec.ts`. No provider was called. No active time was measured.
+
+### P5.8 — Verify and document the final product experience
+
+**Status:** Partial
+**Kind:** Verify · 30 minutes · all acceptance criteria
+**Commit subject:** Verify and document the final product experience
+
+Run the full regression, privacy, accessibility, responsive, performance, build, deployment, and documentation pass.
+
+**Done when.** Full suites and the public smoke checklist pass, docs describe deployed behavior, provider caps are recorded, and final feature freeze is restored.
+
+**Notes.** Automated verification passed on October 12, 2026 in the final-polish commit on `final-product-polish`. The public smoke checklist was not run, and https://footwork-m6g0.onrender.com/ was not changed. `deploy/render.yaml` was not edited. Feature freeze is restored for further product changes. Three gates stay with the user.
+
+Commands and results, from the repository root unless noted:
+
+- `uv run pytest -q` in `backend/`: 91 passed in 52.71s.
+- `uv run ruff check .` in `backend/`: all checks passed.
+- `uv run ruff format --check .` in `backend/`: 29 files already formatted.
+- `npm run typecheck` in `frontend/`: passed.
+- `npm run lint` in `frontend/`: passed.
+- `npm run format` in `frontend/`: failed first on `tests/fixtures/route-sketch-result.json`, a one-line fixture from commit `0f44b87`. Prettier rewrote only its whitespace. The check then passed.
+- `npx playwright test` in `frontend/`, with `PLAYWRIGHT_BROWSERS_PATH` set to the local browser cache: 133 passed in 45.4s. The suite built the production preview itself.
+- `npm run build` in `frontend/`: passed. HTML 1.60 kB, gzip 0.74 kB. CSS `index-y2zVn5zp.css` 22.39 kB, gzip 5.02 kB. JavaScript `index-D2VZ9LOE.js` 327.16 kB, gzip 98.99 kB.
+
+Privacy, from the passing suites and a source search: the landing has no download control and `privateWalkFile` is gone. An accepted `POST /api/v1/soundprints` clears the ended raw draft; a refusal keeps it. The job log test rejects the raw install token, the capability, and coordinates, and the ledger contains the install digest rather than the token. Share URLs are `/w#` plus the token and are checked for the absence of a latitude. The result route is relative meters, not coordinates.
+
+Accessibility and layout, from the same Playwright run: axe serious and critical checks passed on the shell, studio, system catalog, and recap. Keyboard coverage includes the live walk, example playback, and the Soundprint actions. The theme control keeps the names Light theme and Dark theme. Status text covers saving, generation stages, and Now playing. Focus outlines are asserted on the keyboard path. Contrast checks passed in Daylight and Nocturne Pulse at 390 and 1280 px. Reduced motion keeps generation, the finished route, the current marker, progress, and text. `tests/phase1.spec.ts` sets the root font to 32 px, which is 200 percent of 16 px, at 360 px. A separate check of that same 32 px size fit `/` and `/studio` at 360, 390, 430, 768, and 1280 px with no horizontal overflow. The suite already checks those five widths at the normal font size.
+
+Audio: playback, marker, recap, and motion tests keep the route, ribbon, story, and audio within 500 ms. The studio result renders one `audio` element. The mini player uses that same element.
+
+Performance: this build matches the motion-polish build. Against the older Step 5 baseline in this file (HTML 0.91 kB gzip 0.45, CSS 11.53 kB gzip 3.12, JavaScript 268.74 kB gzip 82.09), CSS is 10.86 kB larger raw and 1.90 kB larger gzip, and JavaScript is 58.42 kB larger raw and 16.90 kB larger gzip. One warm throttled sample in the full suite, at 1.6 Mbps down, 750 kbps up, 150 ms latency, and 4× CPU, reached the landing in 1376 ms and the studio in 4393 ms. DOM content loaded in 361 ms and the load event ended at 368 ms. The document transfer was 1045 bytes and encoded resource bytes were 0 because the preview assets were already cached. That is one observation, not a Lighthouse score. No new runtime dependency was added. Dependencies remain React and React DOM.
+
+Docs updated to the verified working tree: `README.md`, `Docs/PRODUCT_CONCEPT.md`, `Docs/FRONTEND_EXPERIENCE.md`, `Docs/HANDOFF_1.md`, this file, `Docs/PHASE_5_FINAL_POLISH_PLAN.md`, and `backend/.env.example`. No provider was called. No active time was measured.
+
+**User-only gates, not done:**
+
+1. Confirm the provider budget before changing deployed caps. The blueprint still lists 4 Gemma attempts, 240 GPU seconds, and 6 music attempts. The code default for one installation is 8 jobs, clamped at 8. Global defaults stay 4, 240, and 6 unless the environment sets them, and those values are clamped at 8, 480, and 8.
+2. Review on a real phone: the 1:30 guidance, the saving transition, touch targets, the sticky player, and the animation.
+3. Deploy this reviewed tree, then run the smoke checklist below. Do not treat the current public site as this verification.
+
+**Smoke checklist, after the user deploys:**
+
+1. `GET /health` returns status `ok`.
+2. `/` shows Start walking, Hear an example, and Hear what a moment does, and it offers no coordinate download.
+3. A live recording shows the 1 minute 30 second line, and End stays available.
+4. Ending announces saving, then the generation stages, without a percent.
+5. The result plays from one control, and the route, ribbon, and current moment stay with that audio.
+6. The theme icon switches Daylight and Nocturne Pulse and keeps the choice.
+7. A ready share link opens `/w` and does not contain a location.
+
+---
+
+## P6 — Demo and submission
 
 **Branch:** `build/submission`
-**Window:** Build hours 17–20 (150 minutes, plus a 30-minute emergency buffer)
+**Window:** Build hours 24–27 (150 minutes, plus a 30-minute emergency buffer)
 **Outcome:** Demo video, DEV article, README, links, and the final evidence record.
-**Phase note:** Not started. Depends on P4. Sponsor roles and technical provenance belong in the README and submission evidence, not in the application UI.
+**Phase note:** Not started. Product feature freeze is restored. This phase still waits for the user to commit the polish, confirm the provider budget, review a real phone, and deploy. Sponsor roles and technical provenance belong in the README and submission evidence, not in the application UI.
 
 The 30-minute buffer is not a step. If emergency work happens, add it under the step it belongs to, with its own commit and note.
 
-### P5.1 — Document the architecture, demo, and AI-assisted development
+### P6.1 — Document the architecture, demo, and AI-assisted development
 
 **Status:** Not started
 **Kind:** Edit · 45 minutes · AC-16
@@ -849,7 +1007,7 @@ Write the README, architecture notes, and rights notes. Draft the DEV article th
 
 **Notes.** Not implemented.
 
-### P5.2 — Add the demonstration assets and judge runbook
+### P6.2 — Add the demonstration assets and judge runbook
 
 **Status:** Not started
 **Kind:** Release · 45 minutes · AC-03, AC-16
@@ -861,7 +1019,7 @@ The user records the 60-second demo. Prepare the runbook and screenshot referenc
 
 **Notes.** Not implemented.
 
-### P5.3 — Record the completed challenge submission
+### P6.3 — Record the completed challenge submission
 
 **Status:** Not started
 **Kind:** Release · 45 minutes · AC-16
@@ -873,7 +1031,7 @@ Review tags, template, and links. The user publishes the DEV submission and reco
 
 **Notes.** Not implemented.
 
-### P5.4 — Record final verification and release status
+### P6.4 — Record final verification and release status
 
 **Status:** Not started
 **Kind:** Verify · 15 minutes · all acceptance criteria

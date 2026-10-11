@@ -1,6 +1,13 @@
 import { useEffect, useRef, type ReactNode } from "react";
 import type { RecordingPort } from "./practicePort";
 import { practiceRoutePieces, type PracticeDraft } from "./practiceDraft";
+import {
+  MIN_ACTIVE_WALK_MS,
+  READINESS_GUIDANCE,
+  SAVING_STATUS,
+  SUBMITTING_STATUS,
+  readinessProgress,
+} from "./readiness";
 import { formatClock } from "./useMonotonicClock";
 import { HoldButton } from "../ui/HoldButton";
 import { Walker } from "../ui/Walker";
@@ -165,6 +172,7 @@ export function RecordingView({
         onNavigate={onNavigate}
         action={live ? "Continue the walk" : "Start again"}
         onAction={live ? onContinue : onRetry}
+        onEnd={live ? onEnd : undefined}
       >
         <p>
           {live
@@ -186,20 +194,26 @@ export function RecordingView({
     return (
       <section className="recording-view" aria-labelledby="end-title">
         <h1 id="end-title">
-          {finished
-            ? port.mode === "live"
-              ? "Walk saved"
-              : "Practice walk finished"
-            : "Finishing"}
-        </h1>
-        <p role="status">
           {port.mode === "live"
             ? finished
-              ? "This walk is saved on this phone. A piece is not being made yet."
-              : "Saving this walk on this phone. It is not being uploaded."
-            : "Finishing this practice walk. Nothing is being saved. No location was stored."}
-        </p>
-        {finished ? (
+              ? "Walk saved"
+              : "Saving your walk"
+            : finished
+              ? "Practice walk finished"
+              : "Finishing"}
+        </h1>
+        {port.mode === "live" && saveError ? (
+          <p role="alert">{saveError}</p>
+        ) : (
+          <p role="status">
+            {port.mode === "live"
+              ? finished
+                ? SUBMITTING_STATUS
+                : SAVING_STATUS
+              : "Finishing this practice walk. Nothing is being saved. No location was stored."}
+          </p>
+        )}
+        {finished && port.mode !== "live" ? (
           <div className="actions">
             <button type="button" className="ui-button ui-button-primary" onClick={onRetry}>
               Start again
@@ -250,7 +264,7 @@ export function RecordingView({
       ) : null}
       {resumeNote && phase === "paused" ? <p role="alert">{resumeNote}</p> : null}
       {saveError ? <p role="alert">{saveError}</p> : null}
-      <WalkClocks clocks={clocks} showBreak={phase !== "recording"} />
+      <WalkClocks clocks={clocks} showBreak={phase !== "recording"} phase={phase} />
       {phase === "recording" ? (
         <>
           <StatusChip label={port.signalLabel()} tone="live" />
@@ -264,6 +278,11 @@ export function RecordingView({
       ) : null}
       {draft && port.mode === "practice" ? (
         <PracticeRoute draft={draft} moving={phase === "recording"} liveMs={liveSegmentMs} />
+      ) : null}
+      {phase === "pausing" ? (
+        <div className="walk-dock">
+          <EndWalk onEnd={onEnd} />
+        </div>
       ) : null}
       {phase === "recording" ? (
         <div className="walk-dock">
@@ -296,6 +315,7 @@ export function RecordingView({
           <button type="button" className="ui-button ui-button-secondary" onClick={onCancelResume}>
             Cancel
           </button>
+          <EndWalk onEnd={onEnd} />
         </div>
       ) : null}
     </section>
@@ -312,7 +332,17 @@ function headingFor(
   return mode === "live" ? "Recording" : "Practice walk";
 }
 
-function WalkClocks({ clocks, showBreak }: { clocks: WalkClocks; showBreak: boolean }) {
+function WalkClocks({
+  clocks,
+  showBreak,
+  phase,
+}: {
+  clocks: WalkClocks;
+  showBreak: boolean;
+  phase: "recording" | "pausing" | "paused" | "resuming";
+}) {
+  const progress = readinessProgress(clocks.activeMs);
+  const reached = clocks.activeMs >= MIN_ACTIVE_WALK_MS && phase === "recording";
   return (
     <>
       <TimerDisplay
@@ -320,6 +350,13 @@ function WalkClocks({ clocks, showBreak }: { clocks: WalkClocks; showBreak: bool
         value={formatClock(clocks.activeMs)}
         clock="active"
       />
+      <p>{READINESS_GUIDANCE}</p>
+      <p
+        data-readiness={clocks.activeMs >= MIN_ACTIVE_WALK_MS ? "reached" : "short"}
+        role={reached ? "status" : undefined}
+      >
+        {progress}
+      </p>
       {showBreak ? (
         <TimerDisplay
           label="Current break time"
@@ -408,12 +445,14 @@ function Recovery({
   onNavigate,
   action,
   onAction,
+  onEnd,
 }: {
   title: string;
   children: ReactNode;
   onNavigate: Navigate;
   action?: string;
   onAction?: () => void;
+  onEnd?: () => void;
 }) {
   return (
     <section className="recording-view" role="alert" aria-labelledby="recovery-title">
@@ -425,6 +464,7 @@ function Recovery({
             {action}
           </button>
         ) : null}
+        {onEnd ? <EndWalk onEnd={onEnd} /> : null}
         <ExampleLink onNavigate={onNavigate} />
       </div>
     </section>

@@ -135,26 +135,34 @@ test("offline and hidden-page practice states do not invent a saved walk", async
   await expect(page.getByRole("alert")).toContainText("Nothing was stored");
 });
 
-test("moment controls are keyboard accessible", async ({ page }) => {
+test("moment previews are keyboard accessible", async ({ page }) => {
   await page.goto("/");
+  const section = page.getByRole("region", { name: "Hear what a moment does" });
+  await expect(section.getByRole("heading", { name: "Turn" })).toBeVisible();
+  await expect(section.getByRole("heading", { name: "Pause" })).toBeVisible();
+  await expect(section.getByRole("heading", { name: "Pace change" })).toBeVisible();
   let found = false;
   for (let step = 0; step < 30; step += 1) {
     await page.keyboard.press("Tab");
-    const name = await page
-      .locator(":focus")
-      .evaluate((element) => (element instanceof HTMLElement ? element.innerText : ""));
-    if (name.trim() === "Pause") {
+    const label = await page.locator(":focus").getAttribute("aria-label");
+    if (label === "Preview pause illustration") {
       found = true;
-      await page.keyboard.press("Enter");
       break;
     }
   }
   expect(found).toBe(true);
-  const pause = page.getByRole("button", { name: "Pause Showing" });
-  await expect(pause).toHaveAttribute("aria-pressed", "true");
-  await expect(page.locator("figcaption", { hasText: "musical break" })).toBeVisible();
+  const pause = page.getByRole("button", { name: "Preview pause illustration" });
   const outline = await pause.evaluate((element) => getComputedStyle(element).outlineStyle);
   expect(outline).not.toBe("none");
+  const box = await pause.boundingBox();
+  expect(box).not.toBeNull();
+  expect(box!.width).toBeGreaterThanOrEqual(44);
+  expect(box!.height).toBeGreaterThanOrEqual(44);
+  await page.keyboard.press("Enter");
+  await expect(page.getByRole("button", { name: "Stop pause illustration" })).toHaveAttribute(
+    "aria-pressed",
+    "true",
+  );
 });
 
 for (const width of [360, 390, 430, 768, 1280]) {

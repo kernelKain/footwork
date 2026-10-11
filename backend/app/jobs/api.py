@@ -67,6 +67,7 @@ async def create_soundprint(request: Request) -> JSONResponse:
         await request.body(),
         request.headers.get("x-idempotency-key", ""),
         request.headers.get("x-job-key", ""),
+        request.headers.get("x-install-token", ""),
     )
     return JSONResponse(status_code=202, content=view.public())
 

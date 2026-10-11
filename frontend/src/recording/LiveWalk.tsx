@@ -21,9 +21,9 @@ import {
   resumeLive,
   type LiveModel,
 } from "./liveCapture";
-import type { LocationSample, MovementDraft } from "./movementDraft";
+import type { LocationSample } from "./movementDraft";
 import type { RecordingPort } from "./practicePort";
-import { downloadPrivateWalk } from "./privateWalkFile";
+import { SHORT_WALK_WARNING, activeWalkIsShort } from "./readiness";
 import { useRunningOffset } from "./useMonotonicClock";
 import { submitFinishedWalk } from "../studio/liveJob";
 
@@ -47,23 +47,26 @@ export function LiveWalk({
   const [settled, setSettled] = useState(false);
   const [sheetOpen, setSheetOpen] = useState(false);
   const [wakeHeld, setWakeHeld] = useState(false);
-  const [storedWalk, setStoredWalk] = useState<MovementDraft | null>(null);
+  const [endedDraftSaved, setEndedDraftSaved] = useState(false);
+  const [shortConfirm, setShortConfirm] = useState(false);
   const modelRef = useRef(model);
   const sessionRef = useRef("");
   const sentRef = useRef(false);
+  const endingRef = useRef(false);
+  const shortConfirmRef = useRef(false);
   const readActiveRef = useRef<() => number>(() => 0);
   modelRef.current = model;
   const recording = model.phase === "recording";
   const activeClock = useRunningOffset(recording);
   readActiveRef.current = () =>
-    modelRef.current.baseActiveMs + (recording ? activeClock.read() : 0);
+    Math.max(0, modelRef.current.baseActiveMs + (recording ? activeClock.read() : 0));
 
   useEffect(() => {
     let cancel = false;
     void store.read(Date.now()).then((saved) => {
       if (cancel) return;
       const recovered = recoverLive(saved);
-      if (saved?.status === "ended" && saved.samples.length > 0) setStoredWalk(saved);
+      setEndedDraftSaved(saved?.status === "ended");
       if (recovered.draft) sessionRef.current = recovered.draft.sessionId;
       setModel(recovered);
       setSettled(true);
@@ -182,8 +185,14 @@ export function LiveWalk({
     const draft = model.draft;
     void submitFinishedWalk(draft)
       .catch(() => "timed_out" as const)
-      .then((outcome) => {
-        if (outcome !== "live") {
+      .then(async (outcome) => {
+        if (outcome === "live") {
+          try {
+            await store.clear();
+          } catch {
+            // The phone still has the ended draft. Delete saved walk can remove it.
+          }
+        } else {
           try {
             sessionStorage.setItem("footwork-generation", outcome);
           } catch {
@@ -192,19 +201,35 @@ export function LiveWalk({
         }
         onGo("/studio");
       });
-  }, [model.phase, model.draft, onGo]);
+  }, [model.phase, model.draft, onGo, store]);
 
   useEffect(() => {
-    if (model.phase !== "ending") return;
-    const timer = window.setTimeout(() => {
-      setModel((current) => {
-        const next = markFinished(current);
-        modelRef.current = next;
-        return next;
-      });
-    }, 700);
-    return () => window.clearTimeout(timer);
-  }, [model.phase]);
+    if (model.phase !== "ending" || !model.draft) return;
+    let cancel = false;
+    const draft = model.draft;
+    void store.write(draft).then(
+      () => {
+        if (cancel) return;
+        setModel((current) => {
+          if (current.phase !== "ending") return current;
+          const next = markFinished(current);
+          modelRef.current = next;
+          return next;
+        });
+      },
+      () => {
+        if (cancel) return;
+        setModel((current) => {
+          const next = failSave(current);
+          modelRef.current = next;
+          return next;
+        });
+      },
+    );
+    return () => {
+      cancel = true;
+    };
+  }, [model.phase, model.draft, store]);
 
   const port = useMemo<RecordingPort>(
     () => ({
@@ -239,9 +264,43 @@ export function LiveWalk({
 
   const reset = () => {
     sessionRef.current = "";
+    endingRef.current = false;
+    shortConfirmRef.current = false;
+    setShortConfirm(false);
     setSheetOpen(false);
     apply(initialLive());
     void store.clear();
+  };
+
+  const finishWalk = () => {
+    if (endingRef.current) return;
+    const current = modelRef.current;
+    if (current.phase === "ending" || current.phase === "finished") return;
+    endingRef.current = true;
+    shortConfirmRef.current = false;
+    setShortConfirm(false);
+    apply(endLive(current, readActiveRef.current(), Date.now()));
+  };
+
+  const requestEnd = () => {
+    if (endingRef.current || shortConfirmRef.current) return;
+    const current = modelRef.current;
+    if (current.phase === "ending" || current.phase === "finished") return;
+    if (activeWalkIsShort(readActiveRef.current())) {
+      shortConfirmRef.current = true;
+      setShortConfirm(true);
+      return;
+    }
+    finishWalk();
+  };
+
+  const keepWalking = () => {
+    shortConfirmRef.current = false;
+    setShortConfirm(false);
+  };
+
+  const discardEndedWalk = () => {
+    void store.clear().then(() => setEndedDraftSaved(false));
   };
 
   const begin = () => {
@@ -260,10 +319,8 @@ export function LiveWalk({
             if (settled) setSheetOpen(true);
           }}
           onNavigate={onNavigate}
-          onDownloadWalk={
-            storedWalk && model.phase === "ready"
-              ? () => downloadPrivateWalk(storedWalk)
-              : undefined
+          onDeleteSavedWalk={
+            settled && endedDraftSaved && model.phase === "ready" ? discardEndedWalk : undefined
           }
         />
       ) : (
@@ -287,11 +344,22 @@ export function LiveWalk({
           onResume={() => apply(resumeLive(modelRef.current, navigator.onLine))}
           onContinue={() => apply(continueLive(modelRef.current, navigator.onLine))}
           onCancelResume={() => apply(cancelLive(modelRef.current))}
-          onEnd={() => apply(endLive(modelRef.current, readActiveRef.current(), Date.now()))}
+          onEnd={requestEnd}
           onRetry={reset}
           onNavigate={onNavigate}
         />
       )}
+      <Sheet
+        open={shortConfirm}
+        title="This walk may be too short"
+        closeLabel="Keep walking"
+        onClose={keepWalking}
+      >
+        <p>{SHORT_WALK_WARNING}</p>
+        <Button variant="destructive" onClick={finishWalk}>
+          End walk anyway
+        </Button>
+      </Sheet>
       <Sheet
         open={sheetOpen}
         title="Before you walk"

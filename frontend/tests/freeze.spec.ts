@@ -6,6 +6,7 @@ import {
   GENERATION_TIMEOUT_MS,
   RETRYABLE_GENERATION_ERRORS,
 } from "../src/studio/generationContract";
+import { installToken } from "../src/studio/installToken";
 import { resultLabel } from "../src/studio/StudioScreen";
 
 const example = JSON.parse(
@@ -46,9 +47,32 @@ test("generation failures keep the locked sentences and the 180 second boundary"
     timed_out: "Making the piece took too long.",
     arrangement_unavailable: "The music plan is unavailable. A simpler version can still be made.",
     music_unavailable: "The studio recording is unavailable. Your simpler version is ready.",
-    generation_limit: "Today's limit for new pieces has been reached.",
+    generation_limit:
+      "The studio has reached today's generation limit. Hear the example or try tomorrow.",
+    install_allowance: "This phone has made today's pieces. New pieces are available tomorrow.",
   });
   expect(RETRYABLE_GENERATION_ERRORS.has("generation_limit")).toBe(false);
+  expect(RETRYABLE_GENERATION_ERRORS.has("install_allowance")).toBe(false);
   expect(RETRYABLE_GENERATION_ERRORS.has("trace_too_short")).toBe(false);
   expect(RETRYABLE_GENERATION_ERRORS.has("trace_unclear")).toBe(false);
+});
+
+test("one install token is random, stored, and reused", () => {
+  const saved = new Map<string, string>();
+  const storage = {
+    getItem: (key: string) => saved.get(key) ?? null,
+    setItem: (key: string, value: string) => {
+      saved.set(key, value);
+    },
+  };
+  const first = installToken(storage);
+  const second = installToken(storage);
+  expect(first).toMatch(/^[0-9a-f]{64}$/);
+  expect(second).toBe(first);
+  expect(saved.get("footwork-install")).toBe(first);
+  saved.set("footwork-install", "not-a-token");
+  const replaced = installToken(storage);
+  expect(replaced).toMatch(/^[0-9a-f]{64}$/);
+  expect(replaced).not.toBe("not-a-token");
+  expect(installToken(storage)).toBe(replaced);
 });

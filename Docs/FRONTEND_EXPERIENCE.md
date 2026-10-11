@@ -4,6 +4,8 @@ Public information architecture, copy, and interface contract for the polishing 
 
 The Phase 1 extension is specified in `Docs/PHASE_1_UI_UX_PLAN.md`. Pause and resume, the movement summary, the visual recap, the walker, Nocturne Pulse, and the Daylight light theme are in the public pages. Token values and contrast decisions are in `Docs/HANDOFF_2.md`.
 
+The final product polish specified in `Docs/PHASE_5_FINAL_POLISH_PLAN.md` is the behavior on `final-product-polish`. There is no raw-coordinate download. Recording shows the 1 minute 30 second active-time line and a saving status. The theme control is a sun or moon icon. Three movement examples can be previewed. The Soundprint is the album result below. Automated checks passed on October 12, 2026. The public host still serves the last deployed release until the user deploys this work. Feature freeze is restored for further product changes.
+
 When this file disagrees with an older screen list in `Docs/HANDOFF_1.md` or a broader idea in `Docs/PRODUCT_CONCEPT.md`, this file wins for the public pages. `Docs/HANDOFF_1.md` still wins for the Hook, acceptance criteria, stack, privacy rules, and phase order.
 
 ## Product flow
@@ -28,7 +30,7 @@ One page introduces the product and holds the walk. A second page is the Soundpr
 | Examples stay honest | An example, a practice state, and a simpler stand-in are labeled as such. None of them is called a finished live recording. |
 | A manual break is not a movement event | Pause walk creates a gap between recording segments. It is not converted into distance or a musical pause. |
 | Results are visual first | Route, movement ribbon, event composition, and compact stat visuals lead; text explains them and remains the accessible alternative. |
-| Theme follows the device, then an explicit choice | Daylight is the light theme. Nocturne Pulse is the dark theme. The header button stores the choice on this browser. |
+| Theme follows the device, then an explicit choice | Daylight is the light theme. Nocturne Pulse is the dark theme. The header shows a sun or a moon. The button name is Light theme or Dark theme, and the icon is hidden from assistive technology. |
 
 The Hook is unchanged: a sharp turn is meant to change the melody's direction, and a pause is meant to become a musical break. Until generated audio is actually heard and checked, the page says the change is planned.
 
@@ -44,27 +46,27 @@ Phase 1 generation is still practice. Ending a practice walk opens the generatio
 
 Order on the page:
 
-1. What Footwork is, in a few sentences.
-2. Start walking.
-3. Hear an example, which opens the labeled example on `/studio`.
-4. While recording: active time, a plain signal word, Pause walk, and Hold to end walk.
-5. While paused: active time, break time, Resume walk, and Hold to end walk.
-6. `#how-it-works`: a short explanation of the walk, the music, privacy limits, and what this build does not do yet.
+1. What Footwork is, in a few sentences, with Start walking and Hear an example. Hear an example opens the labeled example on `/studio`.
+2. `#how-it-works`: a short explanation of the walk, the music, privacy limits, and what this build does not do yet.
+3. Hear what a moment does: three cards for a turn, a pause, and a pace change. Each Preview is an illustration the person starts. Nothing plays by itself.
+4. Before you go: location, what is recorded, and the other limits already on the page.
+5. The recording screen, after Start walking: active time, the 1 minute 30 second readiness line, a plain signal word, Pause walk, and Hold to end walk. While paused: active time, break time, Resume walk, and Hold to end walk.
 
 Start walking is the primary action. Hear an example is secondary and visibly an example.
 
 ### `/studio` — Hear the Soundprint
 
-On a phone the page is one reading order. At desktop width the player and route can stay beside the timeline.
+On a phone the page is one reading order. At desktop width the album art sits beside the title and player.
 
-1. Soundprint hero: track title, a short walk summary, a cover, the primary audio controls, and one honest label. The label is Example walk or Generated from your walk. Phase 1's example uses Example walk.
-2. Journey at a glance: active time, elapsed time, distance, and meaningful-moment count as large values with compact visual marks.
-3. Route fingerprint: a segmented, privacy-safe route with relative pace color, playback position, a clear start and end, and markers for a turn, detected pause, loop, and change in pace. Manual breaks and uncertain gaps are visibly disconnected.
-4. Movement ribbon: a visual intensity timeline with manual-break and uncertain-gap treatments, chapter boundaries, musical influence, and the shared playback cursor. A Song time list marks the start, quarter, half, three-quarter point, and end. A second list names each stretch, break, uncertain gap, and moment in words.
-5. Movement-to-music moments: three to five visual event cards. Choosing or focusing a moment seeks the shared audio clock. The route, ribbon, cards, and story stay within 500 ms of that clock.
-6. Journey composition: a compact count/distribution visual for turns, detected pauses, loops, and pace changes. It is not a quality score.
-7. Short walk story: one plain summary of the shape of the walk. It does not repeat the charts.
-8. Optional quality and details: a closed disclosure. It is not a provenance panel and it does not print internal fields.
+1. Album hero: large privacy-safe route art, one honest label, the track title, a short journey sentence, the primary player, a compact share action when a link exists, and a line that the displayed route is abstracted and contains no coordinates. The label is Example walk or Generated from your walk.
+2. Journey at a glance: active time, total time, distance, and accepted movement moments.
+3. The journey: one dominant frame with the route, playhead, event markers, and the current chapter. A Now playing line names the chapter and, when playback is on a moment, that moment.
+4. What shaped the music: up to five event cards. Choosing or focusing a card or a route marker selects both and seeks the shared audio clock. The route, ribbon, cards, and Now playing line stay within 500 ms of that clock.
+5. Movement ribbon: a compact song-length overview with pace, gaps, chapters, events, and the playhead.
+6. Journey pattern: the accepted counts of turns, detected pauses, loops, and pace changes. It is not a quality score. Few moments and no moments have their own sentences.
+7. Optional quality and generation details: one closed disclosure. It is not a provenance panel. Example, simpler-version, and studio-recording labels stay honest.
+
+A phone shows a sticky mini player after the hero player scrolls away. It uses the same audio element and clock. There is one audio element on the result. The hero route draws once when the result appears. The walker moves only while that audio is playing and the page is visible. Reduced motion shows the finished route, the current marker, the progress position, and the text without animated travel.
 
 No Sponsors section. No Provenance section. No generation picker. Technical provenance stays in the result object, the fixture, and these notes. The page may say, in plain words, that a musical change is planned. It does not print `synthetic_fixture`, `mapping_status`, stage ids, or a percent complete.
 
@@ -123,7 +125,8 @@ Error codes the interface understands:
 | `interrupted` | The page was hidden. Missing time was not filled in. |
 | `trace_too_short` | That walk was too short to shape a piece. |
 | `trace_unclear` | The location was too unclear to trust. |
-| `generation_limit` | Today's limit for new pieces has been reached. |
+| `generation_limit` | The studio has reached today's generation limit. Hear the example or try tomorrow. |
+| `install_allowance` | This phone has made today's pieces. New pieces are available tomorrow. |
 | `arrangement_unavailable` | The music plan is unavailable. A simpler version can still be made. |
 | `music_unavailable` | The studio recording is unavailable. Your simpler version is ready. |
 | `timed_out` | Making the piece took too long. |
@@ -159,7 +162,7 @@ No account balance is shown. No stack trace, coordinate, or secret is shown.
 
 ### Recording
 
-- The person sees Recording, active time, a plain signal word (clear, weak, or lost), Pause walk, and Hold to end walk. The page asks them to keep this tab open. It does not show a fitness dashboard.
+- The person sees Recording, active time, the line "Walk for at least 1 min 30 sec of active movement for a reliable Soundprint.", progress such as "0:54 of 1:30 minimum." or "Minimum time reached.", a plain signal word (clear, weak, or lost), Pause walk, and Hold to end walk. Ending before 90 seconds asks for confirmation and still finishes the walk. The page asks them to keep this tab open. It does not show a fitness dashboard.
 - Actions: Pause walk or Hold to end walk.
 - Data: local samples grouped into ordered recording segments, a monotonic active clock, and either a screen wake lock or a visible warning that the screen may sleep.
 - Phase 1 target: the practice port demonstrates pause, paused restoration, resume, and end. It does not call geolocation or pretend that fixture time is a real walk.
@@ -182,7 +185,7 @@ No account balance is shown. No stack trace, coordinate, or secret is shown.
 - Data: the location watch has stopped and the local draft is closed for writing.
 - Phase 1: practice copy only.
 - Real behavior: Phase 2 quality check. A walk that fails becomes Recoverable error, not a fake Soundprint.
-- Accessibility: a text status. The page does not jump onward in silence.
+- Accessibility: one status says "Saving your walk on this phone…" and then "Walk saved. Turning your movement into music…" before the generation stages. The page does not jump onward in silence.
 
 ### Processing
 
@@ -294,6 +297,21 @@ Backend processing uses the stage ids and error codes in this file. The public s
 
 Integration of the rebaselined journey, accessibility, performance, and device regression at 390 px and 1280 px. Fixes only. No new public sections.
 
-### Phase 5 — evidence outside the app
+### Phase 5 — final product polish
+
+This is the last public-product phase, and `final-product-polish` implements it. Automated checks passed on October 12, 2026. The public host does not serve it until the user deploys it.
+
+- There is no raw-coordinate download, warning, or practice footer sentence.
+- Recording shows `Walk for at least 1 min 30 sec of active movement for a reliable Soundprint.` and progress to that line. Ending remains available.
+- After ending, one status announces saving and then `Walk saved. Turning your movement into music…` before the existing generation stages.
+- One anonymous browser installation can be admitted for eight jobs in a day when the separate global provider budget permits it. No device fingerprint is created.
+- The theme control is a sun or moon icon. Its accessible name is still the action.
+- The landing shows three turn, pause, and pace cards. Each preview starts only when the person asks.
+- `/studio` is the album hero, journey stage, sticky single-clock player, Now playing label, moment and composition visuals, and quiet details described above.
+- Result animation follows loading, playback, or selection. Reduced motion keeps the finished route, marker, progress, and text.
+
+The public result contains no literal map, coordinates, health metrics, raw export, internal mode name, sponsor block, provenance panel, or second audio clock. Accepted raw local drafts are removed after the server admits the job. Feature freeze is restored for further product changes. Provider-budget confirmation, a real-phone review, and deployment remain with the user.
+
+### Phase 6 — evidence outside the app
 
 Sponsor roles and technical provenance are written into the README and the submission evidence. They are not added back to the application as public sections.

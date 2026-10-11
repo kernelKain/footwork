@@ -12,10 +12,11 @@ This is what the application shows now.
 
 - `/` explains Footwork and holds the practice walk. Start walking opens a readiness sheet. The practice does not ask for location and does not hold the screen awake. A paused practice keeps its time and segments on this phone. It does not save a location route.
 - Ending the practice opens generation on `/studio`. The wait names four stages and an elapsed time. It does not show a percent. The result is the labeled example.
-- `/studio` is the Soundprint: hero, glance totals, a segmented route, a movement ribbon, movement-to-music cards, composition counts, a short walk story, and optional details. Hear an example opens that same example. A small walker marks ready, recording, paused, generation, and playback.
+- `/studio` is the Soundprint: album hero, four glance totals, one journey frame with the route and Now playing line, the moments that shaped the music, a compact movement ribbon, journey-pattern counts, and one details disclosure. Hear an example opens that same example. A phone can show a sticky player for the same audio after the hero player leaves the screen. A small walker marks ready, recording, paused, generation, and playback, and it steps only while playback is running and the page is visible.
 - `/about` opens How it works on `/`.
 - There is no global Walk / Soundprint / How it works navigation, no Sponsors section, and no Provenance section. Sponsor roles and technical provenance stay in this file, `Docs/HANDOFF_1.md`, and `README.md`.
-- The pages use two themes with the same roles. Nocturne Pulse is the dark theme: midnight and cobalt surfaces, cyan for the route, violet for music and playback, amber for movement moments, blue for a pause, and coral only for ending a walk. Daylight is the light theme: warm paper surfaces and deeper versions of those same colors so text and controls stay readable. The header switches them. The device choice is the default.
+- The pages use two themes with the same roles. Nocturne Pulse is the dark theme: midnight and cobalt surfaces, cyan for the route, violet for music and playback, amber for movement moments, blue for a pause, and coral only for ending a walk. Daylight is the light theme: warm paper surfaces and deeper versions of those same colors so text and controls stay readable. The header shows a sun to switch to Daylight and a moon to switch to Nocturne Pulse. The button's accessible name is Light theme or Dark theme. The device choice is the default until the person chooses.
+- The landing does not offer a coordinate download. While recording, the page asks for at least 1 minute 30 seconds of active movement and still leaves End available. "Hear what a moment does" shows a turn, a pause, and a pace change, each with a short preview the person starts.
 
 Mood choice, Pocket Mode, and a desktop QR code are later product ideas. They are not controls on these pages. A finished Soundprint shows a copyable link. Anyone with it can open that result at `/w` for about an hour. The link does not contain a location, and it cannot delete the walk.
 
@@ -30,7 +31,21 @@ Mood choice, Pocket Mode, and a desktop QR code are later product ideas. They ar
 - The Soundprint is a visual journey recap with at-a-glance stats, a segmented route, a movement ribbon, movement-to-music moments, an event-composition visual, and a short story.
 - Visual analytics stay limited to data in the validated movement summary: active and elapsed time, manual-break time, within-segment distance, relative pace, accepted event counts, gaps, and a plain quality state. Calories, heart rate, steps, elevation, and health advice remain out of scope.
 
-The extension is planned as steps P1.7–P1.13. Its estimated 290 minutes still need an explicit budget decision because the original 20-hour plan was already fully allocated. P1.7 was not a separate implementation step; those decisions are the plan document.
+The extension was planned as steps P1.7–P1.13. P1.7 was not a separate implementation step; those decisions are the plan document. The implementation record is in `Docs/HANDOFF_2.md`.
+
+## Verified final product polish
+
+`Docs/PHASE_5_FINAL_POLISH_PLAN.md` is the spec. The `final-product-polish` branch matches it, and the automated checks in `Docs/HANDOFF_2.md` passed. https://footwork-m6g0.onrender.com/ does not serve it until the user deploys it.
+
+- There is no browser download of a raw-coordinate walk. After the server accepts a job, the ended raw draft on the phone is deleted.
+- A reliable Soundprint asks for at least 1 minute 30 seconds of active walking. End stays available.
+- Saving and the handoff into generation are announced before the existing generation stages.
+- An anonymous browser installation has an eight-job daily allowance, and a separate server-wide provider budget still applies. The ledger stores a digest of that installation key, not the key itself.
+- The theme action is a sun or moon icon with an accessible name.
+- Turn, pause, and pace each have an accurate picture and a short browser preview the person starts.
+- The result is one music page: hero, synchronized journey, sticky single-clock player on a phone, Now playing context, composition counts, and motion that reduced motion can skip.
+
+The polish does not add accounts, tracking analytics, a literal map, health metrics, a raw route export, a second audio clock, or a new runtime visual dependency. Feature freeze is restored for further product changes. Provider-budget confirmation, a real-phone review, and deployment remain with the user. Phase 6, documentation and submission, has not started.
 
 ## Product Summary
 
@@ -42,7 +57,7 @@ Unlike a fitness tracker, Footwork does not reduce the journey to distance, calo
 
 Footwork is initially designed for casual walkers, runners, travellers, students, and creative-technology users who want something more meaningful than another activity summary.
 
-Users do not need musical knowledge. They only need a phone and a willingness to take a 5-minute to 3-hour walk or run.
+Users do not need musical knowledge. They need a phone and at least 1 minute 30 seconds of active movement. The current recording contract accepts at most 30 minutes per walk.
 
 ## The Problem
 

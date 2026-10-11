@@ -10,12 +10,13 @@ from secrets import token_hex
 
 import pytest
 from app.jobs.flow import WalkOutcome
-from app.jobs.ledger import Ledger
+from app.jobs.ledger import Ledger, digest
 from app.jobs.privacy import LOG
 from app.jobs.service import (
     GPU_RESERVE_SECONDS,
     GPU_SECOND_LIMIT,
     JobService,
+    bounded_cap,
 )
 from app.main import create_app
 from fastapi.testclient import TestClient
@@ -25,6 +26,9 @@ ORIGIN_LAT = 12.9716
 ORIGIN_LON = 77.5946
 T0 = 1_700_000_000_000.0
 DAY = "2026-10-10"
+INSTALL_TOKEN = token_hex(32)
+GLOBAL_LIMIT = "The studio has reached today's generation limit. Hear the example or try tomorrow."
+INSTALL_LIMIT = "This phone has made today's pieces. New pieces are available tomorrow."
 
 
 class Clock:
@@ -64,6 +68,7 @@ def test_a_retry_returns_the_same_job_and_reserves_once(tmp_path: Path) -> None:
     assert first.json()["stage"] == "reading_walk"
     assert "percent" not in first.json()
     assert spy.job_ids == [first.json()["job_id"]]
+    assert _install_jobs(data, INSTALL_TOKEN) == 1
     assert spy.usage[0][DAY] == {
         "gemma_attempts": 1,
         "gpu_seconds": GPU_RESERVE_SECONDS,
@@ -147,6 +152,7 @@ def test_quota_is_kept_after_delete_and_blocks_the_next_piece(tmp_path: Path) ->
 
     assert blocked.status_code == 429
     assert blocked.json()["code"] == "generation_limit"
+    assert blocked.json()["message"] == GLOBAL_LIMIT
     assert blocked.json()["retryable"] is False
     assert "balance" not in blocked.text
     assert len(spy.job_ids) == 4
@@ -221,6 +227,8 @@ def test_restart_interrupts_the_job_and_keeps_the_reservation(tmp_path: Path) ->
     assert restarted_spy.job_ids == [retried.json()["job_id"]]
     assert retried.json()["job_id"] != job_id
     assert _usage(data)["gemma_attempts"] == 2
+    assert _install_jobs(data, INSTALL_TOKEN) == 2
+    assert INSTALL_TOKEN not in (data / "quota-ledger.json").read_text(encoding="utf-8")
     assert len(spy.job_ids) == 1
 
 
@@ -264,7 +272,7 @@ def test_overlapping_retries_create_one_job(tmp_path: Path) -> None:
 
     def submit() -> None:
         barrier.wait()
-        found.append(service.submit(body, "idem-race-0001", key).job_id)
+        found.append(service.submit(body, "idem-race-0001", key, INSTALL_TOKEN).job_id)
         time.sleep(0.05)
 
     threads = [threading.Thread(target=submit) for _ in range(2)]
@@ -276,6 +284,7 @@ def test_overlapping_retries_create_one_job(tmp_path: Path) -> None:
     assert found[0] == found[1]
     assert spy.job_ids == [found[0]]
     assert _usage(data)["gemma_attempts"] == 1
+    assert _install_jobs(data, INSTALL_TOKEN) == 1
 
 
 def test_capabilities_stay_coarse_and_jobs_require_the_right_key(tmp_path: Path) -> None:
@@ -599,18 +608,21 @@ def test_job_log_omits_locations_capabilities_and_keys(
         )
     )
     key = token_hex(32)
+    install = token_hex(32)
     created = client.post(
         "/api/v1/soundprints",
         content=_walk(),
-        headers=_headers("idem-log-00001", key),
+        headers=_headers("idem-log-00001", key, install),
     )
     job_id = created.json()["job_id"]
     owned = client.get(f"/api/v1/jobs/{job_id}", headers={"authorization": f"Bearer {key}"})
     share_token = owned.json()["share_token"]
     client.get(f"/api/v1/jobs/{job_id}", headers={"authorization": f"Bearer {token_hex(32)}"})
     LOG.info("latitude 12.9716 authorization Bearer %s sk-live-secret", key)
+    LOG.info("x-install-token %s", install)
 
     text = caplog.text
+    ledger = (data / "quota-ledger.json").read_text(encoding="utf-8")
     assert job_id in text
     assert "shaping_music" in text
     assert "invalid_capability" in text
@@ -622,6 +634,10 @@ def test_job_log_omits_locations_capabilities_and_keys(
     assert "Bearer" not in text
     assert "authorization" not in text.lower()
     assert "sk-live-secret" not in text
+    assert install not in text
+    assert "x-install-token" not in text.lower()
+    assert install not in ledger
+    assert digest("install", install.encode()) in ledger
 
 
 def test_a_share_link_opens_the_piece_without_the_job_key(tmp_path: Path) -> None:
@@ -729,12 +745,184 @@ def _dump(body: dict[str, object]) -> bytes:
     return json.dumps(body, separators=(",", ":")).encode()
 
 
-def _headers(idempotency_key: str, job_key: str) -> dict[str, str]:
+def _headers(
+    idempotency_key: str, job_key: str, install_token: str = INSTALL_TOKEN
+) -> dict[str, str]:
     return {
         "content-type": "application/json",
         "x-idempotency-key": idempotency_key,
         "x-job-key": job_key,
+        "x-install-token": install_token,
     }
+
+
+def test_environment_caps_stay_inside_reviewed_maxima(monkeypatch: pytest.MonkeyPatch) -> None:
+    monkeypatch.setenv("MAX_INSTALL_JOBS_PER_DAY", "30")
+    monkeypatch.setenv("MAX_GEMMA_ATTEMPTS_PER_DAY", "100")
+    monkeypatch.setenv("MAX_GEMMA_GPU_SECONDS_PER_DAY", "99999")
+    monkeypatch.setenv("MAX_MUSIC_ATTEMPTS_PER_DAY", "40")
+    assert bounded_cap("MAX_INSTALL_JOBS_PER_DAY", 8, 8) == 8
+    assert bounded_cap("MAX_GEMMA_ATTEMPTS_PER_DAY", 4, 8) == 8
+    assert bounded_cap("MAX_GEMMA_GPU_SECONDS_PER_DAY", 240, 480) == 480
+    assert bounded_cap("MAX_MUSIC_ATTEMPTS_PER_DAY", 6, 8) == 8
+    monkeypatch.setenv("MAX_GEMMA_ATTEMPTS_PER_DAY", "nope")
+    assert bounded_cap("MAX_GEMMA_ATTEMPTS_PER_DAY", 4, 8) == 4
+
+
+def test_eight_jobs_are_admitted_and_the_ninth_is_refused_before_dispatch(
+    monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+) -> None:
+    _open_global_budget(monkeypatch, 8)
+    data, _clock, spy, client = _app(tmp_path)
+    body = _walk()
+
+    for index in range(8):
+        _admit(client, body, f"idem-install-{index}")
+
+    blocked = client.post(
+        "/api/v1/soundprints",
+        content=body,
+        headers=_headers("idem-install-ninth", token_hex(32)),
+    )
+
+    assert blocked.status_code == 429
+    assert blocked.json()["code"] == "install_allowance"
+    assert blocked.json()["message"] == INSTALL_LIMIT
+    assert blocked.json()["retryable"] is False
+    assert len(spy.job_ids) == 8
+    assert _install_jobs(data, INSTALL_TOKEN) == 8
+    assert INSTALL_TOKEN not in (data / "quota-ledger.json").read_text(encoding="utf-8")
+
+
+def test_another_install_has_its_own_allowance(
+    monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+) -> None:
+    _open_global_budget(monkeypatch, 9)
+    data, _clock, spy, client = _app(tmp_path)
+    body = _walk()
+    other = token_hex(32)
+
+    for index in range(8):
+        _admit(client, body, f"idem-phone-a-{index}")
+    blocked = client.post(
+        "/api/v1/soundprints",
+        content=body,
+        headers=_headers("idem-phone-a-ninth", token_hex(32)),
+    )
+    admitted = _admit(client, body, "idem-phone-b-01", other)
+
+    assert blocked.status_code == 429
+    assert blocked.json()["code"] == "install_allowance"
+    assert admitted.status_code == 202
+    assert len(spy.job_ids) == 9
+    assert _install_jobs(data, INSTALL_TOKEN) == 8
+    assert _install_jobs(data, other) == 1
+    ledger = (data / "quota-ledger.json").read_text(encoding="utf-8")
+    assert INSTALL_TOKEN not in ledger
+    assert other not in ledger
+
+
+def test_global_budget_blocks_a_fresh_install_before_dispatch(tmp_path: Path) -> None:
+    data = tmp_path / "jobs"
+    clock = Clock()
+    ledger = Ledger(data / "quota-ledger.json", clock)
+
+    def seed(payload: dict[str, object]) -> None:
+        payload["usage"] = {DAY: {"gemma_attempts": 4, "gpu_seconds": 240, "eleven_attempts": 4}}
+
+    ledger.transact(seed)
+    spy = Spy(data / "quota-ledger.json")
+    client = TestClient(create_app(tmp_path / "missing", data_dir=data, now=clock, dispatch=spy))
+    fresh = token_hex(32)
+    response = client.post(
+        "/api/v1/soundprints",
+        content=_walk(),
+        headers=_headers("idem-global-01", token_hex(32), fresh),
+    )
+
+    assert response.status_code == 429
+    assert response.json()["code"] == "generation_limit"
+    assert response.json()["message"] == GLOBAL_LIMIT
+    assert spy.job_ids == []
+    assert fresh not in (data / "quota-ledger.json").read_text(encoding="utf-8")
+    assert "installs" in json.loads((data / "quota-ledger.json").read_text(encoding="utf-8"))
+    assert _usage(data)["gemma_attempts"] == 4
+
+
+def test_a_schema_one_ledger_keeps_spent_global_usage(tmp_path: Path) -> None:
+    data = tmp_path / "jobs"
+    data.mkdir()
+    legacy = {
+        "schema_version": "1",
+        "jobs": {},
+        "usage": {DAY: {"gemma_attempts": 3, "gpu_seconds": 180, "eleven_attempts": 2}},
+    }
+    (data / "quota-ledger.json").write_text(json.dumps(legacy), encoding="utf-8")
+    clock = Clock()
+    spy = Spy(data / "quota-ledger.json")
+    client = TestClient(create_app(tmp_path / "missing", data_dir=data, now=clock, dispatch=spy))
+    migrated = json.loads((data / "quota-ledger.json").read_text(encoding="utf-8"))
+
+    assert migrated["schema_version"] == "2"
+    assert migrated["usage"][DAY]["gemma_attempts"] == 3
+    assert migrated["usage"][DAY]["gpu_seconds"] == 180
+    assert migrated["installs"] == {}
+
+    created = client.post(
+        "/api/v1/soundprints",
+        content=_walk(),
+        headers=_headers("idem-migrate-01", token_hex(32)),
+    )
+
+    assert created.status_code == 202
+    assert len(spy.job_ids) == 1
+    assert _usage(data)["gemma_attempts"] == 4
+    assert _install_jobs(data, INSTALL_TOKEN) == 1
+
+
+def test_a_missing_install_token_is_refused_before_dispatch(tmp_path: Path) -> None:
+    data, _clock, spy, client = _app(tmp_path)
+    headers = _headers("idem-missing-token", token_hex(32))
+    del headers["x-install-token"]
+    response = client.post("/api/v1/soundprints", content=_walk(), headers=headers)
+
+    assert response.status_code == 400
+    assert response.json()["code"] == "invalid_request"
+    assert spy.job_ids == []
+    assert not (data / "quota-ledger.json").exists()
+
+
+def _open_global_budget(monkeypatch: pytest.MonkeyPatch, jobs: int) -> None:
+    monkeypatch.setattr("app.jobs.service.GEMMA_ATTEMPT_LIMIT", jobs)
+    monkeypatch.setattr("app.jobs.service.GPU_SECOND_LIMIT", jobs * GPU_RESERVE_SECONDS)
+    monkeypatch.setattr("app.jobs.service.ELEVEN_ATTEMPT_LIMIT", jobs)
+
+
+def _admit(
+    client: TestClient, body: bytes, idempotency_key: str, install_token: str = INSTALL_TOKEN
+):
+    key = token_hex(32)
+    created = client.post(
+        "/api/v1/soundprints",
+        content=body,
+        headers=_headers(idempotency_key, key, install_token),
+    )
+    assert created.status_code == 202
+    deleted = client.delete(
+        f"/api/v1/jobs/{created.json()['job_id']}",
+        headers={"authorization": f"Bearer {key}"},
+    )
+    assert deleted.status_code == 204
+    return created
+
+
+def _install_jobs(data: Path, token: str) -> int:
+    payload = json.loads((data / "quota-ledger.json").read_text(encoding="utf-8"))
+    bucket = payload["installs"][digest("install", token.lower().encode())][DAY]
+    assert isinstance(bucket, dict)
+    jobs = bucket["jobs"]
+    assert isinstance(jobs, int)
+    return jobs
 
 
 def _usage(data: Path) -> dict[str, int]:

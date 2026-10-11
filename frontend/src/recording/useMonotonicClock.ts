@@ -27,6 +27,7 @@ export function useMonotonicClock(running: boolean): number {
  * `displayMs` advances once per second while running and is 0 while stopped.
  * `read` returns the latest frame, including the partial second, and returns
  * 0 once the clock is stopped so a stored duration is not added twice.
+ * A frame time can be slightly earlier than the effect start, so the offset stays at zero instead of going negative.
  */
 export function useRunningOffset(running: boolean): { displayMs: number; read: () => number } {
   const [displayMs, setDisplayMs] = useState(0);
@@ -43,7 +44,7 @@ export function useRunningOffset(running: boolean): { displayMs: number; read: (
     const started = performance.now();
     let shownSecond = -1;
     return runWhileVisible((now) => {
-      const next = now - started;
+      const next = Math.max(0, now - started);
       readMs.current = next;
       const second = Math.floor(next / 1000);
       if (second !== shownSecond) {

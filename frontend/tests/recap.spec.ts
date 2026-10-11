@@ -8,6 +8,8 @@ import type { DemoFixture } from "../src/contracts/types";
 import {
   drawnSpans,
   formatDistance,
+  momentPresence,
+  nowPlayingLine,
   playbackPoint,
   ribbonBands,
   ribbonLines,
@@ -30,6 +32,37 @@ async function expectNoHorizontalOverflow(page: Page): Promise<void> {
   );
   expect(overflow).toBe(true);
 }
+
+test("now playing follows the chapter, and quiet walks name how few moments they have", () => {
+  expect(momentPresence(0)).toBe("none");
+  expect(momentPresence(1)).toBe("few");
+  expect(momentPresence(2)).toBe("few");
+  expect(momentPresence(3)).toBe("several");
+  expect(
+    nowPlayingLine(
+      [{ id: "approach", start_ms: 0, end_ms: 18_000, title: "Approach" }],
+      [],
+      60_000,
+      0,
+    ),
+  ).toBe("Now playing Approach");
+  expect(
+    nowPlayingLine(
+      [{ id: "corner", start_ms: 18_000, end_ms: 36_000, title: "Corner" }],
+      [
+        {
+          id: "turn-1",
+          type: "turn",
+          source_offset_ms: 18_000,
+          audio_offset_ms: 18_000,
+          confidence: 1,
+        },
+      ],
+      60_000,
+      18_000,
+    ),
+  ).toBe("Now playing Corner. Turn. Melody changed direction.");
+});
 
 test("the ribbon names its time scale and each gap", () => {
   const fixture = loadMixed();
@@ -98,14 +131,15 @@ test("the example recap shows published totals and withholds an unclear speed", 
   await expect(page.locator(".route-figure [data-kind='break']")).toHaveCount(0);
   await expect(page.locator(".ribbon [data-kind='break']")).toHaveCount(0);
   await expect(page.locator(".ribbon [data-kind='uncertain']")).toHaveCount(0);
-  await expect(page.getByRole("region", { name: "Journey composition" })).toContainText("Turns 1");
-  await expect(page.getByRole("region", { name: "Journey composition" })).toContainText(
+  await expect(page.getByRole("region", { name: "Journey pattern" })).toContainText("Turns 1");
+  await expect(page.getByRole("region", { name: "Journey pattern" })).toContainText(
     "Detected pauses 1",
   );
-  await expect(page.getByRole("region", { name: "Journey composition" })).toContainText("Loops 0");
-  await expect(page.getByRole("region", { name: "Journey composition" })).toContainText(
+  await expect(page.getByRole("region", { name: "Journey pattern" })).toContainText("Loops 0");
+  await expect(page.getByRole("region", { name: "Journey pattern" })).toContainText(
     "Counts of accepted moments",
   );
+  await expect(page.getByText("No accepted moments shaped this piece.")).toHaveCount(0);
 
   const details = page.getByRole("button", { name: "About this example" });
   await expect(details).toHaveAttribute("aria-expanded", "false");
@@ -205,6 +239,25 @@ for (const width of [360, 1280]) {
     await expectNoHorizontalOverflow(page);
   });
 }
+
+test("the mobile mini player controls the same audio element", async ({ page }) => {
+  await page.setViewportSize({ width: 390, height: 700 });
+  await page.goto("/studio");
+  await expect(page.getByRole("region", { name: "Mini player" })).toHaveCount(0);
+  await page.evaluate(() => window.scrollTo(0, document.body.scrollHeight));
+  const mini = page.getByRole("region", { name: "Mini player" });
+  await expect(mini).toBeVisible();
+  await expect(mini).toContainText("Now playing");
+  await expect(page.locator("audio")).toHaveCount(1);
+  await mini.getByRole("button", { name: "Play in the mini player" }).click();
+  await expect(page.getByRole("button", { name: "Pause", exact: true })).toBeVisible();
+  await expect(page.locator("audio")).toHaveCount(1);
+  const clock = Number(await page.locator(".route-cursor").getAttribute("data-time-ms"));
+  const audio = await page.locator("audio").evaluate((element) => {
+    return (element as HTMLAudioElement).currentTime * 1000;
+  });
+  expect(Math.abs(audio - clock)).toBeLessThanOrEqual(500);
+});
 
 test("the soundprint recap has no serious accessibility violations", async ({ page }) => {
   await page.goto("/studio");

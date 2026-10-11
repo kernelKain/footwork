@@ -92,6 +92,27 @@
   cursor: pointer;
 }
 
+.journey-stage {
+  padding: var(--space-2);
+  border: var(--border-width) solid var(--color-line);
+  border-radius: var(--radius-2);
+  background: var(--color-surface);
+}
+
+.journey-stage .route-figure {
+  border: 0;
+  background: transparent;
+  padding: 0;
+}
+
+.journey-stage .route-figure svg {
+  width: min(100%, 36rem);
+}
+
+.now-playing {
+  font-weight: 700;
+}
+
 .route-marker.is-current .route-turn,
 .route-marker.is-current .route-pace,
 .route-marker.is-current .route-pause,
@@ -199,19 +220,23 @@
   margin: 0;
   padding: 0;
   display: grid;
+  grid-template-columns: 1fr 1fr;
   gap: var(--space-2);
 }
 
 .composition-track {
   display: block;
-  height: 8px;
+  height: 1.75rem;
   margin-top: var(--space-1);
+  border-radius: var(--radius-1);
   background: var(--color-surface-raised);
+  overflow: hidden;
 }
 
 .composition-fill {
   display: block;
   height: 100%;
+  border-radius: inherit;
   background: var(--color-music);
 }
 
@@ -261,10 +286,24 @@
 }
 
 @media (prefers-reduced-motion: no-preference) {
-  .route-path {
+  .studio-cover .cover-signature {
     stroke-dasharray: 100;
     stroke-dashoffset: 100;
-    animation: route-draw 700ms var(--ease-standard) forwards;
+    animation: route-draw 700ms var(--ease-standard) 1 forwards;
+  }
+
+  .route-marker.is-live {
+    animation: event-pulse 400ms var(--ease-standard) 1;
+  }
+
+  .now-playing {
+    animation: text-settle var(--duration-fast) var(--ease-standard) 1;
+  }
+
+  html.is-background .studio-cover .cover-signature,
+  html.is-background .route-marker.is-live,
+  html.is-background .now-playing {
+    animation-play-state: paused;
   }
 
   .walker-ready .walker-leg-a,
@@ -290,10 +329,6 @@
   html:not(.is-background) .route-figure.is-onstage .route-cursor.is-playing .walker-leg-b {
     animation-play-state: running;
   }
-
-  .route-marker.is-current {
-    animation: event-pulse 400ms var(--ease-standard) 1;
-  }
 }
 
 @keyframes route-draw {
@@ -314,7 +349,17 @@
 
 @keyframes event-pulse {
   from {
-    opacity: 0.45;
+    opacity: 0.55;
+  }
+
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes text-settle {
+  from {
+    opacity: 0.72;
   }
 
   to {

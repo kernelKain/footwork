@@ -19,7 +19,6 @@
 }
 
 .hero-figure,
-.moment-figure,
 .practice-route {
   margin: 0;
   display: grid;
@@ -27,7 +26,7 @@
 }
 
 .hero-figure svg,
-.moment-figure svg,
+.moment-card svg,
 .practice-route svg {
   display: block;
   width: 100%;
@@ -55,14 +54,48 @@
   background: var(--color-surface);
 }
 
-.moment-controls {
-  display: flex;
-  flex-wrap: wrap;
-  gap: var(--space-1);
+.moment-cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 15rem), 1fr));
+  gap: var(--space-2);
   margin-top: var(--space-3);
 }
 
-.moment-controls .ui-button[aria-pressed="true"] {
+.moment-card {
+  display: grid;
+  gap: var(--space-1);
+  align-content: start;
+  padding: var(--space-2);
+  border: var(--border-width) solid var(--color-line);
+  border-radius: var(--radius-1);
+  background: var(--color-surface);
+}
+
+.moment-align {
+  stroke: var(--color-event);
+  stroke-width: 1.5;
+  stroke-dasharray: 3 4;
+}
+
+.moment-contour {
+  fill: none;
+  stroke: var(--color-music);
+  stroke-width: 3;
+  stroke-linejoin: round;
+  stroke-linecap: round;
+}
+
+.moment-silence {
+  stroke: var(--color-text-muted);
+  stroke-width: 3;
+  stroke-linecap: round;
+}
+
+.moment-sample {
+  fill: var(--color-route);
+}
+
+.moment-card .ui-button[aria-pressed="true"] {
   border-color: var(--color-event);
 }
 
@@ -95,12 +128,6 @@
   stroke-width: 3;
   stroke-dasharray: 2 4;
   stroke-linecap: round;
-}
-
-.journey-footer {
-  padding-top: var(--space-2);
-  border-top: var(--border-width) solid var(--color-line);
-  color: var(--color-text-muted);
 }
 
 @media (min-width: 64rem) {
