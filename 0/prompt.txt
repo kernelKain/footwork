@@ -1,0 +1,9 @@
+I am getting  error of : The piece is not ready as studio has reached today's geenration limit, is it limit for all users, I want to incraese limits  of generation per user, what need to be doen about this
+
+---
+
+Create a plan to do this, do not implement anything yet.
+
+---
+
+Alright implement these and tell me what I need to do from my side.
