@@ -12,26 +12,38 @@ pinned: false
 
 # Footwork arrangement service
 
-This directory is the Hugging Face Space at `kernelKain/footwork`.
+This directory contains the Hugging Face Space used by Footwork.
 
-`/arrange` checks an anonymous event timeline, then asks `google/gemma-4-E2B-it` at revision `3e22461f65e89153144f8adb70e3b8c2cc9845a7` for one JSON plan. Thinking is off. A reply is accepted only when `mood` is `warm_cinematic`, `style` is one to six words from the closed instrumental list and includes `instrumental`, and every `event_refs` id is in the timeline. Anything else stays a blocked or invalid result. This service does not invent a plan, and it does not call Eleven Music.
+`/arrange` validates an anonymous movement-event timeline and asks the pinned
+`google/gemma-4-E2B-it` checkpoint for one JSON arrangement. It accepts a result
+only when:
 
-The Space runtime is free ZeroGPU (`zero-a10g`). The `spaces` package is provided there. When the app starts it downloads the checkpoint and places it on CUDA, which is the placement ZeroGPU keeps. Set `HF_TOKEN` as a Space secret so that download is authenticated. The first start after a push can take several minutes. A request does not download the weights.
+- the mood is supported;
+- the style uses the allowed instrumental vocabulary;
+- every `event_refs` value exists in the submitted timeline; and
+- the response matches the arrangement schema.
 
-Push `app.py`, `arrange.py`, `gemma_runtime.py`, `requirements.txt`, and this file to the Space repository. Do not put a token in these files.
+An invalid response stays invalid. This service does not invent a replacement
+plan and does not call Eleven Music.
 
-## Checked call
+## Deployment
 
-On October 11, 2026 this input:
+The Space uses ZeroGPU. Add `HF_TOKEN` as a Space secret so the pinned checkpoint
+can be downloaded. Never place token values in source files.
 
-```json
-{"schema_version":"1","duration_ms":60000,"events":[{"id":"turn-1","type":"turn","audio_offset_ms":12000},{"id":"pause-1","type":"pause","audio_offset_ms":30000}]}
-```
+Push these files to the Space repository:
 
-returned:
+- `app.py`
+- `arrange.py`
+- `gemma_runtime.py`
+- `requirements.txt`
+- `README.md`
 
-```json
-{"schema_version":"1","status":"valid","code":"validated","model_id":"google/gemma-4-E2B-it","model_revision":"3e22461f65e89153144f8adb70e3b8c2cc9845a7","arrangement":{"mood":"warm_cinematic","style":["instrumental","warm","cinematic","rising"],"event_refs":["turn-1"]},"fallback":null,"message":"A validated arrangement was generated."}
-```
+The application service calls this Space first. Only a validated arrangement is
+eligible to be sent to Eleven Music.
 
-The user confirmed on October 11, 2026 that this Space is the live arrangement service. The Render app asks it for a plan, and a validated plan is what can be sent to Eleven.
+## Local checks
+
+The arrangement schema and invalid-response behavior are covered by the backend
+and Space tests. The public integration example is documented in
+[`Docs/evidence/gemma-access.md`](../Docs/evidence/gemma-access.md).
