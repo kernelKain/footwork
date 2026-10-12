@@ -1,0 +1,54 @@
+{
+  "cli_version": "0.11.4",
+  "checkpoint_id": "01M4Q0T01DV7C3FPSY9ZESK7TB",
+  "session_id": "50097c98-fcc7-4049-a466-e16ec8dd8b1d",
+  "strategy": "manual-commit",
+  "created_at": "2026-10-12T02:59:36.730035692Z",
+  "branch": "main",
+  "checkpoints_count": 1,
+  "files_touched": [
+    "Docs/FRONTEND_EXPERIENCE.md",
+    "Docs/HANDOFF_0.md",
+    "Docs/HANDOFF_1.md",
+    "Docs/HANDOFF_2.md",
+    "Docs/PHASE_1_UI_UX_PLAN.md",
+    "Docs/PHASE_5_FINAL_POLISH_PLAN.md",
+    "Docs/PRODUCT_CONCEPT.md",
+    "Docs/architecture.md",
+    "Docs/assets/footwork-home.png",
+    "Docs/demo-runbook.md",
+    "Docs/evidence/gemma-access.md",
+    "Docs/evidence/music-hosting.md",
+    "Docs/evidence/seed-walk-review.md",
+    "Docs/submission.md",
+    "Docs/write-ups/README.md",
+    "Docs/write-ups/footwork-challenge-draft.md",
+    "README.md",
+    "hf-space/README.md"
+  ],
+  "agent": "Cursor",
+  "model": "grok-4.7-high",
+  "turn_id": "57453109706d",
+  "compact_transcript_start": 0,
+  "initial_attribution": {
+    "calculated_at": "2026-10-12T02:59:36.723707127Z",
+    "agent_lines": 504,
+    "agent_removed": 4590,
+    "human_added": 0,
+    "human_modified": 0,
+    "human_removed": 0,
+    "total_committed": 504,
+    "total_lines_changed": 5094,
+    "agent_percentage": 100,
+    "metric_version": 2
+  },
+  "prompt_attributions": [
+    {
+      "checkpoint_number": 1,
+      "user_lines_added": 0,
+      "user_lines_removed": 0,
+      "agent_lines_added": 0,
+      "agent_lines_removed": 0
+    }
+  ]
+}

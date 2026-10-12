@@ -1,0 +1,36 @@
+{
+  "cli_version": "0.11.4",
+  "checkpoint_id": "01M4Q0T01DV7C3FPSY9ZESK7TB",
+  "strategy": "manual-commit",
+  "branch": "main",
+  "checkpoints_count": 1,
+  "files_touched": [
+    "Docs/FRONTEND_EXPERIENCE.md",
+    "Docs/HANDOFF_0.md",
+    "Docs/HANDOFF_1.md",
+    "Docs/HANDOFF_2.md",
+    "Docs/PHASE_1_UI_UX_PLAN.md",
+    "Docs/PHASE_5_FINAL_POLISH_PLAN.md",
+    "Docs/PRODUCT_CONCEPT.md",
+    "Docs/architecture.md",
+    "Docs/assets/footwork-home.png",
+    "Docs/demo-runbook.md",
+    "Docs/evidence/gemma-access.md",
+    "Docs/evidence/music-hosting.md",
+    "Docs/evidence/seed-walk-review.md",
+    "Docs/submission.md",
+    "Docs/write-ups/README.md",
+    "Docs/write-ups/footwork-challenge-draft.md",
+    "README.md",
+    "hf-space/README.md"
+  ],
+  "sessions": [
+    {
+      "metadata": "/0/metadata.json",
+      "transcript": "/0/full.jsonl",
+      "compact_transcript": "/0/transcript.jsonl",
+      "content_hash": "/0/content_hash.txt",
+      "prompt": "/0/prompt.txt"
+    }
+  ]
+}
